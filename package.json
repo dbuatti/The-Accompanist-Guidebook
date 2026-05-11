@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@hookform/resolvers": "3.10.0",
-    "@neondatabase/auth": "0.4.1-beta",
-    "@neondatabase/auth-ui": "0.4.1-beta",
+    "@neondatabase/auth": "0.4.4-beta",
+    "@neondatabase/auth-ui": "0.4.4-beta",
     "@neondatabase/serverless": "1.1.0",
     "@radix-ui/react-accordion": "1.2.0",
     "@radix-ui/react-alert-dialog": "1.1.1",
@@ -79,19 +79,11 @@
   },
   "pnpm": {
     "overrides": {
-      "zod": "3.24.1",
-      "@neondatabase/auth>zod": "3.24.1",
-      "@neondatabase/auth-ui>zod": "3.24.1"
+      "zod": "3.24.1"
     }
   },
   "overrides": {
-    "zod": "3.24.1",
-    "@neondatabase/auth": {
-      "zod": "3.24.1"
-    },
-    "@neondatabase/auth-ui": {
-      "zod": "3.24.1"
-    }
+    "zod": "3.24.1"
   },
   "resolutions": {
     "zod": "3.24.1"
