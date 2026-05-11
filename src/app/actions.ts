@@ -7,55 +7,85 @@ import { revalidatePath } from "next/cache";
 
 // --- Progress Actions ---
 export async function getProgress(userId: string) {
-  const results = await db.select().from(progress).where(eq(progress.userId, userId));
-  return results.map(r => r.lessonId);
+  try {
+    const results = await db.select().from(progress).where(eq(progress.userId, userId));
+    return results.map(r => r.lessonId);
+  } catch (error) {
+    console.error("Error fetching progress:", error);
+    return [];
+  }
 }
 
 export async function toggleLessonProgress(userId: string, lessonId: string) {
-  const existing = await db
-    .select()
-    .from(progress)
-    .where(and(eq(progress.userId, userId), eq(progress.lessonId, lessonId)));
-
-  if (existing.length > 0) {
-    await db
-      .delete(progress)
+  try {
+    const existing = await db
+      .select()
+      .from(progress)
       .where(and(eq(progress.userId, userId), eq(progress.lessonId, lessonId)));
-    return { completed: false };
-  } else {
-    await db.insert(progress).values({ userId, lessonId });
-    return { completed: true };
+
+    if (existing.length > 0) {
+      await db
+        .delete(progress)
+        .where(and(eq(progress.userId, userId), eq(progress.lessonId, lessonId)));
+      return { completed: false };
+    } else {
+      await db.insert(progress).values({ userId, lessonId });
+      return { completed: true };
+    }
+  } catch (error) {
+    console.error("Error toggling progress:", error);
+    throw new Error("Failed to update progress");
   }
 }
 
 // --- Content Management Actions ---
 export async function getCourseContent() {
-  const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
-  const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
+  try {
+    const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
+    const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
 
-  return allModules.map(mod => ({
-    ...mod,
-    lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
-  }));
+    return allModules.map(mod => ({
+      ...mod,
+      lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
+    }));
+  } catch (error) {
+    console.error("Error fetching course content:", error);
+    return [];
+  }
 }
 
 export async function updateLesson(lessonId: string, data: { title: string, videoUrl: string, notes: string, duration: string }) {
-  await db.update(lessons).set(data).where(eq(lessons.id, lessonId));
-  revalidatePath("/portal");
-  revalidatePath("/admin");
+  try {
+    await db.update(lessons).set(data).where(eq(lessons.id, lessonId));
+    revalidatePath("/portal");
+    revalidatePath("/admin");
+  } catch (error) {
+    console.error("Error updating lesson:", error);
+    throw new Error("Failed to update lesson");
+  }
 }
 
 export async function createModule(title: string) {
-  const result = await db.insert(modules).values({ title }).returning();
-  revalidatePath("/admin");
-  return result[0];
+  try {
+    const result = await db.insert(modules).values({ title }).returning();
+    revalidatePath("/admin");
+    return result[0];
+  } catch (error) {
+    console.error("Error creating module:", error);
+    throw new Error("Failed to create module");
+  }
 }
 
 export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string }) {
-  const result = await db.insert(lessons).values({ ...data, moduleId }).returning();
-  revalidatePath("/admin");
-  revalidatePath("/portal");
-  return result[0];
+  try {
+    const result = await db.insert(lessons).values({ ...data, moduleId }).returning();
+    revalidatePath("/admin");
+    revalidatePath("/portal");
+    return result[0];
+  } catch (error) {
+    console.error("Error creating lesson:", error);
+    throw new Error("Failed to create lesson");
+  }
 }
 
 // --- Auth Actions ---
