@@ -18,10 +18,9 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
         onEnded={onComplete}
         config={{
           youtube: {
-            playerVars: {
-              rel: 0,
-              autoplay: 0,
-            }
+            rel: 0,
+            // @ts-ignore - autoplay is valid but sometimes missing from strict types
+            autoplay: 0,
           }
         }}
       />
