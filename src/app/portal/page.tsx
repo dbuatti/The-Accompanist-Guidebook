@@ -165,7 +165,10 @@ export default function PortalPage() {
               <Button
                 onClick={() => handleToggleComplete(currentLesson.id)}
                 variant={completedLessons.includes(currentLesson.id) ? "default" : "outline"}
-                className={completedLessons.includes(currentLesson.id) ? "bg-accent hover:bg-accent/90" : "border-primary text-primary hover:bg-primary/5"}
+                className={completedLessons.includes(currentLesson.id) 
+                  ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
+                  : "border-primary text-primary hover:bg-primary/5 hover:text-primary"
+                }
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 {completedLessons.includes(currentLesson.id) ? "Completed" : "Mark as Complete"}
