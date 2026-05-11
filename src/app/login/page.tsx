@@ -1,23 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Music, Lock } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 
-const Login = () => {
+export default function LoginPage() {
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple prototype password check
     if (password === "accompanist2024") {
       localStorage.setItem("auth_session", "true");
       showSuccess("Welcome to the Guidebook");
-      navigate("/portal");
+      router.push("/portal");
     } else {
       showError("Incorrect password. Please try again.");
     }
@@ -63,6 +62,4 @@ const Login = () => {
       </div>
     </div>
   );
-};
-
-export default Login;
+}

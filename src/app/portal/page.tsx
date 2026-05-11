@@ -1,32 +1,32 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { courseData } from "../data/courseData";
-import { Lesson } from "../types/course";
-import VideoPlayer from "../components/VideoPlayer";
-import PlaylistSidebar from "../components/PlaylistSidebar";
+import { useRouter } from "next/navigation";
+import { courseData } from "@/data/courseData";
+import { Lesson } from "@/types/course";
+import VideoPlayer from "@/components/VideoPlayer";
+import PlaylistSidebar from "@/components/PlaylistSidebar";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, LogOut, Menu } from "lucide-react";
 import { showSuccess } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const Portal = () => {
-  const navigate = useNavigate();
+export default function PortalPage() {
+  const router = useRouter();
   const [currentLesson, setCurrentLesson] = useState<Lesson>(courseData[0].lessons[0]);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
 
   useEffect(() => {
     const session = localStorage.getItem("auth_session");
     if (!session) {
-      navigate("/login");
+      router.push("/login");
     }
     
     const savedProgress = localStorage.getItem("course_progress");
     if (savedProgress) {
       setCompletedLessons(JSON.parse(savedProgress));
     }
-  }, [navigate]);
+  }, [router]);
 
   const toggleComplete = (lessonId: string) => {
     const newCompleted = completedLessons.includes(lessonId)
@@ -43,12 +43,11 @@ const Portal = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("auth_session");
-    navigate("/login");
+    router.push("/login");
   };
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
-      {/* Desktop Sidebar */}
       <div className="hidden lg:block w-80 h-full">
         <PlaylistSidebar
           modules={courseData}
@@ -58,9 +57,7 @@ const Portal = () => {
         />
       </div>
 
-      {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-full overflow-y-auto">
-        {/* Header */}
         <header className="h-16 border-b border-border/50 flex items-center justify-between px-6 bg-card/30 backdrop-blur-sm sticky top-0 z-20">
           <div className="flex items-center gap-4">
             <Sheet>
@@ -91,7 +88,6 @@ const Portal = () => {
         </header>
 
         <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-5xl mx-auto w-full space-y-8">
-          {/* Video Section */}
           <div className="space-y-4">
             <VideoPlayer 
               url={currentLesson.videoUrl} 
@@ -119,7 +115,6 @@ const Portal = () => {
             </div>
           </div>
 
-          {/* Notes Section */}
           <div className="prose prose-stone max-w-none bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm">
             <h3 className="text-xl font-serif font-semibold text-primary mb-4 border-b border-border/50 pb-2">
               Lesson Notes
@@ -132,6 +127,4 @@ const Portal = () => {
       </div>
     </div>
   );
-};
-
-export default Portal;
+}
