@@ -1,1 +1,68 @@
-{}
+{
+  "../node_modules/.pnpm/dash-video-element@0.3.2_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@s_4f10778b8e6d9a825e5aab75ca0860d7/node_modules/dash-video-element/dist/dash-video-element.js -> dashjs": {
+    "id": "../node_modules/.pnpm/dash-video-element@0.3.2_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@s_4f10778b8e6d9a825e5aab75ca0860d7/node_modules/dash-video-element/dist/dash-video-element.js -> dashjs",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_dashjs_5_1_1__svta_cml-cta_1_0_1__svta_cml-structured-fi-f93cc6.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/ReactPlayer.js -> ./Preview.js": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/ReactPlayer.js -> ./Preview.js",
+    "files": [
+      "static/chunks/reactPlayerPreview.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> @mux/mux-player-react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> @mux/mux-player-react",
+    "files": [
+      "static/chunks/reactPlayerMux.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> dash-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> dash-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerDash.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> hls-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> hls-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerHls.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> spotify-audio-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> spotify-audio-element/react",
+    "files": [
+      "static/chunks/reactPlayerSpotify.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> tiktok-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> tiktok-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerTiktok.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> twitch-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> twitch-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerTwitch.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> vimeo-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> vimeo-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerVimeo.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> wistia-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> wistia-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerWistia.js"
+    ]
+  },
+  "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> youtube-video-element/react": {
+    "id": "../node_modules/.pnpm/react-player@3.4.0_@svta+cml-cta@1.0.1_@svta+cml-structured-field-values@1.0.1_@svta+cm_25fa0b7080b1d78cb93b9ded79c14f25/node_modules/react-player/dist/players.js -> youtube-video-element/react",
+    "files": [
+      "static/chunks/reactPlayerYouTube.js"
+    ]
+  }
+}

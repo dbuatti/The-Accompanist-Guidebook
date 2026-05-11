@@ -1,5 +1,60 @@
 {
-  "node": {},
+  "node": {
+    "40556fd52e972bc8a650fcd4511392cf16df57bb16": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        },
+        "app/portal/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/login/page": "action-browser",
+        "app/portal/page": "action-browser"
+      },
+      "filename": "app/actions.ts",
+      "exportedName": "validateAccess"
+    },
+    "40935402ee31aca3e8405b26ea1605c1e81b3067c6": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        },
+        "app/portal/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/login/page": "action-browser",
+        "app/portal/page": "action-browser"
+      },
+      "filename": "app/actions.ts",
+      "exportedName": "getProgress"
+    },
+    "6026141f602f91297d03c921fe88388424e7b5c14b": {
+      "workers": {
+        "app/login/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        },
+        "app/portal/page": {
+          "moduleId": "(action-browser)/./node_modules/.pnpm/next@15.5.18_react-dom@19.2.3_react@19.2.3__react@19.2.3/node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22%2FUsers%2Fdanielebuatti%2Fdyad-apps%2Fradiant-ocelot-chirp%2Fsrc%2Fapp%2Factions.ts%22%2C%5B%7B%22id%22%3A%2240556fd52e972bc8a650fcd4511392cf16df57bb16%22%2C%22exportedName%22%3A%22validateAccess%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%2240935402ee31aca3e8405b26ea1605c1e81b3067c6%22%2C%22exportedName%22%3A%22getProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%2C%7B%22id%22%3A%226026141f602f91297d03c921fe88388424e7b5c14b%22%2C%22exportedName%22%3A%22toggleLessonProgress%22%2C%22filename%22%3A%22app%2Factions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/login/page": "action-browser",
+        "app/portal/page": "action-browser"
+      },
+      "filename": "app/actions.ts",
+      "exportedName": "toggleLessonProgress"
+    }
+  },
   "edge": {},
   "encryptionKey": "9OsWvRUVUmVfMEaI8UVJyxgVkeseeKc+/IEhgRPIQWk="
 }

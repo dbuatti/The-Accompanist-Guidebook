@@ -28,7 +28,7 @@ export async function toggleLessonProgress(userId: string, lessonId: string) {
 
 // Simple mock auth for this guidebook
 export async function validateAccess(password: string) {
-  if (password === "accompanist2024") {
+  if (password === "accompanist2026") {
     // In a real app, we'd find or create a specific user record here
     // For this demo, we'll use a static UUID for the "guest" user
     const guestId = "00000000-0000-0000-0000-000000000000";
