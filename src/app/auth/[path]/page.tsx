@@ -24,20 +24,8 @@ export default async function AuthPage({
         </div>
 
         <div className="bg-card p-8 rounded-2xl shadow-xl border border-border/50">
-          <AuthView 
-            path={path} 
-            appearance={{
-              elements: {
-                card: "shadow-none border-none p-0 bg-transparent",
-                headerTitle: "hidden",
-                headerSubtitle: "hidden",
-                socialProviderButton: "hover:bg-secondary/80 border-border/50 font-sans",
-                button: "bg-primary hover:bg-primary/90 text-primary-foreground font-serif text-lg h-11",
-                input: "bg-background border-border/50 focus:ring-primary",
-                label: "text-muted-foreground font-medium",
-              }
-            }}
-          />
+          {/* Removed unsupported appearance prop to fix compile error; container handles card styling */}
+          <AuthView path={path} />
         </div>
 
         <p className="text-center text-xs text-muted-foreground uppercase tracking-widest mt-8">
