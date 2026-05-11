@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
+// Use the main react-player entry point to resolve TypeScript module resolution issues
 const ReactPlayer = dynamic(() => import("react-player").then(mod => mod.default), { 
   ssr: false,
   loading: () => (
@@ -39,14 +40,16 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
         height="100%"
         controls
         onEnded={onComplete}
-        onError={(e: any) => console.error("VideoPlayer: Error loading video:", e)}
+        onError={(e: any) => {
+          console.error("VideoPlayer: Error loading video:", e);
+        }}
         onReady={() => console.log("VideoPlayer: Player is ready")}
         config={{
           youtube: {
             playerVars: { 
               rel: 0,
               modestbranding: 1,
-              origin: typeof window !== 'undefined' ? window.location.origin : ''
+              autoplay: 0
             }
           }
         }}
