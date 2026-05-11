@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, varchar, integer } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, varchar, integer, unique } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -10,8 +10,11 @@ export const progress = pgTable('progress', {
   id: uuid('id').defaultRandom().primaryKey(),
   userId: uuid('user_id').references(() => users.id).notNull(),
   lessonId: text('lesson_id').notNull(),
-  completedAt: timestamp('completed_at').defaultNow().notNull(),
-});
+  lastPosition: integer('last_position').default(0).notNull(),
+  completedAt: timestamp('completed_at').defaultNow(),
+}, (t) => ({
+  unq: unique().on(t.userId, t.lessonId),
+}));
 
 export const modules = pgTable('modules', {
   id: uuid('id').defaultRandom().primaryKey(),

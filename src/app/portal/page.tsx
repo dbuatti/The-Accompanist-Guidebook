@@ -8,14 +8,14 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, LogOut, Menu, Loader2, Settings } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { getProgress, toggleLessonProgress, getCourseContent } from "@/app/actions";
+import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress } from "@/app/actions";
 import Link from "next/link";
 
 export default function PortalPage() {
   const router = useRouter();
   const [courseData, setCourseData] = useState<any[]>([]);
   const [currentLesson, setCurrentLesson] = useState<any>(null);
-  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [progressData, setProgressData] = useState<any[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -24,8 +24,6 @@ export default function PortalPage() {
     const session = localStorage.getItem("auth_session");
     const role = localStorage.getItem("auth_role");
     
-    console.log("PortalPage: Session check", { session, role });
-
     if (!session) {
       router.push("/login");
       return;
@@ -35,22 +33,16 @@ export default function PortalPage() {
 
     const fetchData = async () => {
       try {
-        console.log("PortalPage: Fetching data...");
         const [progress, content] = await Promise.all([
           getProgress(session),
           getCourseContent()
         ]);
         
-        console.log("PortalPage: Data received", { progress, content });
-        
-        setCompletedLessons(progress);
+        setProgressData(progress);
         setCourseData(content);
         
         if (content.length > 0 && content[0].lessons.length > 0) {
-          console.log("PortalPage: Setting initial lesson", content[0].lessons[0]);
           setCurrentLesson(content[0].lessons[0]);
-        } else {
-          console.warn("PortalPage: No content or lessons found in database");
         }
       } catch (error) {
         console.error("PortalPage: Failed to fetch data:", error);
@@ -67,11 +59,11 @@ export default function PortalPage() {
 
     try {
       const result = await toggleLessonProgress(userId, lessonId);
+      const updatedProgress = await getProgress(userId);
+      setProgressData(updatedProgress);
+      
       if (result.completed) {
-        setCompletedLessons(prev => [...prev, lessonId]);
         showSuccess("Lesson marked as complete!");
-      } else {
-        setCompletedLessons(prev => prev.filter(id => id !== lessonId));
       }
     } catch (error) {
       showError("Failed to update progress.");
@@ -82,6 +74,14 @@ export default function PortalPage() {
     localStorage.removeItem("auth_session");
     localStorage.removeItem("auth_role");
     router.push("/login");
+  };
+
+  const isLessonCompleted = (lessonId: string) => {
+    return progressData.some(p => p.lessonId === lessonId && p.completedAt);
+  };
+
+  const getLessonPosition = (lessonId: string) => {
+    return progressData.find(p => p.lessonId === lessonId)?.lastPosition || 0;
   };
 
   if (isLoading) {
@@ -111,11 +111,8 @@ export default function PortalPage() {
         <PlaylistSidebar
           modules={courseData}
           currentLessonId={currentLesson.id}
-          completedLessons={completedLessons}
-          onSelectLesson={(lesson) => {
-            console.log("PortalPage: Lesson selected", lesson);
-            setCurrentLesson(lesson);
-          }}
+          completedLessons={progressData.filter(p => p.completedAt).map(p => p.lessonId)}
+          onSelectLesson={(lesson) => setCurrentLesson(lesson)}
         />
       </div>
 
@@ -132,11 +129,8 @@ export default function PortalPage() {
                 <PlaylistSidebar
                   modules={courseData}
                   currentLessonId={currentLesson.id}
-                  completedLessons={completedLessons}
-                  onSelectLesson={(lesson) => {
-                    console.log("PortalPage: Lesson selected (mobile)", lesson);
-                    setCurrentLesson(lesson);
-                  }}
+                  completedLessons={progressData.filter(p => p.completedAt).map(p => p.lessonId)}
+                  onSelectLesson={(lesson) => setCurrentLesson(lesson)}
                 />
               </SheetContent>
             </Sheet>
@@ -163,9 +157,14 @@ export default function PortalPage() {
         <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-5xl mx-auto w-full space-y-8">
           <div className="space-y-4">
             <VideoPlayer 
+              key={currentLesson.id}
               url={currentLesson.videoUrl} 
+              initialTime={getLessonPosition(currentLesson.id)}
+              onProgress={(seconds) => {
+                if (userId) saveVideoProgress(userId, currentLesson.id, seconds);
+              }}
               onComplete={() => {
-                if (!completedLessons.includes(currentLesson.id)) {
+                if (!isLessonCompleted(currentLesson.id)) {
                   handleToggleComplete(currentLesson.id);
                 }
               }}
@@ -179,14 +178,14 @@ export default function PortalPage() {
               </div>
               <Button
                 onClick={() => handleToggleComplete(currentLesson.id)}
-                variant={completedLessons.includes(currentLesson.id) ? "default" : "outline"}
-                className={completedLessons.includes(currentLesson.id) 
+                variant={isLessonCompleted(currentLesson.id) ? "default" : "outline"}
+                className={isLessonCompleted(currentLesson.id) 
                   ? "bg-accent hover:bg-accent/90 text-accent-foreground" 
                   : "border-primary text-primary hover:bg-primary/5 hover:text-primary"
                 }
               >
                 <CheckCircle2 className="w-4 h-4 mr-2" />
-                {completedLessons.includes(currentLesson.id) ? "Completed" : "Mark as Complete"}
+                {isLessonCompleted(currentLesson.id) ? "Completed" : "Mark as Complete"}
               </Button>
             </div>
           </div>

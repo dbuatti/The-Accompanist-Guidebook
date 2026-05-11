@@ -1,20 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface VideoPlayerProps {
   url: string;
   onComplete: () => void;
+  initialTime?: number;
+  onProgress?: (seconds: number) => void;
 }
 
-const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
-  const [isMounted, setIsMounted] = useState(false);
+declare global {
+  interface Window {
+    onYouTubeIframeAPIReady: () => void;
+    YT: any;
+  }
+}
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlayerProps) => {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const playerRef = useRef<any>(null);
+  const [isApiLoaded, setIsApiLoaded] = useState(false);
 
-  // Helper to extract YouTube ID from various URL formats
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
     const match = url.match(regExp);
@@ -23,11 +29,58 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
 
   const videoId = getYoutubeId(url);
 
-  if (!isMounted) {
-    return (
-      <div className="aspect-video w-full bg-black rounded-xl" />
-    );
-  }
+  useEffect(() => {
+    if (!videoId) return;
+
+    if (!window.YT) {
+      const tag = document.createElement('script');
+      tag.src = "https://www.youtube.com/iframe_api";
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode?.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        setIsApiLoaded(true);
+      };
+    } else {
+      setIsApiLoaded(true);
+    }
+  }, [videoId]);
+
+  useEffect(() => {
+    if (isApiLoaded && videoId && iframeRef.current) {
+      if (playerRef.current) {
+        playerRef.current.destroy();
+      }
+
+      playerRef.current = new window.YT.Player(iframeRef.current, {
+        events: {
+          onStateChange: (event: any) => {
+            if (event.data === 0) { // 0 is ENDED
+              onComplete();
+            }
+          },
+          onReady: (event: any) => {
+            if (initialTime > 0) {
+              event.target.seekTo(initialTime, true);
+            }
+          }
+        }
+      });
+
+      const interval = setInterval(() => {
+        if (playerRef.current && playerRef.current.getCurrentTime && onProgress) {
+          onProgress(Math.floor(playerRef.current.getCurrentTime()));
+        }
+      }, 5000);
+
+      return () => {
+        clearInterval(interval);
+        if (playerRef.current) {
+          playerRef.current.destroy();
+        }
+      };
+    }
+  }, [isApiLoaded, videoId, onComplete, initialTime, onProgress]);
 
   if (!videoId) {
     return (
@@ -40,7 +93,9 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-2xl bg-black ring-1 ring-white/10">
       <iframe
-        src={`https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&showinfo=0`}
+        ref={iframeRef}
+        id="yt-player"
+        src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1`}
         title="YouTube video player"
         className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
