@@ -21,7 +21,7 @@ export default function Home() {
 
         <div className="pt-4">
           <Link 
-            href="/login" 
+            href="/auth/sign-in" 
             className="inline-flex items-center justify-center bg-primary text-primary-foreground px-10 py-4 rounded-full font-serif text-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
           >
             Enter the Portal

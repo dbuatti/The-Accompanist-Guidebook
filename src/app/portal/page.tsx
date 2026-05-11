@@ -10,56 +10,55 @@ import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress } from "@/app/actions";
 import Link from "next/link";
+import { authClient } from "@/lib/auth/client";
 
 export default function PortalPage() {
   const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
   const [courseData, setCourseData] = useState<any[]>([]);
   const [currentLesson, setCurrentLesson] = useState<any>(null);
   const [progressData, setProgressData] = useState<any[]>([]);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingContent, setIsLoadingContent] = useState(true);
+
+  const isAdmin = session?.user?.email === "admin@accompanist.com"; // Example admin check
 
   useEffect(() => {
-    const session = localStorage.getItem("auth_session");
-    const role = localStorage.getItem("auth_role");
-    
-    if (!session) {
-      router.push("/login");
+    if (!isPending && !session) {
+      router.push("/auth/sign-in");
       return;
     }
-    setUserId(session);
-    setIsAdmin(role === "admin");
 
-    const fetchData = async () => {
-      try {
-        const [progress, content] = await Promise.all([
-          getProgress(session),
-          getCourseContent()
-        ]);
-        
-        setProgressData(progress);
-        setCourseData(content);
-        
-        if (content.length > 0 && content[0].lessons.length > 0) {
-          setCurrentLesson(content[0].lessons[0]);
+    if (session?.user?.id) {
+      const fetchData = async () => {
+        try {
+          const [progress, content] = await Promise.all([
+            getProgress(session.user.id),
+            getCourseContent()
+          ]);
+          
+          setProgressData(progress);
+          setCourseData(content);
+          
+          if (content.length > 0 && content[0].lessons.length > 0) {
+            setCurrentLesson(content[0].lessons[0]);
+          }
+        } catch (error) {
+          console.error("PortalPage: Failed to fetch data:", error);
+        } finally {
+          setIsLoadingContent(false);
         }
-      } catch (error) {
-        console.error("PortalPage: Failed to fetch data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+      };
 
-    fetchData();
-  }, [router]);
+      fetchData();
+    }
+  }, [session, isPending, router]);
 
   const handleToggleComplete = async (lessonId: string) => {
-    if (!userId) return;
+    if (!session?.user?.id) return;
 
     try {
-      const result = await toggleLessonProgress(userId, lessonId);
-      const updatedProgress = await getProgress(userId);
+      const result = await toggleLessonProgress(session.user.id, lessonId);
+      const updatedProgress = await getProgress(session.user.id);
       setProgressData(updatedProgress);
       
       if (result.completed) {
@@ -70,10 +69,9 @@ export default function PortalPage() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("auth_session");
-    localStorage.removeItem("auth_role");
-    router.push("/login");
+  const handleLogout = async () => {
+    await authClient.signOut();
+    router.push("/");
   };
 
   const isLessonCompleted = (lessonId: string) => {
@@ -84,7 +82,7 @@ export default function PortalPage() {
     return progressData.find(p => p.lessonId === lessonId)?.lastPosition || 0;
   };
 
-  if (isLoading) {
+  if (isPending || isLoadingContent) {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -139,6 +137,9 @@ export default function PortalPage() {
             </h1>
           </div>
           <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground mr-2 hidden md:block">
+              {session?.user?.name || session?.user?.email}
+            </span>
             {isAdmin && (
               <Link href="/admin">
                 <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
@@ -161,7 +162,7 @@ export default function PortalPage() {
               url={currentLesson.videoUrl} 
               initialTime={getLessonPosition(currentLesson.id)}
               onProgress={(seconds) => {
-                if (userId) saveVideoProgress(userId, currentLesson.id, seconds);
+                if (session?.user?.id) saveVideoProgress(session.user.id, currentLesson.id, seconds);
               }}
               onComplete={() => {
                 if (!isLessonCompleted(currentLesson.id)) {

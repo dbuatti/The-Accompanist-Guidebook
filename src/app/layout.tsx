@@ -5,6 +5,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "./providers";
+import { NeonAuthUIProvider } from "@neondatabase/auth/react";
+import { authClient } from "@/lib/auth/client";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -22,13 +24,15 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased">
-        <Providers>
-          <TooltipProvider>
-            {children}
-            <Toaster />
-            <Sonner position="top-center" />
-          </TooltipProvider>
-        </Providers>
+        <NeonAuthUIProvider authClient={authClient} defaultTheme="light">
+          <Providers>
+            <TooltipProvider>
+              {children}
+              <Toaster />
+              <Sonner position="top-center" />
+            </TooltipProvider>
+          </Providers>
+        </NeonAuthUIProvider>
       </body>
     </html>
   );
