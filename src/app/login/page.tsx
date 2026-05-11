@@ -6,19 +6,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Music, Lock } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import { validateAccess } from "@/app/actions";
 
 export default function LoginPage() {
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === "accompanist2024") {
-      localStorage.setItem("auth_session", "true");
-      showSuccess("Welcome to the Guidebook");
-      router.push("/portal");
-    } else {
-      showError("Incorrect password. Please try again.");
+    setIsLoading(true);
+    
+    try {
+      const result = await validateAccess(password);
+      if (result.success) {
+        localStorage.setItem("auth_session", result.userId!);
+        showSuccess("Welcome to the Guidebook");
+        router.push("/portal");
+      } else {
+        showError("Incorrect password. Please try again.");
+      }
+    } catch (error) {
+      showError("Connection error. Please check your database setup.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -48,11 +59,16 @@ export default function LoginPage() {
                 className="pl-10 bg-background border-border/50 focus:ring-primary"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
               />
             </div>
           </div>
-          <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg font-serif">
-            Enter Portal
+          <Button 
+            type="submit" 
+            className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg font-serif"
+            disabled={isLoading}
+          >
+            {isLoading ? "Verifying..." : "Enter Portal"}
           </Button>
         </form>
 

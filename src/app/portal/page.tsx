@@ -7,37 +7,53 @@ import { Lesson } from "@/types/course";
 import VideoPlayer from "@/components/VideoPlayer";
 import PlaylistSidebar from "@/components/PlaylistSidebar";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, LogOut, Menu } from "lucide-react";
-import { showSuccess } from "@/utils/toast";
+import { CheckCircle2, LogOut, Menu, Loader2 } from "lucide-react";
+import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { getProgress, toggleLessonProgress } from "@/app/actions";
 
 export default function PortalPage() {
   const router = useRouter();
   const [currentLesson, setCurrentLesson] = useState<Lesson>(courseData[0].lessons[0]);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const session = localStorage.getItem("auth_session");
     if (!session) {
       router.push("/login");
+      return;
     }
-    
-    const savedProgress = localStorage.getItem("course_progress");
-    if (savedProgress) {
-      setCompletedLessons(JSON.parse(savedProgress));
-    }
+    setUserId(session);
+
+    const fetchProgress = async () => {
+      try {
+        const progress = await getProgress(session);
+        setCompletedLessons(progress);
+      } catch (error) {
+        console.error("Failed to fetch progress:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProgress();
   }, [router]);
 
-  const toggleComplete = (lessonId: string) => {
-    const newCompleted = completedLessons.includes(lessonId)
-      ? completedLessons.filter(id => id !== lessonId)
-      : [...completedLessons, lessonId];
-    
-    setCompletedLessons(newCompleted);
-    localStorage.setItem("course_progress", JSON.stringify(newCompleted));
-    
-    if (!completedLessons.includes(lessonId)) {
-      showSuccess("Lesson marked as complete!");
+  const handleToggleComplete = async (lessonId: string) => {
+    if (!userId) return;
+
+    try {
+      const result = await toggleLessonProgress(userId, lessonId);
+      if (result.completed) {
+        setCompletedLessons(prev => [...prev, lessonId]);
+        showSuccess("Lesson marked as complete!");
+      } else {
+        setCompletedLessons(prev => prev.filter(id => id !== lessonId));
+      }
+    } catch (error) {
+      showError("Failed to update progress.");
     }
   };
 
@@ -45,6 +61,14 @@ export default function PortalPage() {
     localStorage.removeItem("auth_session");
     router.push("/login");
   };
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-background overflow-hidden">
@@ -93,7 +117,7 @@ export default function PortalPage() {
               url={currentLesson.videoUrl} 
               onComplete={() => {
                 if (!completedLessons.includes(currentLesson.id)) {
-                  toggleComplete(currentLesson.id);
+                  handleToggleComplete(currentLesson.id);
                 }
               }}
             />
@@ -105,7 +129,7 @@ export default function PortalPage() {
                 <p className="text-muted-foreground mt-1">Duration: {currentLesson.duration}</p>
               </div>
               <Button
-                onClick={() => toggleComplete(currentLesson.id)}
+                onClick={() => handleToggleComplete(currentLesson.id)}
                 variant={completedLessons.includes(currentLesson.id) ? "default" : "outline"}
                 className={completedLessons.includes(currentLesson.id) ? "bg-accent hover:bg-accent/90" : "border-primary text-primary hover:bg-primary/5"}
               >
