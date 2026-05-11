@@ -23,6 +23,9 @@ export default function PortalPage() {
   useEffect(() => {
     const session = localStorage.getItem("auth_session");
     const role = localStorage.getItem("auth_role");
+    
+    console.log("PortalPage: Session check", { session, role });
+
     if (!session) {
       router.push("/login");
       return;
@@ -32,17 +35,25 @@ export default function PortalPage() {
 
     const fetchData = async () => {
       try {
+        console.log("PortalPage: Fetching data...");
         const [progress, content] = await Promise.all([
           getProgress(session),
           getCourseContent()
         ]);
+        
+        console.log("PortalPage: Data received", { progress, content });
+        
         setCompletedLessons(progress);
         setCourseData(content);
+        
         if (content.length > 0 && content[0].lessons.length > 0) {
+          console.log("PortalPage: Setting initial lesson", content[0].lessons[0]);
           setCurrentLesson(content[0].lessons[0]);
+        } else {
+          console.warn("PortalPage: No content or lessons found in database");
         }
       } catch (error) {
-        console.error("Failed to fetch data:", error);
+        console.error("PortalPage: Failed to fetch data:", error);
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +112,10 @@ export default function PortalPage() {
           modules={courseData}
           currentLessonId={currentLesson.id}
           completedLessons={completedLessons}
-          onSelectLesson={setCurrentLesson}
+          onSelectLesson={(lesson) => {
+            console.log("PortalPage: Lesson selected", lesson);
+            setCurrentLesson(lesson);
+          }}
         />
       </div>
 
@@ -120,6 +134,7 @@ export default function PortalPage() {
                   currentLessonId={currentLesson.id}
                   completedLessons={completedLessons}
                   onSelectLesson={(lesson) => {
+                    console.log("PortalPage: Lesson selected (mobile)", lesson);
                     setCurrentLesson(lesson);
                   }}
                 />

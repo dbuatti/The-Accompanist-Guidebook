@@ -64,5 +64,11 @@
     "files": [
       "static/chunks/reactPlayerYouTube.js"
     ]
+  },
+  "components/VideoPlayer.tsx -> react-player": {
+    "id": "components/VideoPlayer.tsx -> react-player",
+    "files": [
+      "static/chunks/_app-pages-browser_node_modules_pnpm_react-player_3_4_0__svta_cml-cta_1_0_1__svta_cml-structu-74d0b0.js"
+    ]
   }
 }

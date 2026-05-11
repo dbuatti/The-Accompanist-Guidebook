@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
-// Use any for the dynamic component to bypass complex type mismatches between Next.js dynamic and react-player
 const ReactPlayer = dynamic(() => import("react-player").then(mod => mod.default), { 
   ssr: false,
   loading: () => (
@@ -23,7 +22,8 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
 
   useEffect(() => {
     setIsMounted(true);
-  }, []);
+    console.log("VideoPlayer: Mounted with URL:", url);
+  }, [url]);
 
   if (!isMounted) {
     return (
@@ -39,6 +39,8 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
         height="100%"
         controls
         onEnded={onComplete}
+        onError={(e: any) => console.error("VideoPlayer: Error loading video:", e)}
+        onReady={() => console.log("VideoPlayer: Player is ready")}
         config={{
           youtube: {
             playerVars: { 
