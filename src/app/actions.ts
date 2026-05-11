@@ -2,8 +2,40 @@
 
 import { db } from "@/lib/db";
 import { users, progress, modules, lessons } from "@/lib/schema";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+// --- User Management Actions ---
+export async function getAllUsers() {
+  try {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return [];
+  }
+}
+
+export async function updateUser(userId: string, data: { name?: string, role?: string }) {
+  try {
+    await db.update(users).set(data).where(eq(users.id, userId));
+    revalidatePath("/admin/users");
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw new Error("Failed to update user");
+  }
+}
+
+export async function deleteUser(userId: string) {
+  try {
+    // Progress will be orphaned or should be deleted if needed, 
+    // but usually we just delete the user record.
+    await db.delete(users).where(eq(users.id, userId));
+    revalidatePath("/admin/users");
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    throw new Error("Failed to delete user");
+  }
+}
 
 // --- Progress Actions ---
 export async function getProgress(userId: string) {

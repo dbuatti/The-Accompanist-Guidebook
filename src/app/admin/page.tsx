@@ -7,23 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Plus, Save, Loader2, ArrowLeft } from "lucide-react";
+import { Plus, Save, Loader2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import AdminNav from "@/components/AdminNav";
+import { authClient } from "@/lib/auth/client";
 
 export default function AdminPage() {
   const router = useRouter();
+  const { data: session, isPending: isAuthPending } = authClient.useSession();
   const [content, setContent] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<string | null>(null);
 
   useEffect(() => {
-    const session = localStorage.getItem("auth_role");
-    if (session !== "admin") {
-      router.push("/login");
+    if (!isAuthPending && !session) {
+      router.push("/auth/sign-in");
+      return;
+    }
+    // Simple admin check - you might want to check the 'role' field from the DB instead
+    if (session && session.user.email !== "admin@accompanist.com") {
+      router.push("/portal");
       return;
     }
     fetchContent();
-  }, [router]);
+  }, [session, isAuthPending, router]);
 
   const fetchContent = async () => {
     try {
@@ -80,7 +87,7 @@ export default function AdminPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isAuthPending) {
     return (
       <div className="h-screen flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" />
@@ -89,14 +96,11 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8 max-w-5xl mx-auto space-y-8">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => router.push("/portal")}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-3xl font-serif font-bold text-primary">Admin Dashboard</h1>
-        </div>
+    <div className="min-h-screen bg-background p-8 max-w-5xl mx-auto">
+      <AdminNav />
+
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-xl font-serif font-semibold text-primary">Course Structure</h2>
         <Button onClick={handleAddModule} className="bg-primary">
           <Plus className="w-4 h-4 mr-2" /> Add Module
         </Button>
@@ -106,7 +110,7 @@ export default function AdminPage() {
         {content.map((module) => (
           <div key={module.id} className="space-y-4">
             <div className="flex items-center justify-between border-b border-border pb-2">
-              <h2 className="text-xl font-serif font-semibold">{module.title}</h2>
+              <h3 className="text-lg font-serif font-medium">{module.title}</h3>
               <Button variant="outline" size="sm" onClick={() => handleAddLesson(module.id)}>
                 <Plus className="w-4 h-4 mr-2" /> Add Lesson
               </Button>

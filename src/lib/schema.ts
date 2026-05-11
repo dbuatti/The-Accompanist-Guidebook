@@ -3,6 +3,8 @@ import { pgTable, text, timestamp, uuid, varchar, integer, unique } from 'drizzl
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  name: varchar('name', { length: 255 }),
+  role: varchar('role', { length: 20 }).default('user').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
