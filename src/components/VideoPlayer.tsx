@@ -1,7 +1,6 @@
 "use client";
 
-import ReactPlayer from "react-player/youtube";
-import { Card } from "@/components/ui/card";
+import ReactPlayer from "react-player";
 
 interface VideoPlayerProps {
   url: string;
@@ -19,7 +18,10 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
         onEnded={onComplete}
         config={{
           youtube: {
-            playerVars: { showinfo: 0, rel: 0 }
+            playerVars: {
+              rel: 0,
+              autoplay: 0,
+            }
           }
         }}
       />
