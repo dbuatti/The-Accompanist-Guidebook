@@ -63,7 +63,7 @@
     "tailwind-merge": "2.5.2",
     "tailwindcss-animate": "1.0.7",
     "vaul": "0.9.3",
-    "zod": "3.24.2"
+    "zod": "4.0.0-canary.7"
   },
   "devDependencies": {
     "@eslint/js": "9.9.0",
@@ -76,20 +76,5 @@
     "postcss": "8.4.47",
     "tailwindcss": "3.4.11",
     "typescript": "5.5.3"
-  },
-  "pnpm": {
-    "overrides": {
-      "zod": "3.24.2",
-      "better-auth>zod": "3.24.2"
-    }
-  },
-  "overrides": {
-    "zod": "3.24.2",
-    "better-auth": {
-      "zod": "3.24.2"
-    }
-  },
-  "resolutions": {
-    "zod": "3.24.2"
   }
 }
