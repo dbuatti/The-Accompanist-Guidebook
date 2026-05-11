@@ -24,7 +24,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <body className="font-sans antialiased">
-        <NeonAuthUIProvider authClient={authClient} defaultTheme="light">
+        {/* Cast authClient to any to bypass internal SDK type mismatches */}
+        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light">
           <Providers>
             <TooltipProvider>
               {children}
