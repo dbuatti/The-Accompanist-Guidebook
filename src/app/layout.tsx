@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased">
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
         <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light">
