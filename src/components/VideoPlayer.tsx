@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import ReactPlayer from "react-player";
 
 interface VideoPlayerProps {
@@ -8,9 +9,22 @@ interface VideoPlayerProps {
 }
 
 const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
+  const [hasWindow, setHasWindow] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHasWindow(true);
+    }
+  }, []);
+
+  if (!hasWindow) return <div className="aspect-video w-full bg-black rounded-xl" />;
+
+  // Cast to any to bypass the library's internal type mismatch with React 19
+  const Player = ReactPlayer as any;
+
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-lg bg-black">
-      <ReactPlayer
+      <Player
         url={url}
         width="100%"
         height="100%"
@@ -18,9 +32,7 @@ const VideoPlayer = ({ url, onComplete }: VideoPlayerProps) => {
         onEnded={onComplete}
         config={{
           youtube: {
-            rel: 0,
-            // @ts-ignore - autoplay is valid but sometimes missing from strict types
-            autoplay: 0,
+            playerVars: { rel: 0 }
           }
         }}
       />
