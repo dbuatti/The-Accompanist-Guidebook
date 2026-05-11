@@ -2,43 +2,53 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { courseData } from "@/data/courseData";
-import { Lesson } from "@/types/course";
 import VideoPlayer from "@/components/VideoPlayer";
 import PlaylistSidebar from "@/components/PlaylistSidebar";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, LogOut, Menu, Loader2 } from "lucide-react";
+import { CheckCircle2, LogOut, Menu, Loader2, Settings } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { getProgress, toggleLessonProgress } from "@/app/actions";
+import { getProgress, toggleLessonProgress, getCourseContent } from "@/app/actions";
+import Link from "next/link";
 
 export default function PortalPage() {
   const router = useRouter();
-  const [currentLesson, setCurrentLesson] = useState<Lesson>(courseData[0].lessons[0]);
+  const [courseData, setCourseData] = useState<any[]>([]);
+  const [currentLesson, setCurrentLesson] = useState<any>(null);
   const [completedLessons, setCompletedLessons] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const session = localStorage.getItem("auth_session");
+    const role = localStorage.getItem("auth_role");
     if (!session) {
       router.push("/login");
       return;
     }
     setUserId(session);
+    setIsAdmin(role === "admin");
 
-    const fetchProgress = async () => {
+    const fetchData = async () => {
       try {
-        const progress = await getProgress(session);
+        const [progress, content] = await Promise.all([
+          getProgress(session),
+          getCourseContent()
+        ]);
         setCompletedLessons(progress);
+        setCourseData(content);
+        if (content.length > 0 && content[0].lessons.length > 0) {
+          setCurrentLesson(content[0].lessons[0]);
+        }
       } catch (error) {
-        console.error("Failed to fetch progress:", error);
+        console.error("Failed to fetch data:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProgress();
+    fetchData();
   }, [router]);
 
   const handleToggleComplete = async (lessonId: string) => {
@@ -59,6 +69,7 @@ export default function PortalPage() {
 
   const handleLogout = () => {
     localStorage.removeItem("auth_session");
+    localStorage.removeItem("auth_role");
     router.push("/login");
   };
 
@@ -66,6 +77,19 @@ export default function PortalPage() {
     return (
       <div className="h-screen w-full flex items-center justify-center bg-background">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!currentLesson) {
+    return (
+      <div className="h-screen w-full flex flex-col items-center justify-center bg-background space-y-4">
+        <p className="text-muted-foreground">No content available yet.</p>
+        {isAdmin && (
+          <Link href="/admin">
+            <Button>Go to Admin Dashboard</Button>
+          </Link>
+        )}
       </div>
     );
   }
@@ -105,10 +129,20 @@ export default function PortalPage() {
               The Accompanist Guidebook
             </h1>
           </div>
-          <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-primary">
-            <LogOut className="w-4 h-4 mr-2" />
-            Exit
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <Link href="/admin">
+                <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Admin
+                </Button>
+              </Link>
+            )}
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-primary">
+              <LogOut className="w-4 h-4 mr-2" />
+              Exit
+            </Button>
+          </div>
         </header>
 
         <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-5xl mx-auto w-full space-y-8">

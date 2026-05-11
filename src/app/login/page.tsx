@@ -21,8 +21,14 @@ export default function LoginPage() {
       const result = await validateAccess(password);
       if (result.success) {
         localStorage.setItem("auth_session", result.userId!);
+        localStorage.setItem("auth_role", result.role!);
         showSuccess("Welcome to the Guidebook");
-        router.push("/portal");
+        
+        if (result.role === 'admin') {
+          router.push("/admin");
+        } else {
+          router.push("/portal");
+        }
       } else {
         showError("Incorrect password. Please try again.");
       }
