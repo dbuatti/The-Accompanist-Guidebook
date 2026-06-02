@@ -5,12 +5,14 @@ import { users, progress, modules, lessons } from "@/lib/schema";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
+const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
 // --- User Management Actions ---
 export async function ensureUserExists(userId: string, email: string, name?: string) {
   try {
     const existing = await db.select().from(users).where(eq(users.id, userId));
     if (existing.length === 0) {
-      const role = email === "admin@accompanist.com" ? "admin" : "user";
+      const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? "admin" : "user";
       await db.insert(users).values({
         id: userId,
         email,

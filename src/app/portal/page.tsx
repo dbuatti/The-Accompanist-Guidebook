@@ -12,6 +12,8 @@ import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress,
 import Link from "next/link";
 import { authClient } from "@/lib/auth/client";
 
+const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
 export default function PortalPage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -20,7 +22,7 @@ export default function PortalPage() {
   const [progressData, setProgressData] = useState<any[]>([]);
   const [isLoadingContent, setIsLoadingContent] = useState(true);
 
-  const isAdmin = session?.user?.email === "admin@accompanist.com"; // Example admin check
+  const isAdmin = session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase());
 
   useEffect(() => {
     if (!isPending && !session) {

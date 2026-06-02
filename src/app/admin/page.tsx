@@ -12,6 +12,8 @@ import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 
+const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
 export default function AdminPage() {
   const router = useRouter();
   const { data: session, isPending: isAuthPending } = authClient.useSession();
@@ -24,8 +26,7 @@ export default function AdminPage() {
       router.push("/auth/sign-in");
       return;
     }
-    // Simple admin check - you might want to check the 'role' field from the DB instead
-    if (session && session.user.email !== "admin@accompanist.com") {
+    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
       router.push("/portal");
       return;
     }

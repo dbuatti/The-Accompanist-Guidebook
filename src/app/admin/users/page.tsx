@@ -27,6 +27,8 @@ import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
 
+const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
 export default function AdminUsersPage() {
   const router = useRouter();
   const { data: session, isPending: isAuthPending } = authClient.useSession();
@@ -39,7 +41,7 @@ export default function AdminUsersPage() {
       router.push("/auth/sign-in");
       return;
     }
-    if (session && session.user.email !== "admin@accompanist.com") {
+    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
       router.push("/portal");
       return;
     }
@@ -121,56 +123,59 @@ export default function AdminUsersPage() {
                   </TableCell>
                 </TableRow>
               ) : (
-                users.map((user) => (
-                  <TableRow key={user.id} className="group">
-                    <TableCell>
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">
-                          {user.name || "Unnamed User"}
-                        </span>
+                users.map((user) => {
+                  const isProtectedAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
+                  return (
+                    <TableRow key={user.id} className="group">
+                      <TableCell>
+                        <div className="flex flex-col">
+                          <span className="font-medium text-foreground">
+                            {user.name || "Unnamed User"}
+                          </span>
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Mail className="w-3 h-3" /> {user.email}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Select 
+                          defaultValue={user.role} 
+                          onValueChange={(val) => handleUpdateRole(user.id, val)}
+                          disabled={isActionPending === user.id || isProtectedAdmin}
+                        >
+                          <SelectTrigger className="w-32 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="admin">Admin</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
                         <span className="text-xs text-muted-foreground flex items-center gap-1">
-                          <Mail className="w-3 h-3" /> {user.email}
+                          <Calendar className="w-3 h-3" />
+                          {new Date(user.createdAt).toLocaleDateString()}
                         </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Select 
-                        defaultValue={user.role} 
-                        onValueChange={(val) => handleUpdateRole(user.id, val)}
-                        disabled={isActionPending === user.id || user.email === "admin@accompanist.com"}
-                      >
-                        <SelectTrigger className="w-32 h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="user">User</SelectItem>
-                          <SelectItem value="admin">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                    <TableCell>
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(user.createdAt).toLocaleDateString()}
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="text-muted-foreground hover:text-destructive"
-                        onClick={() => handleDeleteUser(user.id)}
-                        disabled={isActionPending === user.id || user.email === "admin@accompanist.com"}
-                      >
-                        {isActionPending === user.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-muted-foreground hover:text-destructive"
+                          onClick={() => handleDeleteUser(user.id)}
+                          disabled={isActionPending === user.id || isProtectedAdmin}
+                        >
+                          {isActionPending === user.id ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Trash2 className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
