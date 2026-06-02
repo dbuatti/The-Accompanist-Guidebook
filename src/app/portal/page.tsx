@@ -24,7 +24,7 @@ export default function PortalPage() {
   const [progressData, setProgressData] = useState<any[]>([]);
   const [isLoadingContent, setIsLoadingContent] = useState(true);
 
-  const isAdmin = session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase());
+  const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
 
   useEffect(() => {
     if (!isPending && !session) {
