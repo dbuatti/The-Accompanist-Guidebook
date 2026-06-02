@@ -271,7 +271,7 @@ export default function AdminPage() {
         await fetchData();
         
         if (zenLesson && zenLesson.id === lessonId) {
-          setZenLesson(prev => ({ ...prev, notes: result.notes }));
+          setZenLesson({ ...zenLesson, notes: result.notes });
         }
       }
     } catch (error: any) {
