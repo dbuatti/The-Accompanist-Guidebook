@@ -4,20 +4,22 @@ import { useState } from "react";
 import { AuthView } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { showError } from "@/utils/toast";
+import { Loader2, ShieldAlert } from "lucide-react";
+import { showError, showSuccess } from "@/utils/toast";
+import { useRouter } from "next/navigation";
 
 interface AuthContainerProps {
   path: string;
 }
 
 export default function AuthContainer({ path }: AuthContainerProps) {
+  const router = useRouter();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isAdminLoading, setIsAdminLoading] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
     try {
-      // Trigger Google OAuth flow using Better Auth client
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/portal",
@@ -26,6 +28,44 @@ export default function AuthContainer({ path }: AuthContainerProps) {
       console.error("Google Sign-In Error:", error);
       showError(error.message || "Failed to sign in with Google.");
       setIsGoogleLoading(false);
+    }
+  };
+
+  const handleAdminAutoLogin = async () => {
+    setIsAdminLoading(true);
+    const adminEmail = "admin@accompanist.com";
+    const adminPassword = "AdminPassword2026!";
+    const adminName = "Administrator";
+
+    try {
+      // 1. Try to sign up first in case the admin account doesn't exist yet
+      try {
+        await authClient.signUp.email({
+          email: adminEmail,
+          password: adminPassword,
+          name: adminName,
+        });
+        showSuccess("Admin account created and logged in!");
+        router.push("/portal");
+        return;
+      } catch (signUpError: any) {
+        // If user already exists, we proceed to sign in
+        console.log("Sign up skipped (user likely exists):", signUpError.message);
+      }
+
+      // 2. Sign in with the admin credentials
+      await authClient.signIn.email({
+        email: adminEmail,
+        password: adminPassword,
+      });
+
+      showSuccess("Logged in as Admin!");
+      router.push("/portal");
+    } catch (error: any) {
+      console.error("Admin Auto-Login Error:", error);
+      showError(error.message || "Failed to auto-login as Admin.");
+    } finally {
+      setIsAdminLoading(false);
     }
   };
 
@@ -38,7 +78,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
           variant="outline"
           className="w-full h-12 border-border/80 hover:bg-primary/5 hover:text-primary transition-all rounded-xl flex items-center justify-center gap-3 font-sans text-sm font-medium shadow-sm"
           onClick={handleGoogleSignIn}
-          disabled={isGoogleLoading}
+          disabled={isGoogleLoading || isAdminLoading}
         >
           {isGoogleLoading ? (
             <Loader2 className="w-4 h-4 animate-spin text-primary" />
@@ -51,6 +91,22 @@ export default function AuthContainer({ path }: AuthContainerProps) {
             </svg>
           )}
           {isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}
+        </Button>
+
+        {/* Admin Auto-Login Button */}
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full h-12 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/20 transition-all rounded-xl flex items-center justify-center gap-3 font-sans text-sm font-semibold shadow-sm"
+          onClick={handleAdminAutoLogin}
+          disabled={isGoogleLoading || isAdminLoading}
+        >
+          {isAdminLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin text-amber-600" />
+          ) : (
+            <ShieldAlert className="w-5 h-5 text-amber-600" />
+          )}
+          {isAdminLoading ? "Logging in as Admin..." : "Auto-Login as Admin"}
         </Button>
 
         <div className="relative flex py-2 items-center">
