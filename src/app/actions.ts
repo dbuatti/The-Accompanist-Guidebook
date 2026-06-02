@@ -230,6 +230,17 @@ export async function createLesson(moduleId: string, data: { title: string, vide
   }
 }
 
+export async function deleteLesson(lessonId: string) {
+  try {
+    await db.delete(lessons).where(eq(lessons.id, lessonId));
+    revalidatePath("/admin");
+    revalidatePath("/portal");
+  } catch (error) {
+    console.error("Error deleting lesson:", error);
+    throw new Error("Failed to delete lesson");
+  }
+}
+
 // --- Auth Actions ---
 export async function validateAccess(password: string) {
   if (password === "accompanist2026") {

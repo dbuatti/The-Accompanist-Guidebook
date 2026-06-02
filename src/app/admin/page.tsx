@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -16,7 +16,7 @@ import {
   SelectTrigger, 
   SelectValue 
 } from "@/components/ui/select";
-import { Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit, Video, Calendar, Film, Layers } from "lucide-react";
+import { Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit, Video, Calendar, Film, Layers, Trash2 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
@@ -47,6 +47,7 @@ export default function AdminPage() {
   const [levels, setLevels] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isAuthPending && !session) {
@@ -94,6 +95,21 @@ export default function AdminPage() {
       showError("Failed to update lesson");
     } finally {
       setIsSaving(null);
+    }
+  };
+
+  const handleDeleteLesson = async (lessonId: string) => {
+    if (!confirm("Are you sure you want to delete this lesson draft? This action cannot be undone.")) return;
+    
+    setIsDeleting(lessonId);
+    try {
+      await deleteLesson(lessonId);
+      showSuccess("Lesson draft deleted successfully");
+      fetchData();
+    } catch (error) {
+      showError("Failed to delete lesson");
+    } finally {
+      setIsDeleting(null);
     }
   };
 
@@ -264,14 +280,25 @@ export default function AdminPage() {
                                       {lesson.isPublished ? "Published" : "Draft"}
                                     </Label>
                                   </div>
-                                  <Button 
-                                    size="sm" 
-                                    onClick={() => handleUpdateLesson(lesson.id, lesson)}
-                                    disabled={isSaving === lesson.id}
-                                  >
-                                    {isSaving === lesson.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
-                                    Save
-                                  </Button>
+                                  <div className="flex items-center gap-2">
+                                    <Button 
+                                      size="sm" 
+                                      onClick={() => handleUpdateLesson(lesson.id, lesson)}
+                                      disabled={isSaving === lesson.id || isDeleting === lesson.id}
+                                    >
+                                      {isSaving === lesson.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}
+                                      Save
+                                    </Button>
+                                    <Button 
+                                      size="sm" 
+                                      variant="ghost"
+                                      className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                                      onClick={() => handleDeleteLesson(lesson.id)}
+                                      disabled={isSaving === lesson.id || isDeleting === lesson.id}
+                                    >
+                                      {isDeleting === lesson.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
                             </CardHeader>
