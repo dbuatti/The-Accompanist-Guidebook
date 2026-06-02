@@ -5,12 +5,14 @@ import { useRouter } from "next/navigation";
 import VideoPlayer from "@/components/VideoPlayer";
 import PlaylistSidebar from "@/components/PlaylistSidebar";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, LogOut, Menu, Loader2, Settings } from "lucide-react";
+import { CheckCircle2, LogOut, Menu, Loader2, Settings, EyeOff, BookOpen, BrainCircuit } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress, ensureUserExists } from "@/app/actions";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/client";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
 
@@ -38,7 +40,7 @@ export default function PortalPage() {
 
           const [progress, content] = await Promise.all([
             getProgress(session.user.id),
-            getCourseContent()
+            getCourseContent(isAdmin) // Admins see drafts, students only see published
           ]);
           
           setProgressData(progress);
@@ -56,7 +58,7 @@ export default function PortalPage() {
 
       fetchData();
     }
-  }, [session, isPending, router]);
+  }, [session, isPending, router, isAdmin]);
 
   const handleToggleComplete = async (lessonId: string) => {
     if (!session?.user?.id) return;
@@ -176,11 +178,18 @@ export default function PortalPage() {
               }}
             />
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary">
-                  {currentLesson.title}
-                </h2>
-                <p className="text-muted-foreground mt-1">Duration: {currentLesson.duration}</p>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h2 className="text-2xl md:text-3xl font-serif font-bold text-primary">
+                    {currentLesson.title}
+                  </h2>
+                  {!currentLesson.isPublished && (
+                    <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/10 flex items-center gap-1">
+                      <EyeOff className="w-3.5 h-3.5" /> Draft Preview
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-muted-foreground">Duration: {currentLesson.duration}</p>
               </div>
               <Button
                 onClick={() => handleToggleComplete(currentLesson.id)}
@@ -196,14 +205,49 @@ export default function PortalPage() {
             </div>
           </div>
 
-          <div className="prose prose-stone max-w-none bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm">
-            <h3 className="text-xl font-serif font-semibold text-primary mb-4 border-b border-border/50 pb-2">
-              Lesson Notes
-            </h3>
-            <div className="text-foreground/80 leading-relaxed whitespace-pre-wrap font-sans">
-              {currentLesson.notes}
+          {isAdmin ? (
+            <Tabs defaultValue="client" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 max-w-md bg-muted/50 border border-border/50 rounded-xl p-1">
+                <TabsTrigger value="client" className="rounded-lg flex items-center gap-2">
+                  <BookOpen className="w-4 h-4" /> Client-Facing Notes
+                </TabsTrigger>
+                <TabsTrigger value="admin" className="rounded-lg flex items-center gap-2">
+                  <BrainCircuit className="w-4 h-4" /> Back-End Draft Notes
+                </TabsTrigger>
+              </TabsList>
+              
+              <TabsContent value="client" className="mt-4">
+                <div className="prose prose-stone max-w-none bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm">
+                  <h3 className="text-xl font-serif font-semibold text-primary mb-4 border-b border-border/50 pb-2">
+                    Client-Facing Notes
+                  </h3>
+                  <div className="text-foreground/80 leading-relaxed whitespace-pre-wrap font-sans">
+                    {currentLesson.notes || <span className="italic text-muted-foreground">No client-facing notes written yet.</span>}
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="admin" className="mt-4">
+                <div className="prose prose-stone max-w-none bg-amber-500/5 p-8 rounded-2xl border border-amber-500/10 shadow-sm">
+                  <h3 className="text-xl font-serif font-semibold text-amber-800 mb-4 border-b border-amber-500/10 pb-2 flex items-center gap-2">
+                    <BrainCircuit className="w-5 h-5" /> Back-End Draft Notes (Private)
+                  </h3>
+                  <div className="text-foreground/80 leading-relaxed whitespace-pre-wrap font-sans">
+                    {currentLesson.adminNotes || <span className="italic text-muted-foreground">No private draft notes written yet. Use the Admin Dashboard to brain dump ideas!</span>}
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="prose prose-stone max-w-none bg-card/50 p-8 rounded-2xl border border-border/50 shadow-sm">
+              <h3 className="text-xl font-serif font-semibold text-primary mb-4 border-b border-border/50 pb-2">
+                Lesson Notes
+              </h3>
+              <div className="text-foreground/80 leading-relaxed whitespace-pre-wrap font-sans">
+                {currentLesson.notes || <span className="italic text-muted-foreground">No notes available for this lesson.</span>}
+              </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
     </div>

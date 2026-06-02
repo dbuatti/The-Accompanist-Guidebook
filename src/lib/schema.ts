@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, varchar, integer, unique } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, uuid, varchar, integer, unique, boolean } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -31,7 +31,9 @@ export const lessons = pgTable('lessons', {
   title: text('title').notNull(),
   videoUrl: text('video_url').notNull(),
   duration: text('duration').notNull(),
-  notes: text('notes'),
+  notes: text('notes'), // Client-facing notes
+  adminNotes: text('admin_notes'), // Back-end / Draft notes
+  isPublished: boolean('is_published').default(false).notNull(), // Draft status
   displayOrder: integer('display_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

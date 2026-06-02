@@ -107,22 +107,38 @@ export async function toggleLessonProgress(userId: string, lessonId: string) {
 }
 
 // --- Content Management Actions ---
-export async function getCourseContent() {
+export async function getCourseContent(isAdmin: boolean = false) {
   try {
     const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
-    const allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
+    
+    let allLessons;
+    if (isAdmin) {
+      allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
+    } else {
+      allLessons = await db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder));
+    }
 
     return allModules.map(mod => ({
       ...mod,
       lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
-    }));
+    })).filter(mod => isAdmin || mod.lessons.length > 0); // Hide empty modules for students
   } catch (error) {
     console.error("Error fetching course content:", error);
     return [];
   }
 }
 
-export async function updateLesson(lessonId: string, data: { title: string, videoUrl: string, notes: string, duration: string }) {
+export async function updateLesson(
+  lessonId: string, 
+  data: { 
+    title: string; 
+    videoUrl: string; 
+    notes: string; 
+    adminNotes: string; 
+    isPublished: boolean; 
+    duration: string; 
+  }
+) {
   try {
     await db.update(lessons).set(data).where(eq(lessons.id, lessonId));
     revalidatePath("/portal");
@@ -144,7 +160,7 @@ export async function createModule(title: string) {
   }
 }
 
-export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string }) {
+export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean }) {
   try {
     const result = await db.insert(lessons).values({ ...data, moduleId }).returning();
     revalidatePath("/admin");
