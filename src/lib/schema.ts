@@ -36,4 +36,7 @@ export const lessons = pgTable('lessons', {
   isPublished: boolean('is_published').default(false).notNull(), // Draft status
   displayOrder: integer('display_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  hasVideo: boolean('has_video').default(true).notNull(),
+  videoStatus: varchar('video_status', { length: 50 }).default('not_started').notNull(),
+  filmingDate: timestamp('filming_date'),
 });

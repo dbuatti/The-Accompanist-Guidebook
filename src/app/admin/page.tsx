@@ -9,13 +9,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit } from "lucide-react";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
+import { Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit, Video, Calendar, Film } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
 
 const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
+const STATUS_LABELS: Record<string, string> = {
+  not_started: "Not Started",
+  scheduled: "Scheduled",
+  filmed: "Filmed",
+  edited: "Edited",
+  uploaded: "Uploaded",
+};
+
+const STATUS_COLORS: Record<string, string> = {
+  not_started: "bg-red-500/10 text-red-700 border-red-500/20",
+  scheduled: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+  filmed: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+  edited: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+  uploaded: "bg-green-500/10 text-green-700 border-green-500/20",
+};
 
 export default function AdminPage() {
   const router = useRouter();
@@ -56,7 +79,10 @@ export default function AdminPage() {
         notes: lessonData.notes || "",
         adminNotes: lessonData.adminNotes || "",
         isPublished: lessonData.isPublished ?? false,
-        duration: lessonData.duration || "00:00"
+        duration: lessonData.duration || "00:00",
+        hasVideo: lessonData.hasVideo ?? true,
+        videoStatus: lessonData.videoStatus ?? 'not_started',
+        filmingDate: lessonData.filmingDate ? new Date(lessonData.filmingDate) : null,
       });
       showSuccess("Lesson updated successfully");
     } catch (error) {
@@ -86,7 +112,10 @@ export default function AdminPage() {
         duration: "00:00",
         notes: "",
         adminNotes: "",
-        isPublished: false // Default to draft
+        isPublished: false,
+        hasVideo: true,
+        videoStatus: 'not_started',
+        filmingDate: null,
       });
       fetchContent();
       showSuccess("Lesson draft added");
@@ -135,7 +164,7 @@ export default function AdminPage() {
                   <Card key={lesson.id} className="bg-card/50 border-border/60 shadow-sm">
                     <CardHeader className="pb-2">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-wrap">
                           <CardTitle className="text-base font-serif font-bold text-primary">
                             {lesson.title || "Untitled Lesson"}
                           </CardTitle>
@@ -146,6 +175,11 @@ export default function AdminPage() {
                           ) : (
                             <Badge variant="secondary" className="bg-amber-500/10 text-amber-700 border-amber-500/20 hover:bg-amber-500/10 flex items-center gap-1">
                               <EyeOff className="w-3 h-3" /> Draft
+                            </Badge>
+                          )}
+                          {lesson.hasVideo && (
+                            <Badge variant="outline" className={`flex items-center gap-1 ${STATUS_COLORS[lesson.videoStatus] || ""}`}>
+                              <Film className="w-3 h-3" /> {STATUS_LABELS[lesson.videoStatus] || "Not Started"}
                             </Badge>
                           )}
                         </div>
@@ -206,19 +240,95 @@ export default function AdminPage() {
                           />
                         </div>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-xs font-semibold text-muted-foreground">Video URL (YouTube)</label>
-                        <Input 
-                          value={lesson.videoUrl} 
-                          placeholder="https://www.youtube.com/watch?v=..."
-                          onChange={(e) => {
-                            const newContent = [...content];
-                            const modIdx = newContent.findIndex(m => m.id === module.id);
-                            const lesIdx = newContent[modIdx].lessons.findIndex((l: any) => l.id === lesson.id);
-                            newContent[modIdx].lessons[lesIdx].videoUrl = e.target.value;
-                            setContent(newContent);
-                          }}
-                        />
+
+                      {/* Video Tracking Section */}
+                      <div className="bg-secondary/30 p-4 rounded-xl border border-border/50 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <Video className="w-4 h-4 text-primary" />
+                            <span className="text-xs font-bold uppercase tracking-wider text-primary">Video Production Tracking</span>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              id={`has-video-${lesson.id}`}
+                              checked={lesson.hasVideo}
+                              onCheckedChange={(checked) => {
+                                const newContent = [...content];
+                                const modIdx = newContent.findIndex(m => m.id === module.id);
+                                const lesIdx = newContent[modIdx].lessons.findIndex((l: any) => l.id === lesson.id);
+                                newContent[modIdx].lessons[lesIdx].hasVideo = checked;
+                                setContent(newContent);
+                              }}
+                            />
+                            <Label htmlFor={`has-video-${lesson.id}`} className="text-xs font-medium cursor-pointer">
+                              Requires Video
+                            </Label>
+                          </div>
+                        </div>
+
+                        {lesson.hasVideo && (
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+                            <div className="space-y-1">
+                              <label className="text-xs font-semibold text-muted-foreground">Video Status</label>
+                              <Select
+                                value={lesson.videoStatus}
+                                onValueChange={(val) => {
+                                  const newContent = [...content];
+                                  const modIdx = newContent.findIndex(m => m.id === module.id);
+                                  const lesIdx = newContent[modIdx].lessons.findIndex((l: any) => l.id === lesson.id);
+                                  newContent[modIdx].lessons[lesIdx].videoStatus = val;
+                                  setContent(newContent);
+                                }}
+                              >
+                                <SelectTrigger className="h-9 text-xs bg-background">
+                                  <SelectValue placeholder="Select status" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="not_started">Not Started</SelectItem>
+                                  <SelectItem value="scheduled">Scheduled</SelectItem>
+                                  <SelectItem value="filmed">Filmed</SelectItem>
+                                  <SelectItem value="edited">Edited</SelectItem>
+                                  <SelectItem value="uploaded">Uploaded</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-xs font-semibold text-muted-foreground">Filming Date</label>
+                              <div className="relative">
+                                <Input
+                                  type="date"
+                                  className="h-9 text-xs bg-background pl-8"
+                                  value={lesson.filmingDate ? new Date(lesson.filmingDate).toISOString().split('T')[0] : ""}
+                                  onChange={(e) => {
+                                    const newContent = [...content];
+                                    const modIdx = newContent.findIndex(m => m.id === module.id);
+                                    const lesIdx = newContent[modIdx].lessons.findIndex((l: any) => l.id === lesson.id);
+                                    newContent[modIdx].lessons[lesIdx].filmingDate = e.target.value ? new Date(e.target.value) : null;
+                                    setContent(newContent);
+                                  }}
+                                />
+                                <Calendar className="w-4 h-4 text-muted-foreground absolute left-2.5 top-2.5" />
+                              </div>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-xs font-semibold text-muted-foreground">Video URL (YouTube)</label>
+                              <Input 
+                                value={lesson.videoUrl} 
+                                placeholder="https://www.youtube.com/watch?v=..."
+                                className="h-9 text-xs bg-background"
+                                onChange={(e) => {
+                                  const newContent = [...content];
+                                  const modIdx = newContent.findIndex(m => m.id === module.id);
+                                  const lesIdx = newContent[modIdx].lessons.findIndex((l: any) => l.id === lesson.id);
+                                  newContent[modIdx].lessons[lesIdx].videoUrl = e.target.value;
+                                  setContent(newContent);
+                                }}
+                              />
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">

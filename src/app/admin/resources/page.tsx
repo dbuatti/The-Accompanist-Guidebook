@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Loader2, ExternalLink, Copy, Check, Presentation, FileText, MessageSquare, Sparkles } from "lucide-react";
+import { Loader2, ExternalLink, Copy, Check, Presentation, FileText, MessageSquare, Sparkles, Calendar, Kanban } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
@@ -44,6 +44,22 @@ export default function AdminResourcesPage() {
       category: "AI Assistant",
       icon: MessageSquare,
       color: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+    },
+    {
+      title: "Notion Course Development",
+      description: "Master Notion workspace for planning, structuring, and drafting the Audition Guidebook.",
+      url: "https://app.notion.com/p/danielebuatti/Audition-Guidebook-Course-Development-35caad21cd0981a18eb9e5a05fa3f765",
+      category: "Notion Workspace",
+      icon: Kanban,
+      color: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20",
+    },
+    {
+      title: "Filming Schedule",
+      description: "Notion database tracking video production, filming dates, and editing status.",
+      url: "https://app.notion.com/p/danielebuatti/dec3663aeda14afdb81b296fa94e9f87?v=a73d9a50dce24b29a8ff50ab5a1b9add",
+      category: "Production Schedule",
+      icon: Calendar,
+      color: "bg-rose-500/10 text-rose-700 border-rose-500/20",
     },
     {
       title: "Audition Prep Workshop (Wednesdays)",

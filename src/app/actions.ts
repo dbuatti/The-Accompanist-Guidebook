@@ -137,10 +137,23 @@ export async function updateLesson(
     adminNotes: string; 
     isPublished: boolean; 
     duration: string; 
+    hasVideo?: boolean;
+    videoStatus?: string;
+    filmingDate?: Date | null;
   }
 ) {
   try {
-    await db.update(lessons).set(data).where(eq(lessons.id, lessonId));
+    await db.update(lessons).set({
+      title: data.title,
+      videoUrl: data.videoUrl,
+      notes: data.notes,
+      adminNotes: data.adminNotes,
+      isPublished: data.isPublished,
+      duration: data.duration,
+      hasVideo: data.hasVideo ?? true,
+      videoStatus: data.videoStatus ?? 'not_started',
+      filmingDate: data.filmingDate ?? null,
+    }).where(eq(lessons.id, lessonId));
     revalidatePath("/portal");
     revalidatePath("/admin");
   } catch (error) {
@@ -160,9 +173,15 @@ export async function createModule(title: string) {
   }
 }
 
-export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean }) {
+export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
   try {
-    const result = await db.insert(lessons).values({ ...data, moduleId }).returning();
+    const result = await db.insert(lessons).values({ 
+      ...data, 
+      moduleId,
+      hasVideo: data.hasVideo ?? true,
+      videoStatus: data.videoStatus ?? 'not_started',
+      filmingDate: data.filmingDate ?? null,
+    }).returning();
     revalidatePath("/admin");
     revalidatePath("/portal");
     return result[0];
