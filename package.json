@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@google/genai": "^2.7.0",
     "@hookform/resolvers": "3.10.0",
     "@neondatabase/auth": "0.4.1-beta",
     "@neondatabase/auth-ui": "0.2.0-beta",
