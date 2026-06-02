@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson } from "@/app/actions";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,8 @@ import {
 import { 
   Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit, Video, 
   Calendar, Film, Layers, Trash2, Search, Filter, ChevronDown, ChevronUp, 
-  Maximize2, Minimize2, Sparkles, CheckCircle2, AlertCircle, BarChart3
+  Maximize2, Minimize2, Sparkles, CheckCircle2, AlertCircle, BarChart3,
+  StickyNote, Play, Pause, RotateCcw, Timer, Zap
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
@@ -62,6 +63,15 @@ export default function AdminPage() {
   const [collapsedModules, setCollapsedModules] = useState<Record<string, boolean>>({});
   const [zenLesson, setZenLesson] = useState<any | null>(null);
 
+  // ADHD Scratchpad State
+  const [scratchpad, setScratchpad] = useState("");
+
+  // Pomodoro Timer States
+  const [pomodoroTime, setPomodoroTime] = useState(25 * 60); // 25 minutes
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const [timerMode, setTimerMode] = useState<"focus" | "break">("focus");
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     if (!isAuthPending && !session) {
       router.push("/auth/sign-in");
@@ -72,7 +82,55 @@ export default function AdminPage() {
       return;
     }
     fetchData();
+    
+    // Load Scratchpad from localStorage
+    const savedScratchpad = localStorage.getItem("adhd_scratchpad");
+    if (savedScratchpad) {
+      setScratchpad(savedScratchpad);
+    }
   }, [session, isAuthPending, router]);
+
+  // Pomodoro Timer Logic
+  useEffect(() => {
+    if (isTimerRunning) {
+      timerRef.current = setInterval(() => {
+        setPomodoroTime((prev) => {
+          if (prev <= 1) {
+            clearInterval(timerRef.current!);
+            setIsTimerRunning(false);
+            // Switch modes
+            if (timerMode === "focus") {
+              showSuccess("Focus session complete! Take a well-deserved 5-minute break.");
+              setTimerMode("break");
+              return 5 * 60;
+            } else {
+              showSuccess("Break over! Ready to crush another focus session?");
+              setTimerMode("focus");
+              return 25 * 60;
+            }
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current);
+    }
+
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isTimerRunning, timerMode]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const handleScratchpadChange = (val: string) => {
+    setScratchpad(val);
+    localStorage.setItem("adhd_scratchpad", val);
+  };
 
   const fetchData = async () => {
     try {
@@ -96,13 +154,17 @@ export default function AdminPage() {
     let draftLessons = 0;
     let totalVideos = 0;
     let uploadedVideos = 0;
+    const draftLessonsList: any[] = [];
 
     content.forEach(level => {
       level.modules.forEach((module: any) => {
         module.lessons.forEach((lesson: any) => {
           totalLessons++;
           if (lesson.isPublished) publishedLessons++;
-          else draftLessons++;
+          else {
+            draftLessons++;
+            draftLessonsList.push({ ...lesson, moduleTitle: module.title });
+          }
 
           if (lesson.hasVideo) {
             totalVideos++;
@@ -115,7 +177,12 @@ export default function AdminPage() {
     const courseProgress = totalLessons > 0 ? Math.round((publishedLessons / totalLessons) * 100) : 0;
     const videoProgress = totalVideos > 0 ? Math.round((uploadedVideos / totalVideos) * 100) : 0;
 
-    return { totalLessons, publishedLessons, draftLessons, totalVideos, uploadedVideos, courseProgress, videoProgress };
+    // Pick a random draft lesson as the "Next Recommended Action" to prevent decision paralysis
+    const nextAction = draftLessonsList.length > 0 
+      ? draftLessonsList[Math.floor((new Date().getDate() * 7) % draftLessonsList.length)]
+      : null;
+
+    return { totalLessons, publishedLessons, draftLessons, totalVideos, uploadedVideos, courseProgress, videoProgress, nextAction };
   };
 
   const stats = getStats();
@@ -277,6 +344,64 @@ export default function AdminPage() {
             <div className="p-3 rounded-xl bg-muted text-muted-foreground">
               <BarChart3 className="w-6 h-6" />
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ADHD Brain Dump & Next Action Row */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Brain Dump Scratchpad */}
+        <Card className="md:col-span-2 bg-amber-500/5 border-amber-500/20 shadow-sm">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between space-y-0">
+            <div className="space-y-1">
+              <CardTitle className="text-sm font-bold uppercase tracking-wider text-amber-800 flex items-center gap-2">
+                <StickyNote className="w-4 h-4 text-amber-600" />
+                ADHD Brain Dump Scratchpad
+              </CardTitle>
+              <CardDescription className="text-xs text-amber-700/70">
+                Fleeting ideas? Random thoughts? Dump them here instantly. Auto-saves to your browser.
+              </CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <Textarea
+              value={scratchpad}
+              onChange={(e) => handleScratchpadChange(e.target.value)}
+              placeholder="Type anything here... 'Remember to add a PDF download for Module 3' or 'Film Module 5 on Friday'..."
+              className="bg-background/80 border-amber-500/20 text-sm h-24 resize-none focus-visible:ring-amber-500"
+            />
+          </CardContent>
+        </Card>
+
+        {/* Bite-Sized Next Action Recommender */}
+        <Card className="bg-primary/5 border-primary/20 shadow-sm flex flex-col justify-between">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+              <Zap className="w-4 h-4 text-accent fill-accent" />
+              Bite-Sized Next Action
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Overcome task paralysis. Just do this one small thing next:
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex-1 flex flex-col justify-between gap-4">
+            {stats.nextAction ? (
+              <div className="space-y-1 bg-background/60 p-3 rounded-xl border border-primary/10">
+                <p className="text-xs font-bold text-primary truncate">{stats.nextAction.title}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{stats.nextAction.moduleTitle}</p>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">All lessons are published! You are a superstar! 🌟</p>
+            )}
+            {stats.nextAction && (
+              <Button 
+                size="sm" 
+                className="w-full bg-primary hover:bg-primary/90 text-xs h-8"
+                onClick={() => setZenLesson(stats.nextAction)}
+              >
+                <Maximize2 className="w-3.5 h-3.5 mr-1.5" /> Focus on This Lesson
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -680,6 +805,41 @@ export default function AdminPage() {
                   {zenLesson.title || "Untitled Lesson"}
                 </h2>
               </div>
+              
+              {/* ADHD Zen Pomodoro Timer Widget */}
+              <div className="flex items-center gap-4 bg-primary/5 border border-primary/10 px-4 py-2.5 rounded-xl shadow-sm">
+                <div className="flex items-center gap-2 text-primary">
+                  <Timer className="w-4 h-4 text-accent" />
+                  <span className="text-xs font-bold uppercase tracking-wider">
+                    {timerMode === "focus" ? "Focus Session" : "Break Time"}
+                  </span>
+                </div>
+                <div className="font-mono text-lg font-bold text-primary">
+                  {formatTime(pomodoroTime)}
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-8 h-8 text-primary hover:bg-primary/10"
+                    onClick={() => setIsTimerRunning(!isTimerRunning)}
+                  >
+                    {isTimerRunning ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="w-8 h-8 text-primary hover:bg-primary/10"
+                    onClick={() => {
+                      setIsTimerRunning(false);
+                      setPomodoroTime(timerMode === "focus" ? 25 * 60 : 5 * 60);
+                    }}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+
               <Button 
                 variant="ghost" 
                 size="sm" 
