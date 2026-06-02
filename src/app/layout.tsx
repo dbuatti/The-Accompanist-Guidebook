@@ -23,7 +23,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
-      <body className="font-sans antialiased">
+      <body className="font-sans antialiased" suppressHydrationWarning>
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
         <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light">
           <Providers>
