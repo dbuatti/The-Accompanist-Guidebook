@@ -18,8 +18,16 @@ export const progress = pgTable('progress', {
   unq: unique().on(t.userId, t.lessonId),
 }));
 
+export const levels = pgTable('levels', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  title: text('title').notNull(),
+  displayOrder: integer('display_order').default(0).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
 export const modules = pgTable('modules', {
   id: uuid('id').defaultRandom().primaryKey(),
+  levelId: uuid('level_id').references(() => levels.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
   displayOrder: integer('display_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),

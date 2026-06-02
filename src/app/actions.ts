@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { users, progress, modules, lessons } from "@/lib/schema";
+import { users, progress, levels, modules, lessons } from "@/lib/schema";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -109,6 +109,7 @@ export async function toggleLessonProgress(userId: string, lessonId: string) {
 // --- Content Management Actions ---
 export async function getCourseContent(isAdmin: boolean = false) {
   try {
+    const allLevels = await db.select().from(levels).orderBy(asc(levels.displayOrder));
     const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
     
     let allLessons;
@@ -118,13 +119,62 @@ export async function getCourseContent(isAdmin: boolean = false) {
       allLessons = await db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder));
     }
 
-    return allModules.map(mod => ({
-      ...mod,
-      lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
-    })).filter(mod => isAdmin || mod.lessons.length > 0); // Hide empty modules for students
+    // Map 3-tier structure: Levels -> Modules -> Lessons
+    return allLevels.map(lvl => {
+      const lvlModules = allModules.filter(mod => mod.levelId === lvl.id).map(mod => ({
+        ...mod,
+        lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
+      })).filter(mod => isAdmin || mod.lessons.length > 0);
+
+      return {
+        ...lvl,
+        modules: lvlModules
+      };
+    }).filter(lvl => isAdmin || lvl.modules.length > 0);
   } catch (error) {
     console.error("Error fetching course content:", error);
     return [];
+  }
+}
+
+export async function getLevelsOnly() {
+  try {
+    return await db.select().from(levels).orderBy(asc(levels.displayOrder));
+  } catch (error) {
+    console.error("Error fetching levels:", error);
+    return [];
+  }
+}
+
+export async function createLevel(title: string) {
+  try {
+    const result = await db.insert(levels).values({ title }).returning();
+    revalidatePath("/admin");
+    return result[0];
+  } catch (error) {
+    console.error("Error creating level:", error);
+    throw new Error("Failed to create level");
+  }
+}
+
+export async function createModule(title: string, levelId?: string) {
+  try {
+    const result = await db.insert(modules).values({ title, levelId: levelId || null }).returning();
+    revalidatePath("/admin");
+    return result[0];
+  } catch (error) {
+    console.error("Error creating module:", error);
+    throw new Error("Failed to create module");
+  }
+}
+
+export async function updateModuleLevel(moduleId: string, levelId: string | null) {
+  try {
+    await db.update(modules).set({ levelId }).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+  } catch (error) {
+    console.error("Error updating module level:", error);
+    throw new Error("Failed to update module level");
   }
 }
 
@@ -159,17 +209,6 @@ export async function updateLesson(
   } catch (error) {
     console.error("Error updating lesson:", error);
     throw new Error("Failed to update lesson");
-  }
-}
-
-export async function createModule(title: string) {
-  try {
-    const result = await db.insert(modules).values({ title }).returning();
-    revalidatePath("/admin");
-    return result[0];
-  } catch (error) {
-    console.error("Error creating module:", error);
-    throw new Error("Failed to create module");
   }
 }
 

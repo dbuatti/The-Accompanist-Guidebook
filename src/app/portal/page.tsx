@@ -46,8 +46,8 @@ export default function PortalPage() {
           setProgressData(progress);
           setCourseData(content);
           
-          if (content.length > 0 && content[0].lessons.length > 0) {
-            setCurrentLesson(content[0].lessons[0]);
+          if (content.length > 0 && content[0].modules.length > 0 && content[0].modules[0].lessons.length > 0) {
+            setCurrentLesson(content[0].modules[0].lessons[0]);
           }
         } catch (error) {
           console.error("PortalPage: Failed to fetch data:", error);
