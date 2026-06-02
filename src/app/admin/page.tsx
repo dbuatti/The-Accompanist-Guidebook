@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -29,7 +29,7 @@ import {
   Calendar, Film, Layers, Trash2, Search, Filter, ChevronDown, ChevronUp, 
   Maximize2, Minimize2, Sparkles, CheckCircle2, AlertCircle, BarChart3,
   StickyNote, Play, Pause, RotateCcw, Timer, Zap, Battery, BatteryCharging, BatteryLow,
-  FileText, Award, Flame
+  FileText, Award, Flame, Wand2
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
@@ -99,6 +99,7 @@ export default function AdminPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState<string | null>(null);
 
   // ADHD-friendly UI States
   const [searchQuery, setSearchQuery] = useState("");
@@ -282,6 +283,26 @@ export default function AdminPage() {
       showError("Failed to update lesson");
     } finally {
       setIsSaving(null);
+    }
+  };
+
+  const handleGenerateWithGemini = async (lessonId: string) => {
+    setIsGenerating(lessonId);
+    try {
+      const result = await generateLessonNotes(lessonId);
+      if (result.success) {
+        triggerCelebration("✨ Gemini AI has written your lesson notes beautifully!");
+        await fetchData();
+        
+        // If we are in Zen Focus Mode, update the active zen lesson state
+        if (zenLesson && zenLesson.id === lessonId) {
+          setZenLesson(prev => ({ ...prev, notes: result.notes }));
+        }
+      }
+    } catch (error: any) {
+      showError(error.message || "Failed to generate notes with Gemini AI");
+    } finally {
+      setIsGenerating(null);
     }
   };
 
@@ -739,6 +760,20 @@ export default function AdminPage() {
                                               </Button>
                                               <Button 
                                                 size="sm" 
+                                                variant="outline"
+                                                className="h-8 text-xs border-amber-500/30 text-amber-700 hover:bg-amber-500/5 flex items-center gap-1"
+                                                onClick={() => handleGenerateWithGemini(lesson.id)}
+                                                disabled={isGenerating === lesson.id}
+                                              >
+                                                {isGenerating === lesson.id ? (
+                                                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                                ) : (
+                                                  <Wand2 className="w-3.5 h-3.5" />
+                                                )}
+                                                Gemini AI
+                                              </Button>
+                                              <Button 
+                                                size="sm" 
                                                 onClick={() => handleUpdateLesson(lesson.id, lesson)}
                                                 disabled={isSaving === lesson.id || isDeleting === lesson.id}
                                                 className="h-8 text-xs"
@@ -1174,6 +1209,19 @@ export default function AdminPage() {
                 </Button>
                 <Button size="sm" variant="outline" onClick={() => handleApplyTemplate("exercise")} className="text-xs h-8">
                   Exercise & Practice
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="text-xs h-8 bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-1"
+                  onClick={() => handleGenerateWithGemini(zenLesson.id)}
+                  disabled={isGenerating === zenLesson.id}
+                >
+                  {isGenerating === zenLesson.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Wand2 className="w-3.5 h-3.5" />
+                  )}
+                  Generate with Gemini AI
                 </Button>
               </div>
             </div>

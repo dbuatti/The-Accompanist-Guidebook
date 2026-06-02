@@ -4,8 +4,12 @@ import { db } from "@/lib/db";
 import { users, progress, levels, modules, lessons } from "@/lib/schema";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { GoogleGenAI } from "@google/genai";
 
 const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+
+// Initialize Gemini client with the provided API key
+const ai = new GoogleGenAI({ apiKey: "AIzaSyB34MlHrrNdpuvJO-6T4NeMwD72msKRRr0" });
 
 // --- User Management Actions ---
 export async function ensureUserExists(userId: string, email: string, name?: string) {
@@ -290,6 +294,57 @@ export async function deleteLesson(lessonId: string) {
   } catch (error) {
     console.error("Error deleting lesson:", error);
     throw new Error("Failed to delete lesson");
+  }
+}
+
+// --- Gemini AI Generation Action ---
+export async function generateLessonNotes(lessonId: string, templateType: string = "standard") {
+  try {
+    // 1. Fetch the lesson details
+    const [lesson] = await db.select().from(lessons).where(eq(lessons.id, lessonId));
+    if (!lesson) throw new Error("Lesson not found");
+
+    // 2. Construct the prompt
+    const prompt = `You are Daniele Buatti, a professional Music Director, Audition Pianist, and Voice Coach. 
+I want you to write a comprehensive, engaging, and highly practical lesson for my "Audition Guidebook" course.
+
+LESSON TITLE: "${lesson.title}"
+CURRENT OUTLINE / NOTES:
+${lesson.notes || "No notes written yet."}
+
+BACK-END DRAFT NOTES / BRAIN DUMP:
+${lesson.adminNotes || "No private draft notes written yet."}
+
+Please write the complete, client-facing lesson notes in Markdown format. Use a warm, professional, and encouraging tone. Include:
+1. A clear, practical explanation of the concept.
+2. Real-world audition room examples or stories.
+3. A "Daniele's Pro-Tip" callout box.
+4. Actionable steps the student can take right now to prepare.
+
+Format the output beautifully with clear headings, bullet points, and bold text. Do not include any conversational intro or outro, just output the markdown content directly.`;
+
+    // 3. Call Gemini API
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+
+    const generatedNotes = response.text;
+    if (!generatedNotes) throw new Error("No content generated from Gemini");
+
+    // 4. Save the generated notes back to the database
+    await db.update(lessons)
+      .set({ notes: generatedNotes })
+      .where(eq(lessons.id, lessonId));
+
+    revalidatePath("/portal");
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+
+    return { success: true, notes: generatedNotes };
+  } catch (error: any) {
+    console.error("Error generating lesson notes with Gemini:", error);
+    throw new Error(error.message || "Failed to generate lesson notes");
   }
 }
 
@@ -583,7 +638,7 @@ export async function scaffoldAuditionGuidebook() {
       {
         title: "Music, In-Room, and Mindset Mistakes",
         notes: "Music Mistakes:\n- Faded or grey printing\n- Missing pages\n- Lead sheets with no piano part\n- Blurry PDFs\n- Pencil annotations\n- Blocking out key signatures\n\nIn-Room Mistakes:\n- Shouting your tempo across the room\n- Giving tempo as just a number\n- Standing behind the piano\n- Rushing through the music handover\n- Apologising for your music\n- Not collecting your music",
-        adminNotes: "Your thoughts here — what are the internal mistakes? The ones that don't show up in the music but show up in the room? Over-explaining, apologising, shrinking."
+        adminNotes: "Your thoughts here — what are the internal mistakes? The ones that don't show up in the music but show up in the room? Over-explaining, apologizing, shrinking."
       }
     ]);
 
