@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, BookOpen, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminNav = () => {
@@ -19,6 +19,11 @@ const AdminNav = () => {
       title: "Manage Users",
       href: "/admin/users",
       icon: Users,
+    },
+    {
+      title: "Admin Resources",
+      href: "/admin/resources",
+      icon: Sparkles,
     },
   ];
 
