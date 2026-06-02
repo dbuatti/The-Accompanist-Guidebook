@@ -150,6 +150,7 @@ export async function createLevel(title: string) {
   try {
     const result = await db.insert(levels).values({ title }).returning();
     revalidatePath("/admin");
+    revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
     console.error("Error creating level:", error);
@@ -157,10 +158,35 @@ export async function createLevel(title: string) {
   }
 }
 
+export async function updateLevel(levelId: string, title: string) {
+  try {
+    await db.update(levels).set({ title }).where(eq(levels.id, levelId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+  } catch (error) {
+    console.error("Error updating level:", error);
+    throw new Error("Failed to update level");
+  }
+}
+
+export async function deleteLevel(levelId: string) {
+  try {
+    // Set levelId to null for any modules in this level
+    await db.update(modules).set({ levelId: null }).where(eq(modules.levelId, levelId));
+    await db.delete(levels).where(eq(levels.id, levelId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+  } catch (error) {
+    console.error("Error deleting level:", error);
+    throw new Error("Failed to delete level");
+  }
+}
+
 export async function createModule(title: string, levelId?: string) {
   try {
     const result = await db.insert(modules).values({ title, levelId: levelId || null }).returning();
     revalidatePath("/admin");
+    revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
     console.error("Error creating module:", error);
@@ -168,10 +194,33 @@ export async function createModule(title: string, levelId?: string) {
   }
 }
 
+export async function updateModule(moduleId: string, title: string) {
+  try {
+    await db.update(modules).set({ title }).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+  } catch (error) {
+    console.error("Error updating module:", error);
+    throw new Error("Failed to update module");
+  }
+}
+
+export async function deleteModule(moduleId: string) {
+  try {
+    await db.delete(modules).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+  } catch (error) {
+    console.error("Error deleting module:", error);
+    throw new Error("Failed to delete module");
+  }
+}
+
 export async function updateModuleLevel(moduleId: string, levelId: string | null) {
   try {
     await db.update(modules).set({ levelId }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
+    revalidatePath("/admin/tree");
   } catch (error) {
     console.error("Error updating module level:", error);
     throw new Error("Failed to update module level");
@@ -206,6 +255,7 @@ export async function updateLesson(
     }).where(eq(lessons.id, lessonId));
     revalidatePath("/portal");
     revalidatePath("/admin");
+    revalidatePath("/admin/tree");
   } catch (error) {
     console.error("Error updating lesson:", error);
     throw new Error("Failed to update lesson");
@@ -223,6 +273,7 @@ export async function createLesson(moduleId: string, data: { title: string, vide
     }).returning();
     revalidatePath("/admin");
     revalidatePath("/portal");
+    revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
     console.error("Error creating lesson:", error);
@@ -235,6 +286,7 @@ export async function deleteLesson(lessonId: string) {
     await db.delete(lessons).where(eq(lessons.id, lessonId));
     revalidatePath("/admin");
     revalidatePath("/portal");
+    revalidatePath("/admin/tree");
   } catch (error) {
     console.error("Error deleting lesson:", error);
     throw new Error("Failed to delete lesson");
@@ -537,6 +589,7 @@ export async function scaffoldAuditionGuidebook() {
 
     revalidatePath("/admin");
     revalidatePath("/portal");
+    revalidatePath("/admin/tree");
     return { success: true };
   } catch (error) {
     console.error("Error scaffolding guidebook:", error);

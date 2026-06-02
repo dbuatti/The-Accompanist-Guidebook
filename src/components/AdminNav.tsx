@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles, BrainCircuit } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles, BrainCircuit, GitFork } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminNav = () => {
@@ -14,6 +14,11 @@ const AdminNav = () => {
       title: "Course Content",
       href: "/admin",
       icon: BookOpen,
+    },
+    {
+      title: "Curriculum Tree",
+      href: "/admin/tree",
+      icon: GitFork,
     },
     {
       title: "Manage Users",
@@ -45,7 +50,7 @@ const AdminNav = () => {
         </div>
       </div>
       
-      <nav className="flex gap-2 border-b border-border pb-px">
+      <nav className="flex gap-2 border-b border-border pb-px overflow-x-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           return (
@@ -53,7 +58,7 @@ const AdminNav = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors relative",
+                "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap",
                 isActive 
                   ? "text-primary border-b-2 border-primary" 
                   : "text-muted-foreground hover:text-primary"
