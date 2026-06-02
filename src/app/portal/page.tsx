@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle2, LogOut, Menu, Loader2, Settings } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress } from "@/app/actions";
+import { getProgress, toggleLessonProgress, getCourseContent, saveVideoProgress, ensureUserExists } from "@/app/actions";
 import Link from "next/link";
 import { authClient } from "@/lib/auth/client";
 
@@ -31,6 +31,9 @@ export default function PortalPage() {
     if (session?.user?.id) {
       const fetchData = async () => {
         try {
+          // Sync user to local database users table
+          await ensureUserExists(session.user.id, session.user.email, session.user.name);
+
           const [progress, content] = await Promise.all([
             getProgress(session.user.id),
             getCourseContent()

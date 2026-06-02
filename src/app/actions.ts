@@ -6,6 +6,23 @@ import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 // --- User Management Actions ---
+export async function ensureUserExists(userId: string, email: string, name?: string) {
+  try {
+    const existing = await db.select().from(users).where(eq(users.id, userId));
+    if (existing.length === 0) {
+      const role = email === "admin@accompanist.com" ? "admin" : "user";
+      await db.insert(users).values({
+        id: userId,
+        email,
+        name: name || null,
+        role,
+      });
+    }
+  } catch (error) {
+    console.error("Error ensuring user exists:", error);
+  }
+}
+
 export async function getAllUsers() {
   try {
     return await db.select().from(users).orderBy(desc(users.createdAt));
@@ -27,8 +44,6 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
 
 export async function deleteUser(userId: string) {
   try {
-    // Progress will be orphaned or should be deleted if needed, 
-    // but usually we just delete the user record.
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
   } catch (error) {
