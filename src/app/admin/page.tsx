@@ -17,6 +17,14 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { 
   Plus, Save, Loader2, Eye, EyeOff, BookOpen, BrainCircuit, Video, 
   Calendar, Film, Layers, Trash2, Search, Filter, ChevronDown, ChevronUp, 
   Maximize2, Minimize2, Sparkles, CheckCircle2, AlertCircle, BarChart3,
@@ -61,6 +69,11 @@ const ENERGY_ICONS: Record<string, any> = {
 
 // ADHD Writing Templates to overcome blank-page anxiety
 const WRITING_TEMPLATES = {
+  none: {
+    title: "Blank Slate",
+    notes: "",
+    adminNotes: ""
+  },
   standard: {
     title: "Standard Lesson Template",
     notes: `### Lesson Overview\n[Provide a 2-sentence summary of what this lesson covers.]\n\n### Key Concepts\n1. **Concept One**: [Brief explanation]\n2. **Concept Two**: [Brief explanation]\n\n### Daniele's Pro-Tip\n> [Insert a golden nugget of real-world advice here!]\n\n### Action Steps\n- [ ] [Action step 1]\n- [ ] [Action step 2]`,
@@ -95,6 +108,16 @@ export default function AdminPage() {
   const [collapsedLevels, setCollapsedLevels] = useState<Record<string, boolean>>({});
   const [collapsedModules, setCollapsedModules] = useState<Record<string, boolean>>({});
   const [zenLesson, setZenLesson] = useState<any | null>(null);
+
+  // Add Lesson Modal States
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
+  const [newLessonTitle, setNewLessonTitle] = useState("");
+  const [newLessonDuration, setNewLessonDuration] = useState("05:00");
+  const [newLessonEnergy, setNewLessonEnergy] = useState("medium");
+  const [newLessonHasVideo, setNewLessonHasVideo] = useState(true);
+  const [newLessonTemplate, setNewLessonTemplate] = useState<"none" | "standard" | "story" | "exercise">("none");
+  const [isCreatingLesson, setIsCreatingLesson] = useState(false);
 
   // ADHD Scratchpad State
   const [scratchpad, setScratchpad] = useState("");
@@ -334,23 +357,45 @@ export default function AdminPage() {
     }
   };
 
-  const handleAddLesson = async (moduleId: string) => {
+  const openAddLessonModal = (moduleId: string) => {
+    setActiveModuleId(moduleId);
+    setNewLessonTitle("");
+    setNewLessonDuration("05:00");
+    setNewLessonEnergy("medium");
+    setNewLessonHasVideo(true);
+    setNewLessonTemplate("none");
+    setIsAddModalOpen(true);
+  };
+
+  const handleCreateLessonSubmit = async () => {
+    if (!activeModuleId) return;
+    if (!newLessonTitle.trim()) {
+      showError("Please enter a lesson title.");
+      return;
+    }
+
+    setIsCreatingLesson(true);
     try {
-      await createLesson(moduleId, {
-        title: "New Lesson Draft",
+      const template = WRITING_TEMPLATES[newLessonTemplate];
+      await createLesson(activeModuleId, {
+        title: newLessonTitle,
         videoUrl: "",
-        duration: "00:00",
-        notes: "",
-        adminNotes: "",
+        duration: newLessonDuration || "05:00",
+        notes: template.notes,
+        adminNotes: template.adminNotes,
         isPublished: false,
-        hasVideo: true,
+        hasVideo: newLessonHasVideo,
         videoStatus: 'not_started',
         filmingDate: null,
       });
+      
+      setIsAddModalOpen(false);
+      triggerCelebration(`✨ Lesson "${newLessonTitle}" created successfully!`);
       fetchData();
-      showSuccess("Lesson draft added");
     } catch (error) {
-      showError("Failed to add lesson");
+      showError("Failed to create lesson");
+    } finally {
+      setIsCreatingLesson(false);
     }
   };
 
@@ -611,7 +656,7 @@ export default function AdminPage() {
                                 </SelectContent>
                               </Select>
                             </div>
-                            <Button variant="ghost" size="sm" onClick={() => handleAddLesson(module.id)} className="h-8 text-xs">
+                            <Button variant="ghost" size="sm" onClick={() => openAddLessonModal(module.id)} className="h-8 text-xs">
                               <Plus className="w-3.5 h-3.5 mr-1" /> Add Lesson Draft
                             </Button>
                           </div>
@@ -929,6 +974,125 @@ export default function AdminPage() {
           );
         })}
       </div>
+
+      {/* ADHD Add Lesson Modal */}
+      <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+        <DialogContent className="sm:max-w-[500px] bg-card border-border/50 rounded-2xl shadow-2xl">
+          <DialogHeader className="pb-4 border-b border-border/50">
+            <DialogTitle className="text-xl font-serif font-bold text-primary flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-accent fill-accent" />
+              Create New Lesson Draft
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              Set up your lesson draft with ADHD-friendly templates and energy mapping.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5 py-4">
+            {/* Title */}
+            <div className="space-y-1.5">
+              <Label htmlFor="lesson-title" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Lesson Title
+              </Label>
+              <Input
+                id="lesson-title"
+                placeholder="e.g., The Golden Rule of Auditioning"
+                value={newLessonTitle}
+                onChange={(e) => setNewLessonTitle(e.target.value)}
+                className="h-10 bg-background border-border/80 text-sm"
+                autoFocus
+              />
+            </div>
+
+            {/* Duration & Energy */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="lesson-duration" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Duration (MM:SS)
+                </Label>
+                <Input
+                  id="lesson-duration"
+                  placeholder="05:00"
+                  value={newLessonDuration}
+                  onChange={(e) => setNewLessonDuration(e.target.value)}
+                  className="h-10 bg-background border-border/80 text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="lesson-energy" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                  Energy Level Required
+                </Label>
+                <Select value={newLessonEnergy} onValueChange={setNewLessonEnergy}>
+                  <SelectTrigger id="lesson-energy" className="h-10 bg-background border-border/80 text-xs">
+                    <SelectValue placeholder="Select energy" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="low">Low Energy (Quick Tasks)</SelectItem>
+                    <SelectItem value="medium">Medium Energy</SelectItem>
+                    <SelectItem value="high">High Energy (Deep Focus)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {/* Video Requirement Toggle */}
+            <div className="flex items-center justify-between bg-secondary/30 p-3 rounded-xl border border-border/50">
+              <div className="space-y-0.5">
+                <Label htmlFor="lesson-video-toggle" className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                  <Video className="w-4 h-4" /> Requires Video
+                </Label>
+                <p className="text-[10px] text-muted-foreground">Toggle if this lesson needs a filmed video.</p>
+              </div>
+              <Switch
+                id="lesson-video-toggle"
+                checked={newLessonHasVideo}
+                onCheckedChange={setNewLessonHasVideo}
+              />
+            </div>
+
+            {/* ADHD Writing Template Pre-selection */}
+            <div className="space-y-2 bg-primary/5 p-4 rounded-xl border border-primary/10">
+              <Label htmlFor="lesson-template" className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-accent" /> Pre-Apply Writing Template
+              </Label>
+              <p className="text-[10px] text-muted-foreground mb-2">
+                Defeat blank-page anxiety! Pre-populate your draft with a structured outline.
+              </p>
+              <Select value={newLessonTemplate} onValueChange={(val: any) => setNewLessonTemplate(val)}>
+                <SelectTrigger id="lesson-template" className="h-9 bg-background border-border/80 text-xs">
+                  <SelectValue placeholder="Select template" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Blank Slate (No Template)</SelectItem>
+                  <SelectItem value="standard">Standard Lesson Template</SelectItem>
+                  <SelectItem value="story">Story-Driven Lesson Template</SelectItem>
+                  <SelectItem value="exercise">Exercise & Practice Template</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <DialogFooter className="border-t border-border/50 pt-4 flex gap-2">
+            <Button variant="outline" onClick={() => setIsAddModalOpen(false)} className="h-10 text-xs">
+              Cancel
+            </Button>
+            <Button onClick={handleCreateLessonSubmit} disabled={isCreatingLesson} className="h-10 text-xs bg-primary">
+              {isCreatingLesson ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Creating Draft...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  Create Lesson Draft
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* ADHD Zen Focus Mode Overlay */}
       {zenLesson && (
