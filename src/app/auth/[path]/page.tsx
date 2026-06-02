@@ -1,5 +1,5 @@
-import { AuthView } from '@neondatabase/auth/react';
 import { Music } from 'lucide-react';
+import AuthContainer from '@/components/AuthContainer';
 
 export const dynamicParams = false;
 
@@ -24,8 +24,7 @@ export default async function AuthPage({
         </div>
 
         <div className="bg-card p-8 rounded-2xl shadow-xl border border-border/50">
-          {/* Removed unsupported appearance prop to fix compile error; container handles card styling */}
-          <AuthView path={path} />
+          <AuthContainer path={path} />
         </div>
 
         <p className="text-center text-xs text-muted-foreground uppercase tracking-widest mt-8">
