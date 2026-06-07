@@ -24,16 +24,22 @@ export async function ensureUserExists(userId: string, email: string, name?: str
         role,
       });
     }
-  } catch (error) {
-    console.error("Error ensuring user exists:", error);
+  } catch (error: any) {
+    console.error("Error ensuring user exists (FULL ERROR):", {
+      message: error.message,
+      stack: error.stack,
+      detail: error.detail,
+      code: error.code,
+      hint: error.hint
+    });
   }
 }
 
 export async function getAllUsers() {
   try {
     return await db.select().from(users).orderBy(desc(users.createdAt));
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  } catch (error: any) {
+    console.error("Error fetching users (FULL ERROR):", error.message);
     return [];
   }
 }
@@ -42,9 +48,9 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
   try {
     await db.update(users).set(data).where(eq(users.id, userId));
     revalidatePath("/admin/users");
-  } catch (error) {
-    console.error("Error updating user:", error);
-    throw new Error("Failed to update user");
+  } catch (error: any) {
+    console.error("Error updating user (FULL ERROR):", error.message);
+    throw new Error("Failed to update user: " + error.message);
   }
 }
 
@@ -52,9 +58,9 @@ export async function deleteUser(userId: string) {
   try {
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    throw new Error("Failed to delete user");
+  } catch (error: any) {
+    console.error("Error deleting user (FULL ERROR):", error.message);
+    throw new Error("Failed to delete user: " + error.message);
   }
 }
 
@@ -63,8 +69,8 @@ export async function getProgress(userId: string) {
   try {
     const results = await db.select().from(progress).where(eq(progress.userId, userId));
     return results;
-  } catch (error) {
-    console.error("Error fetching progress:", error);
+  } catch (error: any) {
+    console.error("Error fetching progress (FULL ERROR):", error.message);
     return [];
   }
 }
@@ -77,8 +83,8 @@ export async function saveVideoProgress(userId: string, lessonId: string, second
         target: [progress.userId, progress.lessonId],
         set: { lastPosition: seconds }
       });
-  } catch (error) {
-    console.error("Error saving video progress:", error);
+  } catch (error: any) {
+    console.error("Error saving video progress (FULL ERROR):", error.message);
   }
 }
 
@@ -104,9 +110,9 @@ export async function toggleLessonProgress(userId: string, lessonId: string) {
         });
       return { completed: true };
     }
-  } catch (error) {
-    console.error("Error toggling progress:", error);
-    throw new Error("Failed to update progress");
+  } catch (error: any) {
+    console.error("Error toggling progress (FULL ERROR):", error.message);
+    throw new Error("Failed to update progress: " + error.message);
   }
 }
 
@@ -135,8 +141,8 @@ export async function getCourseContent(isAdmin: boolean = false) {
         modules: lvlModules
       };
     }).filter(lvl => isAdmin || lvl.modules.length > 0);
-  } catch (error) {
-    console.error("Error fetching course content:", error);
+  } catch (error: any) {
+    console.error("Error fetching course content (FULL ERROR):", error.message);
     return [];
   }
 }
@@ -144,8 +150,8 @@ export async function getCourseContent(isAdmin: boolean = false) {
 export async function getLevelsOnly() {
   try {
     return await db.select().from(levels).orderBy(asc(levels.displayOrder));
-  } catch (error) {
-    console.error("Error fetching levels:", error);
+  } catch (error: any) {
+    console.error("Error fetching levels (FULL ERROR):", error.message);
     return [];
   }
 }
@@ -156,9 +162,9 @@ export async function createLevel(title: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error) {
-    console.error("Error creating level:", error);
-    throw new Error("Failed to create level");
+  } catch (error: any) {
+    console.error("Error creating level (FULL ERROR):", error.message);
+    throw new Error("Failed to create level: " + error.message);
   }
 }
 
@@ -167,9 +173,9 @@ export async function updateLevel(levelId: string, title: string) {
     await db.update(levels).set({ title }).where(eq(levels.id, levelId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error updating level:", error);
-    throw new Error("Failed to update level");
+  } catch (error: any) {
+    console.error("Error updating level (FULL ERROR):", error.message);
+    throw new Error("Failed to update level: " + error.message);
   }
 }
 
@@ -180,9 +186,9 @@ export async function deleteLevel(levelId: string) {
     await db.delete(levels).where(eq(levels.id, levelId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error deleting level:", error);
-    throw new Error("Failed to delete level");
+  } catch (error: any) {
+    console.error("Error deleting level (FULL ERROR):", error.message);
+    throw new Error("Failed to delete level: " + error.message);
   }
 }
 
@@ -192,9 +198,9 @@ export async function createModule(title: string, levelId?: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error) {
-    console.error("Error creating module:", error);
-    throw new Error("Failed to create module");
+  } catch (error: any) {
+    console.error("Error creating module (FULL ERROR):", error.message);
+    throw new Error("Failed to create module: " + error.message);
   }
 }
 
@@ -203,9 +209,9 @@ export async function updateModule(moduleId: string, title: string) {
     await db.update(modules).set({ title }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error updating module:", error);
-    throw new Error("Failed to update module");
+  } catch (error: any) {
+    console.error("Error updating module (FULL ERROR):", error.message);
+    throw new Error("Failed to update module: " + error.message);
   }
 }
 
@@ -214,9 +220,9 @@ export async function deleteModule(moduleId: string) {
     await db.delete(modules).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error deleting module:", error);
-    throw new Error("Failed to delete module");
+  } catch (error: any) {
+    console.error("Error deleting module (FULL ERROR):", error.message);
+    throw new Error("Failed to delete module: " + error.message);
   }
 }
 
@@ -225,9 +231,9 @@ export async function updateModuleLevel(moduleId: string, levelId: string | null
     await db.update(modules).set({ levelId }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error updating module level:", error);
-    throw new Error("Failed to update module level");
+  } catch (error: any) {
+    console.error("Error updating module level (FULL ERROR):", error.message);
+    throw new Error("Failed to update module level: " + error.message);
   }
 }
 
@@ -260,9 +266,9 @@ export async function updateLesson(
     revalidatePath("/portal");
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error updating lesson:", error);
-    throw new Error("Failed to update lesson");
+  } catch (error: any) {
+    console.error("Error updating lesson (FULL ERROR):", error.message);
+    throw new Error("Failed to update lesson: " + error.message);
   }
 }
 
@@ -279,9 +285,9 @@ export async function createLesson(moduleId: string, data: { title: string, vide
     revalidatePath("/portal");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error) {
-    console.error("Error creating lesson:", error);
-    throw new Error("Failed to create lesson");
+  } catch (error: any) {
+    console.error("Error creating lesson (FULL ERROR):", error.message);
+    throw new Error("Failed to create lesson: " + error.message);
   }
 }
 
@@ -291,9 +297,9 @@ export async function deleteLesson(lessonId: string) {
     revalidatePath("/admin");
     revalidatePath("/portal");
     revalidatePath("/admin/tree");
-  } catch (error) {
-    console.error("Error deleting lesson:", error);
-    throw new Error("Failed to delete lesson");
+  } catch (error: any) {
+    console.error("Error deleting lesson (FULL ERROR):", error.message);
+    throw new Error("Failed to delete lesson: " + error.message);
   }
 }
 
