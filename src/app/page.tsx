@@ -29,7 +29,7 @@ export default function Home() {
         </div>
 
         <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] pt-12">
-          Private Educational Resource &copy; 2026
+          Private Educational Resource © 2026
         </p>
       </div>
     </div>
