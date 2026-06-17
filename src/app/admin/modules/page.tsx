@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   getCourseContent,
   updateLesson,
@@ -45,11 +47,15 @@ import {
   Link2,
   ExternalLink,
   StickyNote,
+  ArrowLeft,
+  GitFork,
+  Users,
+  BrainCircuit,
+  Sparkles,
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { authClient } from "@/lib/auth/client";
 import VideoPlayer from "@/components/VideoPlayer";
-import AdminNav from "@/components/AdminNav";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +82,7 @@ export interface DocBlock {
 
 export default function ModuleStudioPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending: isAuthPending } = authClient.useSession();
   const [content, setContent] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -317,9 +324,36 @@ export default function ModuleStudioPage() {
 
   return (
     <div className="h-screen bg-background flex flex-col overflow-hidden">
-      <div className="shrink-0 border-b border-border/60 bg-card/30">
-        <AdminNav />
-      </div>
+      {/* Compact admin nav bar */}
+      <header className="h-11 border-b border-border/40 bg-card/60 flex items-center px-4 shrink-0">
+        <nav className="flex items-center gap-1 overflow-x-auto">
+          <Link href="/modules" className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-muted-foreground hover:text-primary hover:bg-accent/40 transition-colors whitespace-nowrap">
+            <ArrowLeft className="w-3 h-3" /> Modules
+          </Link>
+          <div className="w-px h-4 bg-border/40 mx-1" />
+          {[
+            { title: "Content", href: "/admin", icon: BookOpen },
+            { title: "Tree", href: "/admin/tree", icon: GitFork },
+            { title: "Users", href: "/admin/users", icon: Users },
+            { title: "AI", href: "/admin/assistant", icon: BrainCircuit },
+            { title: "Resources", href: "/admin/resources", icon: Sparkles },
+          ].map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium transition-colors whitespace-nowrap ${
+                  isActive ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-primary hover:bg-accent/40"
+                }`}
+              >
+                <item.icon className="w-3 h-3" />
+                {item.title}
+              </Link>
+            );
+          })}
+        </nav>
+      </header>
       <div className="flex-1 flex overflow-hidden">
       {/* Left Sidebar */}
       <aside className="w-72 border-r border-border/60 bg-card/30 flex flex-col shrink-0">

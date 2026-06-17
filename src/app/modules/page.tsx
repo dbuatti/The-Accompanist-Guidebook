@@ -148,6 +148,27 @@ export default function ModulesPage() {
           </div>
         </div>
         <ScrollArea className="flex-1 p-4">{nav}</ScrollArea>
+        {session && (
+          <div className="px-6 py-3 border-t border-border/30 bg-card/30">
+            {(() => {
+              const totalLessons = content.reduce((sum: number, l: any) => sum + (l.modules?.reduce((s: number, m: any) => s + (m.lessons?.length || 0), 0) || 0), 0);
+              const completedLessons = content.reduce((sum: number, l: any) => sum + (l.modules?.reduce((s: number, m: any) => s + (m.lessons?.filter((les: any) => isLessonCompleted(les.id)).length || 0), 0) || 0), 0);
+              const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+              return (
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-medium text-muted-foreground">Course progress</span>
+                    <span className="text-[11px] font-bold text-primary">{pct}%</span>
+                  </div>
+                  <div className="h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">{completedLessons} of {totalLessons} lessons completed</p>
+                </div>
+              );
+            })()}
+          </div>
+        )}
         <div className="p-4 border-t border-border/30">
           {session ? (
             <div className="flex items-center justify-between">
@@ -232,6 +253,20 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
             <span className="text-[11px] text-muted-foreground">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">{module.title}</h1>
+
+          {/* Module progress */}
+          {isLoggedIn && lessons.length > 0 && (() => {
+            const done = lessons.filter((l: any) => isLessonCompleted(l.id)).length;
+            const pct = Math.round((done / lessons.length) * 100);
+            return (
+              <div className="mt-4 flex items-center gap-3">
+                <div className="flex-1 h-1.5 rounded-full bg-primary/10 overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
+                </div>
+                <span className="text-[11px] font-medium text-muted-foreground">{done}/{lessons.length}</span>
+              </div>
+            );
+          })()}
 
           {/* Jump-to pills */}
           {lessons.length > 1 && (
