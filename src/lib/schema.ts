@@ -29,6 +29,7 @@ export const modules = pgTable('modules', {
   id: uuid('id').defaultRandom().primaryKey(),
   levelId: uuid('level_id').references(() => levels.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
+  wrapUpVideoUrl: text('wrapUpVideoUrl').default(''),
   displayOrder: integer('display_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });

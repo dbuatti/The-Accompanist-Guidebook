@@ -725,6 +725,19 @@ export async function renameModule(moduleId: string, newTitle: string) {
   }
 }
 
+export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: string) {
+  try {
+    await db.update(modules).set({ wrapUpVideoUrl }).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    revalidatePath("/modules");
+  } catch (error: any) {
+    console.error("Error updating module wrap-up video:", error.message);
+    throw new Error("Failed to update module wrap-up video: " + error.message);
+  }
+}
+
 export async function publishAllLessons() {
   try {
     await db.update(lessons).set({ isPublished: true });

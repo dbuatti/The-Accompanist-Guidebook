@@ -368,6 +368,19 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
           ))}
         </div>
 
+        {/* Wrap-Up Video */}
+        {module.wrapUpVideoUrl && (
+          <div className="mt-16">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-6 rounded-full bg-primary/30" />
+              <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60">Wrap-Up</h3>
+            </div>
+            <div className="rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
+              <VideoPlayer url={module.wrapUpVideoUrl} onComplete={() => {}} initialTime={0} onProgress={() => {}} />
+            </div>
+          </div>
+        )}
+
         <div className="mt-24 pb-16 text-center">
           <p className="text-[11px] text-muted-foreground/40 uppercase tracking-widest">End of module</p>
         </div>

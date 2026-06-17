@@ -9,6 +9,7 @@ import {
   updateLesson,
   addResource,
   deleteResource,
+  updateModuleWrapUpVideo,
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -101,6 +102,8 @@ export default function ModuleStudioPage() {
   const [isAddingResource, setIsAddingResource] = useState<string | null>(null);
   const [editingVideoUrl, setEditingVideoUrl] = useState<string | null>(null);
   const [videoUrlValue, setVideoUrlValue] = useState("");
+  const [editingWrapUpVideo, setEditingWrapUpVideo] = useState(false);
+  const [wrapUpVideoValue, setWrapUpVideoValue] = useState("");
 
   useEffect(() => {
     if (!isAuthPending && !session) {
@@ -220,6 +223,24 @@ export default function ModuleStudioPage() {
       showError("Failed to save video URL");
     } finally {
       setIsSaving(null);
+    }
+  };
+
+  const handleSaveWrapUpVideo = async () => {
+    if (!selectedModuleId) return;
+    try {
+      await updateModuleWrapUpVideo(selectedModuleId, wrapUpVideoValue);
+      const newContent = content.map((level) => ({
+        ...level,
+        modules: level.modules.map((mod: any) =>
+          mod.id === selectedModuleId ? { ...mod, wrapUpVideoUrl: wrapUpVideoValue } : mod
+        ),
+      }));
+      setContent(newContent);
+      setEditingWrapUpVideo(false);
+      showSuccess("Wrap-up video saved!");
+    } catch (error) {
+      showError("Failed to save wrap-up video");
     }
   };
 
@@ -578,6 +599,49 @@ export default function ModuleStudioPage() {
                     )}
                   </div>
                 ))}
+                
+                {/* Wrap-Up Video */}
+                <div className="mt-16 pt-8 border-t-2 border-border/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold shrink-0">
+                      <Video className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-serif font-bold text-primary">Wrap-Up Video</h2>
+                      <p className="text-xs text-muted-foreground">Optional video shown at the end of this module for logged-out viewers.</p>
+                    </div>
+                  </div>
+                  {editingWrapUpVideo ? (
+                    <div className="flex items-center gap-2">
+                      <Input
+                        value={wrapUpVideoValue}
+                        onChange={(e) => setWrapUpVideoValue(e.target.value)}
+                        placeholder="https://www.youtube.com/watch?v=... or Vimeo URL"
+                        className="h-8 text-sm"
+                        autoFocus
+                      />
+                      <Button size="sm" onClick={handleSaveWrapUpVideo} className="h-8 shrink-0">
+                        <Check className="w-3.5 h-3.5 mr-1" /> Save
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => setEditingWrapUpVideo(false)} className="h-8 shrink-0">
+                        <X className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => { setEditingWrapUpVideo(true); setWrapUpVideoValue(currentModule?.wrapUpVideoUrl || ""); }}
+                      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-primary transition-colors group"
+                    >
+                      <Video className="w-3.5 h-3.5" />
+                      {currentModule?.wrapUpVideoUrl ? (
+                        <span className="truncate max-w-md group-hover:underline">{currentModule.wrapUpVideoUrl}</span>
+                      ) : (
+                        <span className="italic">Click to add wrap-up video URL</span>
+                      )}
+                      <Edit3 className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  )}
+                </div>
               </div>
             )}
           </div>
