@@ -28,7 +28,7 @@ export default function AdminAssistantPage() {
       return;
     }
     if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/portal");
+      router.push("/modules");
       return;
     }
     fetchContent();

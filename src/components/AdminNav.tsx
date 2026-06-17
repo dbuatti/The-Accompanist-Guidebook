@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles, BrainCircuit, GitFork } from "lucide-react";
+import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles, BrainCircuit, GitFork, PenLine } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminNav = () => {
@@ -35,13 +35,18 @@ const AdminNav = () => {
       href: "/admin/resources",
       icon: Sparkles,
     },
+    {
+      title: "Module Studio",
+      href: "/admin/modules",
+      icon: PenLine,
+    },
   ];
 
   return (
     <div className="flex flex-col space-y-4 mb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/portal">
+          <Link href="/modules">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="w-5 h-5" />
             </Button>

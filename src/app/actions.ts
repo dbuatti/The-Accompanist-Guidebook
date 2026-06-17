@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { users, progress, levels, modules, lessons } from "@/lib/schema";
+import { users, progress, levels, modules, lessons, resources } from "@/lib/schema";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { GoogleGenAI } from "@google/genai";
@@ -129,11 +129,21 @@ export async function getCourseContent(isAdmin: boolean = false) {
       allLessons = await db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder));
     }
 
-    // Map 3-tier structure: Levels -> Modules -> Lessons
+    const allResources = await db.select().from(resources).orderBy(asc(resources.displayOrder));
+
+    const resourceMap = new Map<string, any[]>();
+    for (const r of allResources) {
+      if (!resourceMap.has(r.lessonId)) resourceMap.set(r.lessonId, []);
+      resourceMap.get(r.lessonId)!.push(r);
+    }
+
     return allLevels.map(lvl => {
       const lvlModules = allModules.filter(mod => mod.levelId === lvl.id).map(mod => ({
         ...mod,
-        lessons: allLessons.filter(lesson => lesson.moduleId === mod.id)
+        lessons: allLessons.filter(lesson => lesson.moduleId === mod.id).map(lesson => ({
+          ...lesson,
+          resources: resourceMap.get(lesson.id) || [],
+        }))
       })).filter(mod => isAdmin || mod.lessons.length > 0);
 
       return {
@@ -244,6 +254,7 @@ export async function updateLesson(
     videoUrl: string; 
     notes: string; 
     adminNotes: string; 
+    cliffnotes?: string;
     isPublished: boolean; 
     duration: string; 
     hasVideo?: boolean;
@@ -257,6 +268,7 @@ export async function updateLesson(
       videoUrl: data.videoUrl,
       notes: data.notes,
       adminNotes: data.adminNotes,
+      cliffnotes: data.cliffnotes,
       isPublished: data.isPublished,
       duration: data.duration,
       hasVideo: data.hasVideo ?? true,
@@ -266,6 +278,7 @@ export async function updateLesson(
     revalidatePath("/portal");
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
   } catch (error: any) {
     console.error("Error updating lesson (FULL ERROR):", error.message);
     throw new Error("Failed to update lesson: " + error.message);
@@ -460,9 +473,9 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Explain why accompanists cannot improvise a full theatrical accompaniment on the spot from chord symbols."
       },
       {
-        title: "What to Avoid (Horror Examples)",
-        notes: "Avoid:\n- Faded or grey printing — black should be truly black\n- Missing pages — always check your music is complete before an audition\n- Photos of books — these are almost always illegible and hard to read on a stand\n- Lead sheets with chord symbols only\n- Music without a piano part",
-        adminNotes: "This is your list of horror examples from the slides — 'things that make Daniele a little...' Include the faded black, missing pages, images only, numbered sheets without context etc."
+        title: "What to Avoid (Common Problems)",
+        notes: "Avoid:\n- Faded or grey printing — black should be truly black, not blurry or pixelated\n- Missing pages — always count your pages before an audition and make sure they're in the right order\n- Photos of books — hard to read on a stand\n- Printers running low on ink — that weird blue tint is no good\n- Lead sheets with chord symbols only\n- Music without a piano part\n\nDo a simple vibe check on your sheet music: can you actually read it? Are you squinting? It's not complicated — you just need to be able to see the music clearly. Print early, store it digitally somewhere you can always find it, and make sure it's high contrast black and white.",
+        adminNotes: "This is your list of common problems from the slides. Include the faded black, missing pages, images only, numbered sheets without context etc."
       }
     ]);
 
@@ -552,13 +565,13 @@ export async function scaffoldAuditionGuidebook() {
     await addModuleWithLessons(lvl2Id, "Module 8: How to Scan and Digitise Your Music", 8, [
       {
         title: "Why Scanning Matters & Scanning Tips",
-        notes: "A blurry, crooked, or low-contrast scan makes it incredibly difficult for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result",
+        notes: "A blurry, crooked, or low-contrast scan makes it very hard for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result",
         adminNotes: "Add recommended apps here — your preferred scanning app, any tips for phone scanning."
       },
       {
         title: "Saving and Naming Your Files",
         notes: "File naming matters, especially when submitting music digitally. Use a consistent, clear convention:\n\nFirst Name Last Name – Song Title – Show Title\nExample: Daniele Buatti – Part of Your World – The Little Mermaid\n\n- PDF format only — no photos, screenshots, or image files\n- Check your file is complete before sending — open it and scroll through every page",
-        adminNotes: "Explain why sending JPGs or screenshots of sheet music is a major red flag to casting directors."
+        adminNotes: "Explain why sending JPGs or screenshots of sheet music causes problems in the audition room."
       }
     ]);
 
@@ -651,9 +664,78 @@ export async function scaffoldAuditionGuidebook() {
     revalidatePath("/admin");
     revalidatePath("/portal");
     revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
     return { success: true };
   } catch (error) {
     console.error("Error scaffolding guidebook:", error);
     throw new Error("Failed to scaffold guidebook");
+  }
+}
+
+// --- Resource Actions ---
+export async function addResource(lessonId: string, title: string, url: string, description?: string) {
+  try {
+    const maxOrder = await db.select({ maxOrder: resources.displayOrder }).from(resources).where(eq(resources.lessonId, lessonId));
+    const nextOrder = (maxOrder.length > 0 && maxOrder[0].maxOrder !== null) ? maxOrder[0].maxOrder + 1 : 0;
+    const result = await db.insert(resources).values({
+      lessonId,
+      title,
+      url,
+      description: description || null,
+      displayOrder: nextOrder,
+    }).returning();
+    revalidatePath("/admin/modules");
+    return result[0];
+  } catch (error: any) {
+    console.error("Error adding resource:", error.message);
+    throw new Error("Failed to add resource: " + error.message);
+  }
+}
+
+export async function updateResource(id: string, data: { title?: string; url?: string; description?: string }) {
+  try {
+    await db.update(resources).set(data).where(eq(resources.id, id));
+    revalidatePath("/admin/modules");
+  } catch (error: any) {
+    console.error("Error updating resource:", error.message);
+    throw new Error("Failed to update resource: " + error.message);
+  }
+}
+
+export async function deleteResource(id: string) {
+  try {
+    await db.delete(resources).where(eq(resources.id, id));
+    revalidatePath("/admin/modules");
+  } catch (error: any) {
+    console.error("Error deleting resource:", error.message);
+    throw new Error("Failed to delete resource: " + error.message);
+  }
+}
+
+export async function renameModule(moduleId: string, newTitle: string) {
+  try {
+    await db.update(modules).set({ title: newTitle }).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    revalidatePath("/modules");
+  } catch (error: any) {
+    console.error("Error renaming module:", error.message);
+    throw new Error("Failed to rename module: " + error.message);
+  }
+}
+
+export async function publishAllLessons() {
+  try {
+    await db.update(lessons).set({ isPublished: true });
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    revalidatePath("/portal");
+    revalidatePath("/modules");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error publishing all lessons:", error.message);
+    throw new Error("Failed to publish all lessons: " + error.message);
   }
 }

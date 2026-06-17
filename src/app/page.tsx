@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Music } from "lucide-react";
+import { Music, BookOpen } from "lucide-react";
 
 export default function Home() {
   return (
@@ -15,21 +15,28 @@ export default function Home() {
             The Accompanist Guidebook
           </h1>
           <p className="text-xl text-muted-foreground italic max-w-2xl mx-auto">
-            "Maybe This Time" — A comprehensive portal for musical theatre collaboration.
+            A comprehensive course for musical theatre collaboration.
           </p>
         </div>
 
-        <div className="pt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <Link 
+            href="/modules" 
+            className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-10 py-4 rounded-full font-serif text-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+          >
+            <BookOpen className="w-5 h-5" />
+            Browse Modules
+          </Link>
           <Link 
             href="/auth/sign-in" 
-            className="inline-flex items-center justify-center bg-primary text-primary-foreground px-10 py-4 rounded-full font-serif text-xl hover:bg-primary/90 transition-all shadow-lg hover:shadow-xl hover:-translate-y-1"
+            className="inline-flex items-center justify-center gap-2 border border-primary/20 text-primary px-8 py-4 rounded-full font-serif text-lg hover:bg-primary/5 transition-all"
           >
-            Enter the Portal
+            Sign In
           </Link>
         </div>
 
         <p className="text-xs text-muted-foreground uppercase tracking-[0.2em] pt-12">
-          Private Educational Resource © 2026
+          Educational Resource © 2026
         </p>
       </div>
     </div>

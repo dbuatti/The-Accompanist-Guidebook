@@ -110,9 +110,9 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Explain why accompanists cannot improvise a full theatrical accompaniment on the spot from chord symbols."
       },
       {
-        title: "What to Avoid (Horror Examples)",
-        notes: "Avoid:\n- Faded or grey printing — black should be truly black\n- Missing pages — always check your music is complete before an audition\n- Photos of books — these are almost always illegible and hard to read on a stand\n- Lead sheets with chord symbols only\n- Music without a piano part",
-        adminNotes: "This is your list of horror examples from the slides — 'things that make Daniele a little...' Include the faded black, missing pages, images only, numbered sheets without context etc."
+        title: "What to Avoid (Common Problems)",
+        notes: "Avoid:\n- Faded or grey printing — black should be truly black, not blurry or pixelated\n- Missing pages — always count your pages before an audition and make sure they're in the right order\n- Photos of books — hard to read on a stand\n- Printers running low on ink — that weird blue tint is no good\n- Lead sheets with chord symbols only\n- Music without a piano part\n\nDo a simple vibe check on your sheet music: can you actually read it? Are you squinting? It's not complicated — you just need to be able to see the music clearly. Print early, store it digitally somewhere you can always find it, and make sure it's high contrast black and white.",
+        adminNotes: "This is your list of common problems from the slides. Include the faded black, missing pages, images only, numbered sheets without context etc."
       }
     ]);
 
@@ -202,13 +202,13 @@ export async function scaffoldAuditionGuidebook() {
     await addModuleWithLessons(lvl2Id, "Module 8: How to Scan and Digitise Your Music", 8, [
       {
         title: "Why Scanning Matters & Scanning Tips",
-        notes: "A blurry, crooked, or low-contrast scan makes it incredibly difficult for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result",
+        notes: "A blurry, crooked, or low-contrast scan makes it very hard for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result",
         adminNotes: "Add recommended apps here — your preferred scanning app, any tips for phone scanning."
       },
       {
         title: "Saving and Naming Your Files",
         notes: "File naming matters, especially when submitting music digitally. Use a consistent, clear convention:\n\nFirst Name Last Name – Song Title – Show Title\nExample: Daniele Buatti – Part of Your World – The Little Mermaid\n\n- PDF format only — no photos, screenshots, or image files\n- Check your file is complete before sending — open it and scroll through every page",
-        adminNotes: "Explain why sending JPGs or screenshots of sheet music is a major red flag to casting directors."
+        adminNotes: "Explain why sending JPGs or screenshots of sheet music causes problems in the audition room."
       }
     ]);
 

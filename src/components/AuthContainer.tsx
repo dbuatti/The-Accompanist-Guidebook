@@ -22,7 +22,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/portal",
+        callbackURL: "/modules",
       });
     } catch (error: any) {
       console.error("Google Sign-In Error:", error);
@@ -46,7 +46,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
           name: adminName,
         });
         showSuccess("Admin account created and logged in!");
-        router.push("/portal");
+        router.push("/modules");
         return;
       } catch (signUpError: any) {
         // If user already exists, we proceed to sign in
@@ -60,7 +60,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
       });
 
       showSuccess("Logged in as Admin!");
-      router.push("/portal");
+      router.push("/modules");
     } catch (error: any) {
       console.error("Admin Auto-Login Error:", error);
       showError(error.message || "Failed to auto-login as Admin.");
