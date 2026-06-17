@@ -2,8 +2,6 @@ import { Music } from 'lucide-react';
 import Link from 'next/link';
 import AuthContainer from '@/components/AuthContainer';
 
-export const dynamicParams = false;
-
 export default async function AuthPage({
   params,
 }: {

@@ -10,6 +10,7 @@ import {
   addResource,
   deleteResource,
   updateModuleWrapUpVideo,
+  toggleModuleVisibility,
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -79,6 +80,7 @@ export interface DocBlock {
   id: string;
   type: BlockType;
   content: string;
+  order?: number;
 }
 
 export default function ModuleStudioPage() {
@@ -286,6 +288,21 @@ export default function ModuleStudioPage() {
     }
   };
 
+  const handleToggleVisibility = async (e: React.MouseEvent, moduleId: string) => {
+    e.stopPropagation();
+    try {
+      const result = await toggleModuleVisibility(moduleId);
+      const newContent = content.map((level) => ({
+        ...level,
+        modules: level.modules.map((mod: any) =>
+          mod.id === moduleId ? { ...mod, isPublished: result.isPublished } : mod
+        ),
+      }));
+      setContent(newContent);
+      showSuccess(result.isPublished ? "Module published" : "Module hidden");
+    } catch { showError("Failed to toggle visibility"); }
+  };
+
   const addBlock = (lessonId: string, type: BlockType, afterId?: string) => {
     const newBlock: DocBlock = { id: `block-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, type, content: "" };
     setDocBlocksMap((prev) => {
@@ -399,16 +416,27 @@ export default function ModuleStudioPage() {
                     {level.modules.map((module: any) => {
                       const isActive = selectedModuleId === module.id;
                       return (
-                        <button
+                        <div
                           key={module.id}
                           onClick={() => setSelectedModuleId(module.id)}
-                          className={`flex items-center gap-2 w-full text-left px-3 py-2 rounded-lg transition-colors ${
+                          className={`flex items-center gap-1 w-full text-left px-3 py-2 rounded-lg transition-colors cursor-pointer ${
                             isActive ? "bg-primary text-primary-foreground font-medium" : "hover:bg-accent/40 text-foreground/80"
                           }`}
                         >
                           <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? "text-primary-foreground" : "text-amber-600"}`} />
-                          <span className="text-xs truncate">{module.title}</span>
-                        </button>
+                          <span className="text-xs truncate flex-1">{module.title}</span>
+                          <button
+                            onClick={(e) => handleToggleVisibility(e, module.id)}
+                            className={`shrink-0 p-0.5 rounded transition-colors ${
+                              module.isPublished
+                                ? "text-green-500/70 hover:text-green-600"
+                                : "text-muted-foreground/40 hover:text-muted-foreground"
+                            }`}
+                            title={module.isPublished ? "Click to hide" : "Click to publish"}
+                          >
+                            {module.isPublished ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
                       );
                     })}
                   </div>
@@ -784,7 +812,7 @@ function BlockRender({ block }: { block: DocBlock }) {
     case "heading": return <h2 className={cn}>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Heading</span>}</h2>;
     case "paragraph": return <p className={cn}>{block.content ? renderInlineMarkdown(block.content) : empty}</p>;
     case "bullet_list": return <ul className={cn}><li>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Bullet point</span>}</li></ul>;
-    case "numbered_list": return <ol className={cn}><li>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Numbered item</span>}</li></ol>;
+    case "numbered_list": return <div className={`${cn} flex items-start gap-2`}><span className="text-xs font-bold text-primary/40 mt-[3px] shrink-0 tabular-nums">{block.order ?? 1}.</span><span>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Numbered item</span>}</span></div>;
     case "callout": return <div className={`${cn} bg-amber-50 dark:bg-amber-950/20 border-l-4 border-amber-400 rounded-r-lg`}><div className="flex items-start gap-3"><Lightbulb className="w-4 h-4 text-amber-600 mt-0.5 shrink-0" /><span>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Pro tip...</span>}</span></div></div>;
     case "quote": return <blockquote className={cn}>{block.content ? renderInlineMarkdown(block.content) : <span className="text-muted-foreground/40 italic">Quote...</span>}</blockquote>;
     default: return <p className={cn}>{block.content ? renderInlineMarkdown(block.content) : empty}</p>;
@@ -895,18 +923,19 @@ function parseNotesToBlocks(notes: string): DocBlock[] {
   const lines = notes.split("\n");
   const blocks: DocBlock[] = [];
   let counter = 0;
+  let listCounter = 0;
   for (const line of lines) {
     const trimmed = line.trim();
-    if (!trimmed) continue;
+    if (!trimmed) { listCounter = 0; continue; }
     const id = `block-parsed-${counter++}`;
-    if (trimmed.startsWith("### ")) blocks.push({ id, type: "heading", content: trimmed.replace("### ", "") });
-    else if (trimmed.startsWith("## ")) blocks.push({ id, type: "heading", content: trimmed.replace("## ", "") });
-    else if (trimmed.startsWith("# ")) blocks.push({ id, type: "heading", content: trimmed.replace("# ", "") });
-    else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) blocks.push({ id, type: "bullet_list", content: trimmed.replace(/^[-*] /, "") });
-    else if (/^\d+\.\s/.test(trimmed)) blocks.push({ id, type: "numbered_list", content: trimmed.replace(/^\d+\.\s/, "") });
-    else if (trimmed.startsWith("> ")) blocks.push({ id, type: "quote", content: trimmed.replace("> ", "") });
-    else if (trimmed === "---") blocks.push({ id, type: "divider", content: "" });
-    else blocks.push({ id, type: "paragraph", content: trimmed });
+    if (trimmed.startsWith("### ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("### ", "") }); }
+    else if (trimmed.startsWith("## ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("## ", "") }); }
+    else if (trimmed.startsWith("# ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("# ", "") }); }
+    else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) { listCounter = 0; blocks.push({ id, type: "bullet_list", content: trimmed.replace(/^[-*] /, "") }); }
+    else if (/^\d+\.\s/.test(trimmed)) { listCounter++; blocks.push({ id, type: "numbered_list", content: trimmed.replace(/^\d+\.\s/, ""), order: listCounter }); }
+    else if (trimmed.startsWith("> ")) { listCounter = 0; blocks.push({ id, type: "quote", content: trimmed.replace("> ", "") }); }
+    else if (trimmed === "---") { listCounter = 0; blocks.push({ id, type: "divider", content: "" }); }
+    else { listCounter = 0; blocks.push({ id, type: "paragraph", content: trimmed }); }
   }
   if (blocks.length === 0) blocks.push({ id: "block-init-p", type: "paragraph", content: notes });
   return blocks;
@@ -917,11 +946,11 @@ function blocksToNotes(blocks: DocBlock[]): string {
     switch (block.type) {
       case "heading": return `### ${block.content}`;
       case "bullet_list": return `- ${block.content}`;
-      case "numbered_list": return `1. ${block.content}`;
+      case "numbered_list": return `${block.order ?? 1}. ${block.content}`;
       case "quote": return `> ${block.content}`;
       case "callout": return `> ${block.content}`;
       case "divider": return "---";
       default: return block.content;
     }
-  }).join("\n\n");
+  }).join("\n");
 }

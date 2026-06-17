@@ -738,6 +738,23 @@ export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: 
   }
 }
 
+export async function toggleModuleVisibility(moduleId: string) {
+  try {
+    const mod = await db.select({ isPublished: modules.isPublished }).from(modules).where(eq(modules.id, moduleId)).limit(1);
+    if (mod.length === 0) throw new Error("Module not found");
+    const newValue = !mod[0].isPublished;
+    await db.update(modules).set({ isPublished: newValue }).where(eq(modules.id, moduleId));
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    revalidatePath("/modules");
+    return { success: true, isPublished: newValue };
+  } catch (error: any) {
+    console.error("Error toggling module visibility:", error.message);
+    throw new Error("Failed to toggle module visibility: " + error.message);
+  }
+}
+
 export async function publishAllLessons() {
   try {
     await db.update(lessons).set({ isPublished: true });

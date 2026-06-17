@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getCourseContent, getProgress, toggleLessonProgress, ensureUserExists, publishAllLessons } from "@/app/actions";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import {
   LogOut,
   Menu,
   Eye,
+  EyeOff,
   Music,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
@@ -38,6 +39,11 @@ export default function ModulesPage() {
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [expandedLevels, setExpandedLevels] = useState<Record<string, boolean>>({});
   const [progressData, setProgressData] = useState<any[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [selectedModuleId]);
 
   const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
 
@@ -53,7 +59,6 @@ export default function ModulesPage() {
       const data = await getCourseContent(isAdmin || !session);
       setContent(data);
       if (data.length > 0 && data[0].modules?.length > 0) {
-        setSelectedModuleId(data[0].modules[0].id);
         setExpandedLevels({ [data[0].id]: true });
       }
     } catch (error) {
@@ -90,6 +95,20 @@ export default function ModulesPage() {
 
   const nav = (
     <div className="space-y-6">
+      {/* Course Introduction */}
+      <button
+        onClick={() => setSelectedModuleId(null)}
+        className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
+          !selectedModuleId
+            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+            : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
+        }`}
+      >
+        <BookOpen className={`w-4 h-4 shrink-0 mt-0.5 ${!selectedModuleId ? "text-primary-foreground/80" : "text-emerald-500"}`} />
+        <div className="min-w-0 flex-1">
+          <span className="text-sm font-medium leading-snug block">Course Introduction</span>
+        </div>
+      </button>
       {content.map((level) => (
         <div key={level.id}>
           <button
@@ -101,8 +120,9 @@ export default function ModulesPage() {
           </button>
           {expandedLevels[level.id] && (
             <div className="mt-2 space-y-1">
-              {level.modules.map((mod: any) => {
+                  {level.modules.map((mod: any) => {
                 const isActive = selectedModuleId === mod.id;
+                const isHidden = mod.isPublished === false;
                 const done = mod.lessons.filter((l: any) => isLessonCompleted(l.id)).length;
                 const total = mod.lessons.length;
                 return (
@@ -115,10 +135,15 @@ export default function ModulesPage() {
                         : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
                     }`}
                   >
-                    <FolderOpen className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? "text-primary-foreground/80" : "text-amber-500"}`} />
+                    <FolderOpen className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? "text-primary-foreground/80" : isHidden ? "text-muted-foreground/30" : "text-amber-500"}`} />
                     <div className="min-w-0 flex-1">
-                      <span className={`text-sm font-medium leading-snug block ${isActive ? "" : ""}`}>{mod.title}</span>
-                      {!isActive && total > 0 && (
+                      <span className={`text-sm font-medium leading-snug block ${isActive ? "" : isHidden ? "text-muted-foreground/50 italic" : ""}`}>
+                        {mod.title}
+                        {isHidden && (
+                          <span className="ml-2 text-[10px] font-normal not-italic text-muted-foreground/40 uppercase tracking-wider">Coming soon</span>
+                        )}
+                      </span>
+                      {!isActive && !isHidden && total > 0 && (
                         <span className="text-[10px] text-muted-foreground mt-1 block">{done}/{total} complete</span>
                       )}
                     </div>
@@ -210,12 +235,26 @@ export default function ModulesPage() {
           )}
         </header>
 
-        <div className="flex-1 overflow-y-auto">
-          {!currentModule ? (
+        <div ref={scrollRef} className="flex-1 overflow-y-auto">
+          {!selectedModuleId ? (
+            <WelcomePage onStart={() => {
+              if (content.length > 0 && content[0].modules?.length > 0) {
+                setSelectedModuleId(content[0].modules[0].id);
+              }
+            }} />
+          ) : !currentModule ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-12">
               <BookOpen className="w-20 h-20 mb-6 opacity-15" />
               <p className="text-xl font-serif">Select a module to begin</p>
               <p className="text-sm mt-2 text-muted-foreground/60">Choose from the sidebar to explore your course.</p>
+            </div>
+          ) : !currentModule.isPublished ? (
+            <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-12">
+              <div className="w-16 h-16 rounded-2xl bg-muted flex items-center justify-center mb-6">
+                <EyeOff className="w-8 h-8 text-muted-foreground/40" />
+              </div>
+              <h2 className="text-xl font-serif font-semibold text-foreground/60 mb-2">{currentModule.title}</h2>
+              <p className="text-sm text-muted-foreground/50 max-w-md text-center">This module is coming soon. Check back later for lessons and resources.</p>
             </div>
           ) : (
             <ModuleContent
@@ -383,6 +422,65 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
 
         <div className="mt-24 pb-16 text-center">
           <p className="text-[11px] text-muted-foreground/40 uppercase tracking-widest">End of module</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function WelcomePage({ onStart }: { onStart: () => void }) {
+  const INTRO_VIDEO_URL = "https://youtu.be/0emjFPgznLY";
+  return (
+    <div>
+      <div className="relative border-b border-border/20">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-primary/[0.02] to-transparent" />
+        <div className="relative max-w-3xl mx-auto px-6 sm:px-10 pt-20 pb-16 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
+            <Music className="w-7 h-7 text-primary" />
+          </div>
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary leading-tight mb-4">
+            The Accompanist Guidebook
+          </h1>
+          <p className="text-base sm:text-lg text-foreground/60 leading-relaxed max-w-xl mx-auto">
+            A complete video course for musical theatre accompanists — from first audition to final callback.
+          </p>
+          <button
+            onClick={onStart}
+            className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-medium text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+          >
+            <BookOpen className="w-4 h-4" /> Start Your Journey
+          </button>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-16">
+        {INTRO_VIDEO_URL && (
+          <div className="mb-16 rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
+            <VideoPlayer url={INTRO_VIDEO_URL} onComplete={() => {}} initialTime={0} onProgress={() => {}} />
+          </div>
+        )}
+
+        <div className="space-y-8">
+          <div>
+            <h2 className="text-lg font-serif font-semibold text-primary mb-3">What You'll Learn</h2>
+            <p className="text-[15px] text-foreground/80 leading-relaxed">
+              This course covers everything you need to know to be a confident, prepared accompanist — from choosing the right sheet music and marking cuts, to navigating the audition room and building long-term relationships with music directors.
+            </p>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[
+              { title: "Sheet Music", desc: "Where to source it, what to look for, and how to prepare it." },
+              { title: "Music Terminology", desc: "Key signatures, time signatures, road signs, and more." },
+              { title: "Audition Room", desc: "The order of events, how to walk in, deliver tempo, and exit." },
+              { title: "Pro Tips", desc: "Real-world advice from a working accompanist and music director." },
+            ].map((item) => (
+              <div key={item.title} className="p-5 bg-card/40 border border-border/20 rounded-2xl">
+                <h3 className="text-sm font-semibold text-primary mb-1.5">{item.title}</h3>
+                <p className="text-xs text-foreground/60 leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
