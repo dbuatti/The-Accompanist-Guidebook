@@ -35,7 +35,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 
-const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
 
 export default function AdminTreePage() {
   const router = useRouter();

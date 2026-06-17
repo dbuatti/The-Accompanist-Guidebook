@@ -23,7 +23,7 @@ import LessonCard from "../../components/admin/LessonCard";
 // Icons & Colors Mapping
 import { Battery, BatteryCharging, BatteryLow } from "lucide-react";
 
-const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
 
 const STATUS_LABELS: Record<string, string> = {
   not_started: "Not Started",

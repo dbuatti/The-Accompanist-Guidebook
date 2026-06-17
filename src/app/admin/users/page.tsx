@@ -27,7 +27,7 @@ import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
 
-const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
 
 export default function AdminUsersPage() {
   const router = useRouter();

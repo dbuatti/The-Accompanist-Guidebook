@@ -29,7 +29,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VideoPlayer from "@/components/VideoPlayer";
 import Link from "next/link";
 
-const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
 
 export default function ModulesPage() {
   const router = useRouter();

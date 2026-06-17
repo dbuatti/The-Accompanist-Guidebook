@@ -5,7 +5,7 @@ import { users } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-const ADMIN_EMAILS = ["admin@accompanist.com", "daniele.buatti@gmail.com"];
+const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
 
 export async function ensureUserExists(userId: string, email: string, name?: string) {
   try {
