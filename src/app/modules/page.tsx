@@ -58,8 +58,12 @@ export default function ModulesPage() {
       }
       const data = await getCourseContent(isAdmin || !session);
       setContent(data);
-      if (data.length > 0 && data[0].modules?.length > 0) {
-        setExpandedLevels({ [data[0].id]: true });
+      if (data.length > 0) {
+        const allExpanded: Record<string, boolean> = {};
+        for (const level of data) {
+          allExpanded[level.id] = true;
+        }
+        setExpandedLevels(allExpanded);
       }
     } catch (error) {
       showError("Failed to load content");
