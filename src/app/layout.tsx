@@ -25,7 +25,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
-        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light">
+        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/modules" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
           <Providers>
             <TooltipProvider>
               {children}

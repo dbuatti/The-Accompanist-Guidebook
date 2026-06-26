@@ -1,7 +1,29 @@
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Music, BookOpen } from "lucide-react";
+import { authClient } from "@/lib/auth/client";
 
 export default function Home() {
+  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && session) {
+      router.replace("/modules");
+    }
+  }, [session, isPending, router]);
+
+  if (isPending) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background" />
+    );
+  }
+
+  if (session) return null;
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background relative overflow-hidden">
       <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
