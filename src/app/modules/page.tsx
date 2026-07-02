@@ -6,6 +6,7 @@ import { getCourseContent, getProgress, toggleLessonProgress, ensureUserExists, 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { NewBadge } from "@/components/NewBadge";
 import {
   Loader2,
   ChevronRight,
@@ -129,6 +130,7 @@ export default function ModulesPage() {
                 const isHidden = mod.isPublished === false;
                 const done = mod.lessons.filter((l: any) => isLessonCompleted(l.id)).length;
                 const total = mod.lessons.length;
+                const hasNew = mod.lessons.some((l: any) => l.isNew);
                 return (
                   <button
                     key={mod.id}
@@ -143,6 +145,9 @@ export default function ModulesPage() {
                     <div className="min-w-0 flex-1">
                       <span className={`text-sm font-medium leading-snug block ${isActive ? "" : isHidden ? "text-muted-foreground/50 italic" : ""}`}>
                         {mod.title}
+                        {hasNew && !isHidden && (
+                          <span className="ml-2 inline-block"><NewBadge /></span>
+                        )}
                         {isHidden && (
                           <span className="ml-2 text-[10px] font-normal not-italic text-muted-foreground/40 uppercase tracking-wider">Coming soon</span>
                         )}
@@ -344,7 +349,10 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
+                    {lesson.isNew && <NewBadge className="shrink-0" />}
+                  </div>
                   <div className="flex items-center gap-3 mt-2.5">
                     {lesson.duration && <span className="text-xs text-muted-foreground/60">{lesson.duration}</span>}
                     {isLoggedIn && (

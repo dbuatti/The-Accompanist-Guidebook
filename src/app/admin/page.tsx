@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, syncUpdatedContent } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { 
   Layers, ChevronDown, ChevronUp, Plus, Loader2
@@ -86,6 +86,7 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // ADHD-friendly UI States
   const [searchQuery, setSearchQuery] = useState("");
@@ -436,6 +437,32 @@ export default function AdminPage() {
         publishedLessons={stats.publishedLessons}
         totalLessons={stats.totalLessons}
       />
+
+      {/* Sync Content Button */}
+      <div className="flex justify-end mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={async () => {
+            if (!confirm("This will update lesson notes from the scaffolder definitions. Continue?")) return;
+            setIsSyncing(true);
+            try {
+              await syncUpdatedContent();
+              showSuccess("Content synced! New lessons added, existing lessons updated.");
+              fetchData();
+            } catch {
+              showError("Sync failed");
+            } finally {
+              setIsSyncing(false);
+            }
+          }}
+          disabled={isSyncing}
+          className="h-8 text-xs"
+        >
+          {isSyncing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
+          {isSyncing ? "Syncing..." : "Sync Updated Content"}
+        </Button>
+      </div>
 
       {/* ADHD Brain Dump & Next Action Row */}
       <BrainDumpScratchpad 
