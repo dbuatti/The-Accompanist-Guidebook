@@ -2,10 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, syncUpdatedContent, scaffoldAuditionGuidebook } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, restructureCourse, fixCourseStructure, toggleModuleVisibility } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { 
-  Layers, ChevronDown, ChevronUp, Plus, Loader2
+  Layers, ChevronDown, ChevronUp, Plus, Loader2, Eye, EyeOff
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
@@ -86,8 +86,6 @@ export default function AdminPage() {
   const [isSaving, setIsSaving] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
-  const [isSyncing, setIsSyncing] = useState(false);
-  const [isScaffolding, setIsScaffolding] = useState(false);
 
   // ADHD-friendly UI States
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,6 +105,8 @@ export default function AdminPage() {
   const [newLessonHasVideo, setNewLessonHasVideo] = useState(true);
   const [newLessonTemplate, setNewLessonTemplate] = useState<"none" | "standard" | "story" | "exercise">("none");
   const [isCreatingLesson, setIsCreatingLesson] = useState(false);
+  const [isRestructuring, setIsRestructuring] = useState(false);
+  const [isFixingTitles, setIsFixingTitles] = useState(false);
 
   // ADHD Scratchpad State
   const [scratchpad, setScratchpad] = useState("");
@@ -352,6 +352,23 @@ export default function AdminPage() {
     }
   };
 
+  const handleToggleModuleVisibility = async (e: React.MouseEvent, moduleId: string) => {
+    e.stopPropagation();
+    try {
+      const result = await toggleModuleVisibility(moduleId);
+      const newContent = content.map((level) => ({
+        ...level,
+        modules: level.modules.map((mod: any) =>
+          mod.id === moduleId ? { ...mod, isPublished: result.isPublished } : mod
+        ),
+      }));
+      setContent(newContent);
+      showSuccess(result.isPublished ? "Module published" : "Module hidden");
+    } catch {
+      showError("Failed to toggle module visibility");
+    }
+  };
+
   const openAddLessonModal = (moduleId: string) => {
     setActiveModuleId(moduleId);
     setNewLessonTitle("");
@@ -439,54 +456,6 @@ export default function AdminPage() {
         totalLessons={stats.totalLessons}
       />
 
-      {/* Sync Content Buttons */}
-      <div className="flex justify-end gap-2 mb-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            if (!confirm("This will seed the entire course (13 modules, 40+ lessons). Continue?")) return;
-            setIsScaffolding(true);
-            try {
-              await scaffoldAuditionGuidebook();
-              showSuccess("Course scaffolded! You can now publish lessons from the dashboard.");
-              fetchData();
-            } catch {
-              showError("Scaffold failed — check DB connection");
-            } finally {
-              setIsScaffolding(false);
-            }
-          }}
-          disabled={isScaffolding || isSyncing}
-          className="h-8 text-xs"
-        >
-          {isScaffolding ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
-          {isScaffolding ? "Scaffolding..." : "Scaffold Course"}
-        </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={async () => {
-            if (!confirm("This will update lesson notes from the scaffolder definitions. Continue?")) return;
-            setIsSyncing(true);
-            try {
-              await syncUpdatedContent();
-              showSuccess("Content synced! New lessons added, existing lessons updated.");
-              fetchData();
-            } catch {
-              showError("Sync failed");
-            } finally {
-              setIsSyncing(false);
-            }
-          }}
-          disabled={isSyncing || isScaffolding}
-          className="h-8 text-xs"
-        >
-          {isSyncing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
-          {isSyncing ? "Syncing..." : "Sync Updated Content"}
-        </Button>
-      </div>
-
       {/* ADHD Brain Dump & Next Action Row */}
       <BrainDumpScratchpad 
         scratchpad={scratchpad}
@@ -494,6 +463,53 @@ export default function AdminPage() {
         nextAction={stats.nextAction}
         onFocusNextAction={(action) => setZenLesson(action)}
       />
+
+      {/* Curriculum Tools */}
+      <div className="flex flex-wrap gap-2 items-center bg-card border border-border/40 rounded-xl px-4 py-3">
+        <span className="text-xs font-medium text-muted-foreground mr-2">Tools</span>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={isRestructuring}
+          onClick={async () => {
+            if (!confirm("This will create a new Module 1, renumber all existing modules, and sync expanded lesson notes. Continue?")) return;
+            setIsRestructuring(true);
+            try {
+              await restructureCourse();
+              showSuccess("Course restructured successfully");
+              fetchData();
+            } catch {
+              showError("Failed to restructure course");
+            } finally {
+              setIsRestructuring(false);
+            }
+          }}
+        >
+          {isRestructuring ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+          {isRestructuring ? "Restructuring..." : "Restructure Course"}
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={isFixingTitles}
+          onClick={async () => {
+            if (!confirm("This will rebuild all module titles and display orders to be sequential. Use after Restructure Course. Continue?")) return;
+            setIsFixingTitles(true);
+            try {
+              await fixCourseStructure();
+              showSuccess("Structure fixed");
+              fetchData();
+            } catch {
+              showError("Failed to fix structure");
+            } finally {
+              setIsFixingTitles(false);
+            }
+          }}
+        >
+          {isFixingTitles ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+          {isFixingTitles ? "Fixing..." : "Fix Structure"}
+        </Button>
+      </div>
 
       {/* ADHD Search & Filter Bar */}
       <SearchFilterBar 
@@ -540,7 +556,18 @@ export default function AdminPage() {
                         <div key={module.id} className="space-y-4">
                           {/* Tier 2: Module Header */}
                           <div className="flex items-center justify-between border-b border-border pb-2">
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={(e) => handleToggleModuleVisibility(e, module.id)}
+                                className={`shrink-0 p-1 rounded transition-colors ${
+                                  module.isPublished
+                                    ? "text-green-500 hover:text-green-600"
+                                    : "text-muted-foreground/40 hover:text-muted-foreground"
+                                }`}
+                                title={module.isPublished ? "Click to hide" : "Click to publish"}
+                              >
+                                {module.isPublished ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                              </button>
                               <button 
                                 onClick={() => toggleModuleCollapse(module.id)}
                                 className="flex items-center gap-2 hover:opacity-80 transition-all text-left"
@@ -549,9 +576,18 @@ export default function AdminPage() {
                                 <h4 className="text-lg font-serif font-medium text-foreground">{module.title}</h4>
                               </button>
                             </div>
-                            <Button variant="ghost" size="sm" onClick={() => openAddLessonModal(module.id)} className="h-8 text-xs">
-                              <Plus className="w-3.5 h-3.5 mr-1" /> Add Lesson Draft
-                            </Button>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                                module.isPublished
+                                  ? "bg-green-500/10 text-green-600"
+                                  : "bg-amber-500/10 text-amber-600"
+                              }`}>
+                                {module.isPublished ? "Published" : "Hidden"}
+                              </span>
+                              <Button variant="ghost" size="sm" onClick={() => openAddLessonModal(module.id)} className="h-8 text-xs">
+                                <Plus className="w-3.5 h-3.5 mr-1" /> Add Lesson Draft
+                              </Button>
+                            </div>
                           </div>
 
                           {/* Tier 3: Lessons */}

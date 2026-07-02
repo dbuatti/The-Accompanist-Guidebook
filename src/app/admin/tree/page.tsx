@@ -14,14 +14,15 @@ import {
   createLesson,
   updateLesson,
   deleteLesson,
-  getLevelsOnly
+  getLevelsOnly,
+  toggleModuleVisibility
 } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { 
   Plus, Save, Loader2, Layers, Folder, FileText, Trash2, Edit2, Check, X, 
-  ChevronRight, ChevronDown, GitFork, ArrowRight, Move
+  ChevronRight, ChevronDown, GitFork, ArrowRight, Move, Eye, EyeOff
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
@@ -183,6 +184,23 @@ export default function AdminTreePage() {
       showError("Failed to delete module");
     } finally {
       setIsActionPending(null);
+    }
+  };
+
+  const handleToggleModulePublication = async (e: React.MouseEvent, moduleId: string) => {
+    e.stopPropagation();
+    try {
+      const result = await toggleModuleVisibility(moduleId);
+      const newContent = content.map((level) => ({
+        ...level,
+        modules: level.modules.map((mod: any) =>
+          mod.id === moduleId ? { ...mod, isPublished: result.isPublished } : mod
+        ),
+      }));
+      setContent(newContent);
+      showSuccess(result.isPublished ? "Module published" : "Module hidden");
+    } catch {
+      showError("Failed to toggle module visibility");
     }
   };
 
@@ -386,6 +404,18 @@ export default function AdminTreePage() {
                                       {isModuleCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                     </button>
                                     <Folder className="w-4 h-4 text-amber-600 flex-shrink-0" />
+
+                                    <button
+                                      onClick={(e) => handleToggleModulePublication(e, module.id)}
+                                      className={`shrink-0 p-0.5 rounded transition-colors ${
+                                        module.isPublished
+                                          ? "text-green-500 hover:text-green-600"
+                                          : "text-muted-foreground/40 hover:text-muted-foreground"
+                                      }`}
+                                      title={module.isPublished ? "Click to hide" : "Click to publish"}
+                                    >
+                                      {module.isPublished ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+                                    </button>
 
                                     {isModuleEditing ? (
                                       <div className="flex items-center gap-2 flex-1 max-w-md">

@@ -6,7 +6,6 @@ import { getCourseContent, getProgress, toggleLessonProgress, ensureUserExists, 
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { NewBadge } from "@/components/NewBadge";
 import {
   Loader2,
   ChevronRight,
@@ -130,7 +129,6 @@ export default function ModulesPage() {
                 const isHidden = mod.isPublished === false;
                 const done = mod.lessons.filter((l: any) => isLessonCompleted(l.id)).length;
                 const total = mod.lessons.length;
-                const hasNew = mod.lessons.some((l: any) => l.isNew);
                 return (
                   <button
                     key={mod.id}
@@ -145,9 +143,6 @@ export default function ModulesPage() {
                     <div className="min-w-0 flex-1">
                       <span className={`text-sm font-medium leading-snug block ${isActive ? "" : isHidden ? "text-muted-foreground/50 italic" : ""}`}>
                         {mod.title}
-                        {hasNew && !isHidden && (
-                          <span className="ml-2 inline-block"><NewBadge /></span>
-                        )}
                         {isHidden && (
                           <span className="ml-2 text-[10px] font-normal not-italic text-muted-foreground/40 uppercase tracking-wider">Coming soon</span>
                         )}
@@ -340,7 +335,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
 
       {/* Lessons */}
       <div className="max-w-3xl mx-auto px-6 sm:px-10 py-12">
-        <div className="space-y-24">
+        <div className="space-y-12">
           {lessons.map((lesson: any, i: number) => (
             <article key={lesson.id} id={`lesson-${lesson.id}`}>
               {/* Lesson header */}
@@ -349,10 +344,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3">
-                    <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
-                    {lesson.isNew && <NewBadge className="shrink-0" />}
-                  </div>
+                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
                   <div className="flex items-center gap-3 mt-2.5">
                     {lesson.duration && <span className="text-xs text-muted-foreground/60">{lesson.duration}</span>}
                     {isLoggedIn && (
@@ -411,7 +403,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
               )}
 
               {i < lessons.length - 1 && (
-                <div className="mt-24 flex items-center gap-4">
+                <div className="mt-10 flex items-center gap-4">
                   <div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/40 to-transparent" />
                 </div>
               )}

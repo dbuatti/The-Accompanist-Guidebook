@@ -410,7 +410,6 @@ export async function scaffoldAuditionGuidebook() {
           hasVideo: les.hasVideo ?? true,
           videoStatus: "not_started",
           displayOrder: i + 1,
-          isNew: les.isNew ?? false,
         });
       }
     };
@@ -419,13 +418,13 @@ export async function scaffoldAuditionGuidebook() {
     await addModuleWithLessons(lvl1Id, "Module 1: Choosing Your Audition Repertoire", 1, [
       {
         title: "What Is Audition Repertoire?",
-        notes: "Your audition repertoire is the collection of songs you keep ready and polished — songs that represent who you are as a performer. A strong book gives you flexibility and confidence across a range of audition types.\n\nThe goal is to build a repertoire of six pieces that are aligned to your brand, your strengths, and your voice. These aren't songs you're learning — they're songs you own.",
+        notes: "Your audition repertoire is the collection of songs you keep ready and polished — songs that represent who you are as a performer. A strong book gives you flexibility and confidence across a range of audition types.\n\nThe goal is to build a repertoire of six pieces that are aligned to your brand, your strengths, and your voice. These aren't songs you're learning — they're songs you own.\n\nDo you actually need twenty songs? No. Six go-to songs that you know inside out will serve you better than a binder full of material you're shaky on. If an audition comes up next week and you've got six songs you could sing in your sleep, you're ready. Brad would bring the same handful of songs to nearly every audition and it worked because he owned them.",
         adminNotes: "Define audition repertoire in your own words. What does it mean to have a 'book'? Why do you need more than one song?"
       },
       {
-        title: "Intellectual Choice vs Vibe",
-        notes: "Choosing a song isn't just about what you like. There are two lenses worth considering:\n\n1. Intellectual choice — does the song serve the audition? Does it suit the show, the brief, the room?\n2. Vibe / presentation / brand — does it feel like you? Does it showcase your voice and energy?\n\nBoth matter. The best song choices sit at the intersection of both.\n\nTIP: You wouldn't bring Seussical to a Ragtime audition. Know what the room is asking for.\n\nChoose from brand first, sound second. Pick material because you connect with the text and what it represents — before you've worked out how it sounds on you or whether the cut will work. Jumping ahead to 'will the cut work?' is a way of ruling out songs prematurely.\n\nBallad vs up-tempo is a false binary. What panels usually mean is a mix of vocal production, energy, and character. You can deliver high energy in a ballad and a legit line in an up-tempo. When reading a brief, separate genre, tempo, vocal production, and acting content — they're different axes. Recent briefs increasingly say 'in the style of the show' rather than '16-bar up-tempo.' Ditch the binary.",
-        adminNotes: "Give examples of bad song choices vs great song choices for specific audition rooms. Expand on brand — what adjectives describe your performer identity?"
+        title: "Intellectual Choice vs Vibe [New]",
+        notes: "Choosing a song isn't just about what you like. There are two lenses worth considering:\n\n1. Intellectual choice — does the song serve the audition? Does it suit the show, the brief, the room?\n2. Vibe / presentation / brand — does it feel like you? Does it showcase your voice and energy?\n\nBoth matter. The best song choices sit at the intersection of both.\n\nTIP: You wouldn't bring Seussical to a Ragtime audition. Know what the room is asking for.\n\nNow let's clear up a few myths.\n\nThe \"don't sing\" list doesn't exist. There is no secret blacklist of forbidden songs. If you nail a song, sing it. If Maybe This Time lands in your voice and you connect with it, sing Maybe This Time. If you want to sing a Disney song and it fits your brand, sing it. Panel members hear unfamiliar songs all day — sometimes hearing a classic done well is a genuine relief.\n\nWhat about songs that are \"too mature\" for your age? If you can connect with the content, it's fine. The blanket rule \"you're too young to sing that\" ignores nuance. If a song is about children and death and you have nothing to draw on, sure, skip it. But if it connects, and it aligns with your brand, you can make it work.\n\nAnd what about overdone songs? If Anything Goes is in your voice and you sing it well, keep it. The reason songs become \"overdone\" is because they're well-written and they work. A familiar song done confidently can actually work in your favour.",
+        adminNotes: "Give examples of bad song choices vs great song choices for specific audition rooms."
       },
       {
         title: "Learning New Songs vs Recycling Your Rep",
@@ -433,13 +432,13 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Talk through when it makes sense to learn something new versus sticking with something tried and tested. What are the risks of each? When is fresh material worth the risk?"
       },
       {
-        title: "Composers Worth Knowing",
-        notes: "Musical theatre has a rich range of composers, each with their own distinct voice and demands. Some worth having in your repertoire:\n\n- Jason Robert Brown — emotionally complex, rhythmically intricate, vocally demanding\n- Stephen Sondheim — sophisticated harmonic language, text-driven, requires strong musicianship\n- Adam Guettel — contemporary, through-composed, less commonly performed\n\n**'Do Not Sing' lists are a fallacy.** If a song matches your brand and you nail it, sing it — including overdone songs. Popular songs become under-sung precisely because everyone avoids them; a well-written classic can be a relief for a panel that's heard obscure material all day.\n\nThe one genuine caution is the hard-to-play composers: Sondheim, Jason Robert Brown, Adam Guettel. The reason isn't the songs — it's the accompaniment. Sondheim's piano reductions are collapsed orchestrations and can be strange to sight-read; JRB writes pianistically demanding rock/pop/gospel-informed parts. Even here it's a generalisation — both have simpler songs. Understand why the rule exists and apply judgement.\n\nAuditioning for a Sondheim show does not mean bringing a Sondheim song. Composer-matching isn't one-for-one, and any accompanist hired for a Sondheim audition will be on top of the rep anyway.\n\n**Mature rep** (songs about parenthood, loss, etc. sung by young performers) — less of a rule than schools suggest. If you genuinely connect with the content and it fits your brand, it can work; if you can't connect, that's the real reason not to sing it.",
+        title: "Composers Worth Knowing [New]",
+        notes: "Musical theatre has a rich range of composers, each with their own distinct voice and demands. Some worth having in your repertoire:\n\n- Jason Robert Brown — emotionally complex, rhythmically intricate, vocally demanding\n- Stephen Sondheim — sophisticated harmonic language, text-driven, requires strong musicianship\n- Adam Guettel — contemporary, through-composed, less commonly performed\n\nThere's a general rule in the industry about three composers you should be careful bringing into an audition — and it has less to do with you and more to do with the accompaniment. Sondheim, Jason Robert Brown, and Adam Guettel are the ones that give accompanists pause.\n\nWhy? Sondheim writes for the world of each show. His orchestrations are dense and specific, and when reduced to a piano accompaniment they can be wacky to play — strange timings, unusual harmonic moves, parts that don't sit naturally under the hands. Not every Sondheim song is hard — anyone can whistle is lighter — but enough of them are that the reputation exists.\n\nJason Robert Brown is rock-and-roll and Billy Joel-informed, gospel and folk. The man himself has said: if you can't play his songs, they've been out for 25 years. He's got a point. But that doesn't change the fact that some of his songs are death for an accompanist, especially cold at 9am.\n\nAdam Guettel's work (Myths and Hymns, The Light in the Piazza) is through-composed and harmonically complex. Less commonly performed, but when it comes up, it demands real musicianship.\n\nDoes this mean you should never bring these composers? No. It means you should be aware that your cut may be harder for the accompanist to sight-read. If you bring a Sondheim song you've prepared and you know your cut cold, fine. But don't assume that singing a Sondheim song for a Sondheim show is a one-to-one advantage. It isn't.\n\nA better approach: choose songs that sit well in your voice and let you do your best work. The accompanist will follow you. But if your cut is rhythmically chaotic and harmonically thorny, you're adding risk.",
         adminNotes: "Add more composers and your personal notes on each. What does each composer ask of a performer? Which voices do they suit?"
       },
       {
         title: "Building Six Pieces",
-        notes: "Aim for six well-prepared, well-chosen pieces. They should collectively demonstrate range — not just vocal range, but emotional range, style range, and character range.\n\n**Book discipline:** you only need a small set of go-to songs you know inside out — six is plenty. Bring only what you're prepared to sing in that room. Consider separate, cleanly stored folders: full originals, 16-bar cuts, 32-bar cuts (useful for cruise-ship style auditions running tight on time).",
+        notes: "Aim for six well-prepared, well-chosen pieces. They should collectively demonstrate range — not just vocal range, but emotional range, style range, and character range.",
         adminNotes: "Give your framework here. What adjectives or categories help a student think about their six pieces? E.g. one uptempo, one ballad, one contemporary, one classic. Make this yours."
       }
     ]);
@@ -451,8 +450,8 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Talk about why sourcing properly matters — both legally and practically. What do badly sourced PDFs look like and why are they a problem in the room?"
       },
       {
-        title: "Recommended Sources",
-        notes: "1. Musicnotes.com: Good for popular songs and musical theatre. Offers transpositions in multiple keys.\n2. Sheet Music Plus: Broader selection, including classical and more obscure musical theatre.\n3. Scribd: Subscription-based, user-uploaded content. Quality and legality varies — use with caution.",
+        title: "Recommended Sources [New]",
+        notes: "1. Musicnotes.com: Good for popular songs and musical theatre. Offers transpositions in multiple keys. Be aware that Musicnotes PDFs sometimes have the melody line embedded in the piano accompaniment — the right hand plays the vocal melody. Most professional accompanists are smart enough not to play the melody when you're singing, but it's something to check when you print your cut.\n2. Sheet Music Plus: Broader selection, including classical and more obscure musical theatre.\n3. Scribd: Subscription-based, user-uploaded content. Quality and legality varies — use with caution.\n\nWherever possible, look for a piano/vocal score rather than a lead sheet. The piano/vocal score gives the accompanist a full arrangement to work with. Lead sheets (just melody and chord symbols) don't give enough information.\n\nAlso: a typeset (computer-engraved) score is always preferable to a handwritten one. Handwritten scores are harder to sight-read — especially in the pressure of an audition. If all you have is a handwritten copy, consider getting it engraved professionally.",
         adminNotes: "Add your personal notes on Musicnotes and Sheet Music Plus — what you recommend them for, any caveats."
       },
       {
@@ -492,13 +491,13 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Explain what a bar is simply. Connect it to the concept of 16-bar and 32-bar cuts."
       },
       {
-        title: "Fermata & Tempo Terms",
-        notes: "**Fermata:** Tells the performer to hold a note longer than its written value. If music is a ribbon flowing along, the fermata holds the ribbon still, then lets it flow again.\n\n**Caesura ('tram tracks'):** A complete cut in the sound. The ribbon is cut; silence; then you get back on. Something in the score (usually the vocal line) cues the re-entry.\n\nBoth the fermata and caesura must appear in **every stave**, not just the vocal line — everyone has to stop, not just the singer. Notation software does this automatically; if you're adding one by hand, add it to the accompaniment too. Note the printed fermata in the accompaniment may sit at a different point than the vocal one — that's deliberate.\n\nRubato: 'Robbed time' — expressive freedom with rhythm.\n\nColla Voce: 'With the voice' — accompanist follows the singer.\n\nRallentando (Rall.) / Ritardando (Rit.): Gradual slowing of tempo.\n\nA Tempo: Return to the original tempo.\n\nAnything that changes the rhythm or tempo of your song is good currency: fermata, caesura, tacet, colla voce. These symbols buy you freedom in the room.",
-        adminNotes: "Explain these terms simply. Give examples of songs where these are commonly used. Add an image showing fermata and caesura notation."
+        title: "Fermata, Caesura & Tempo Terms [New]",
+        notes: "Fermata: Tells the performer to hold a note or rest longer than its written value. If your song has a fermata, point it out to the accompanist during the handover. Not every fermata is obvious — sometimes the vocal holds while the accompaniment doesn't, so check the score.\n\nCaesura (Tram Tracks / Grand Pause): Indicates a complete break in the music. Everything stops. This is different from a fermata.\n\nThink of music as a ribbon flowing forward:\n- A fermata stretches the ribbon — it holds, stays tense, then resumes.\n- A caesura cuts the ribbon. Silence. Then you pick up again.\n\nWhen marking caesuras in your music, write two small slanted lines (//). The accompanist will know to stop and wait for your cue.\n\nRubato: 'Robbed time' — expressive freedom with rhythm. The singer leads, the accompaniment follows.\n\nColla Voce: 'With the voice' — the accompanist follows the singer's timing exactly.\n\nRallentando (Rall.) / Ritardando (Rit.): Gradual slowing of tempo.\n\nA Tempo: Return to the original tempo.",
+        adminNotes: "Explain these terms simply. Give examples of songs where these are commonly used."
       },
       {
-        title: "Back Phrasing, Colla Voce & Tacet",
-        notes: "**Tacet:** Means 'do not play'. If there are bars where you want the accompanist to be silent — perhaps for dramatic effect — write 'tacet' clearly over those bars.\n\n**Colla voce:** The accompanist follows the voice. The singer leads, the pianist waits and supports. Useful when you know the timing will be fluid.\n\n**Back-phrasing:** Singing deliberately off the written rhythm (behind or ahead of the beat). Most contemporary MT is effectively written back-phrased. If you know you back-phrase, telling your accompanist is gold: it means they hold the pulse steady rather than chasing you.\n\nColla voce and back-phrasing are different things — know which one you're asking for. Colla voce means 'follow me'; back-phrasing means 'I'm going to play with the rhythm, hold the pulse steady.'",
+        title: "Colle Voce, Back Phrasing & Tacet [New]",
+        notes: "Colle Voce: 'With the voice.' The accompanist follows you. This is the default mode for most auditions — the pianist watches your breath and your phrasing and stays with you. It requires no special marking; it's simply good ensemble.\n\nBack Phrasing: Deliberately singing behind or ahead of the written rhythm. This is a stylistic choice, common in contemporary musical theatre and pop-influenced repertoire. If you are back phrasing, tell the accompanist. The phrase 'I'll be back phrasing this' is gold — it signals that you want the pianist to keep a steady tempo while you play with the timing.\n\nHow do you know if you're back phrasing? If you're singing a different rhythm to what's written — pushing ahead on some phrases, laying back on others — that's back phrasing.\n\nColla Voce and back phrasing are not the same thing:\n- Colla Voce: accompanist waits for you, follows your lead\n- Back Phrasing: accompanist stays steady, you move around the beat\n\nTacet: Means 'do not play.' If there are bars where you want the accompanist to be silent — perhaps for a dramatic moment or a held note — write 'tacet' clearly over those bars.",
         adminNotes: "Explain back phrasing in your own words. What does it sound like? How do you communicate it to an accompanist?"
       }
     ]);
@@ -506,25 +505,19 @@ export async function scaffoldAuditionGuidebook() {
     // --- LEVEL 2 MODULES ---
     await addModuleWithLessons(lvl2Id, "Module 5: How to Cut Your Music", 5, [
       {
-        title: "What Is a Cut? (Time Over Bar Counts)",
-        notes: "A cut is a shortened excerpt of your song — the section that best showcases your voice and storytelling within the time you're given.\n\n**'16 bars' is lazy nomenclature** — bars are an arbitrary measurement. Think in time and story, not bar counts.\n\n- Target **30–45 seconds**. Pushing past 45 needs to be worth it; at a full minute you're adding padding (walking in, holding the final note) on top. Some briefs ask for 60–90 seconds — read the brief, but in the room, quicker and snappier usually lands better.\n- **Singing shorter gives the panel time back** and can open the door to being asked for a second song. Not gospel — a guideline, not a rule.\n\n**The 'story arc' of a cut is largely an illusion.** Sing a chunk. Get as much story as you can, but don't contort the song into a Frankenstein of half-sentences and jumps. The test isn't 'does it have an arc' — it's 'would someone watching feel lost?'\n\n**Songs aren't designed to be cut.** Don't hack them apart in weird places. Often the cleanest cut is a chunk the composer already stitched together (e.g. from the key change to the end).\n\n**Contemporary MT resists heavy trimming:** intro fragment → jump to end belt reads as chaotic, and a short cut can leave the panel wondering what they missed. If you can hold space and deliver storytelling in a short cut, fine — but know the trade-off.\n\nSome songs simply work better as longer cuts, some as shorter. A held final note alone can be 15 seconds — budget for it.",
-        adminNotes: "Give your own guidance on how to identify the right section. What are you looking for?"
+        title: "What Is a Cut? (16-Bar vs 32-Bar) [New]",
+        notes: "A cut is a shortened excerpt of your song — usually the most effective section that best showcases your voice and storytelling.\n\nFirst, let's talk about the term '16-bar cut.' It's become the default language, but bars are an arbitrary measurement. The real measure is time. A verse in 4/4 at a slow tempo might take 30 seconds. The same 16 bars in a fast pop-rock song might fly by in 12 seconds. So when you say '16-bar cut,' what you really mean is something that runs between 30 and 45 seconds.\n\nHere's what the numbers actually mean in the room:\n- 30-45 seconds: A tight, effective cut. Shows what you can do, doesn't outstay its welcome.\n- 45-60 seconds: Pushing it. If you're going past 45 seconds, it had better be worth it — every extra second needs to earn its place.\n- 60-90 seconds: A 32-bar equivalent. Allows for a more developed arc, but be aware of the room's energy.\n\nThere's a practical tradeoff to keep in mind: the pains and gains. If you sing a shorter cut, you give the panel more time. If they like what they hear, they may ask for a second song. A tight 30-second cut that leaves them wanting more is better than a 90-second cut that goes on too long. But this isn't gospel — some songs need a bit more room, and that's fine. Just know that every bar you add is a bar they have to sit through.",
+        adminNotes: "Give your own guidance on how to identify the right 16 or 32 bars. What are you looking for?"
       },
       {
-        title: "Making Clean, Performable Cuts",
-        notes: "A good cut feels like a complete musical thought — not a fragment. It should make sense harmonically and emotionally, even without the context of the full song.\n\n- Cut at the end of a phrase, not mid-thought\n- Avoid starting on a pickup bar where possible\n- The ending of your cut should feel conclusive\n- **Never cut mid-bar.** Don't start or end a cut partway through a bar; it forces extra barlines and reads as messy. Cut clean at barlines.\n\n**Elaborate patchwork cuts are a mental game more than a practical asset.** When it comes time to communicate a complicated cut to an accompanist under pressure, complexity costs you. Keep it simple.\n\n**There is no consequence to trying.** Draft cuts in pencil, test them, commit in pen when it's final.",
+        title: "Making Logical, Performable Cuts [New]",
+        notes: "A good cut feels like a complete musical thought — not a fragment. It should make sense harmonically and emotionally, even without the context of the full song.\n\nLet's clear up a big misconception: your cut doesn't need an arc. The full song has an arc — that's the composer's job. Your cut just needs to communicate what the song is about. How much of the song's story can you keep in a short excerpt? The opposite is also a useful question: how much can you take out before the song makes no sense at all?\n\nHere are the practical principles:\n\n- Cut at the end of a phrase, not mid-thought. A bracket in the middle of a barline is messy and hard to read. Don't cut through a bar. If you need to start mid-bar, it's usually better to find a cleaner entry point.\n- Avoid starting on a pickup bar where possible. Starting on a weak beat can feel unsettled.\n- Don't start a cut on the word 'and' — it implies something happened before. If your cut starts on 'and' or 'but', the panel feels like they've missed something.\n- Don't jump around erratically. A cut that goes from half a verse to a second verse to a final belt is chaotic both for the accompanist and the listener. Sing a chunk. Get as much story as you can.\n- The ending of your cut should feel conclusive. If the song doesn't have a natural ending, that's fine — you can land on a held note or a cut-off. But make sure it doesn't just trail off.\n\nA good way to start cutting: look at the lyrics first. Put them in a Google Doc and read them as text. The natural shape of the lyrics will tell you where the cut might live. If you're jumping around between half-sentences, the cut is going to be hard to follow.\n\nOne more thing: contemporary musical theatre songs often get over-cut. People try to cram in too many sections — a bit of verse, a pre-chorus, a chorus, a bridge, a belt ending — and the result is a choppy, confusing excerpt. Sometimes a simpler cut from a single section does the job better.",
         adminNotes: "Step-by-step: how do you find a good cutting point? What do you listen for? What makes a cut feel awkward or abrupt?"
       },
       {
-        title: "The Correct Bracket Notation",
-        notes: "When marking a cut in your music, use a clear bracket system:\n- Use a thick black or red line to mark the start and end of your cut\n- Clearly label START and END at the appropriate points\n- Do not add brackets at the natural end of the song",
+        title: "The Correct Bracket Notation [New]",
+        notes: "When marking a cut in your music, use a clear bracket system:\n- Use a thick black or red line to mark the start and end of your cut\n- Draw the cross from the bottom left corner to the top right corner of the bar\n- The bracket should point inward toward the music that is to be played\n- Don't face the brackets outward — it scrambles the brain's reading flow\n\nBox method: draw a box around the bars you're cutting, then cross from bottom left to top right. This is the cleanest visual signal. The box tells the accompanist 'do not play any of this' with no ambiguity.\n\nIf a bracket ends at the natural end of the song, you don't need to bracket it — the end of the page is clear enough. But if your instinct says to add one, it doesn't hurt.\n\nLabeling START and END: Optional. Some people find it gives them a psychological boost — like a little pump of confidence — to write 'START' at their entry point. It's fine if you want to do that. Just know it's not strictly necessary if your brackets are clear.\n\nUsing a single chord as an intro: If you want just one chord to set the tempo and then silence before you begin, write the chord and mark 'tacet' over the rest of the bar. This tells the accompanist: play that chord, then stop and wait for my breath.\n\nBonus tip: Use a ruler. Clean lines matter. A wobbly freehand cross can be ambiguous. A ruler sends a professional signal.",
         adminNotes: "Add an image or diagram here showing correct bracket notation vs common mistakes."
-      },
-      {
-        title: "Intros and Endings",
-        notes: "**Most people give themselves too much intro.** Two bars is usually plenty; eight is almost never needed.\n\nYou can drop straight in on the vocal with no intro at all — the accompanist only needs your breath. This requires confidence, and it connects to presentation and brand: are you someone who can take a note and go?\n\nDon't count yourself in out loud.\n\n**Alternative to a full intro bar: a single chord.** Mark the bar with the chord, write 'tacet' for what the piano shouldn't play, and 'play' where the accompaniment re-enters. This removes a whole bar where tempo and communication can go wrong — you take the pitch, you set the tempo yourself.\n\n**Endings:** If your cut ends on something unresolved, the panel may not know you've finished. Consider ending somewhere that resolves, or adding a simple ending. Watch your final gesture — it's part of signalling you're done.",
-        adminNotes: "Brad suggests a demo video showing the single-chord intro technique in action.",
-        isNew: true
       }
     ]);
 
@@ -535,9 +528,9 @@ export async function scaffoldAuditionGuidebook() {
         adminNotes: "Emphasize the psychological shift of treating sheet music as a direct communication channel."
       },
       {
-        title: "General Annotation Tips & Marking Cuts",
-        notes: "- Use a pen, not pencil — pencil is too light and smudges\n- Use yellow highlighter only\n- Do not highlight lyrics\n- Highlight key and time signature changes, clef changes, and (optionally) brackets at page turns\n- Highlight tempo markings and fermatas — highlight the symbol itself, not a giant stroke across the system\n- Keep lines clean and straight — use a ruler\n- Pencil while drafting, pen when committed\n\n**Never cut mid-bar.** Don't start or end a cut partway through a bar; it forces extra barlines and reads as messy. Cut clean at barlines.\n\n**Cross-outs:** Box the excluded bars, then draw a diagonal line from bottom-left to top-right. The box matters — without it, the accompanist can be unsure whether an edge bar is in or out.\n\n**Brackets face the music that is to be played.** Reversed brackets scramble the read. Think of brackets as a portal: in here, out there. Don't bracket the final bars if you're simply playing through to the printed end — a closing bracket implies more music follows.\n\n**Always keep the first page**, even if it's entirely crossed out. It carries the title, key signature, time signature, and context — the accompanist downloads the whole world of the song in one glance. It also means you don't need to re-insert time signatures into later pages (and if the piece is in common time, you never needed to add 'C' anyway). Put the title at the top of the first page.\n\n**Cross out any lyrics you are not singing.** A simple ruled strike-through is enough — no white-out needed. This saves the pre-song conversation from 'wait, are you singing this bit?'\n\n**Start/End labels and smiley faces:** optional. They don't hurt, and if writing 'start' gives you certainty, do it.\n\n**White-out / cut-and-paste reconstruction:** generally discouraged. Done meticulously it can work, but most attempts produce scores that are hard to trust at sight. If you go this route, get the result transcribed or checked — and always re-scan so seams and shadows disappear.\n\n**Duets:** Leave the other vocal line in. It doesn't throw the accompanist, and it can actually help them help you.",
-        adminNotes: "Explain why highlighting lyrics is a major distraction for sight-reading pianists. Include images showing correct cross-out technique and bracket orientation."
+        title: "General Annotation Tips & Marking Cuts [New]",
+        notes: "- Use a pen, not pencil — pencil is too light and smudges\n- Use yellow highlighter only\n- Do not highlight lyrics\n- Highlight key and time signature changes, not entire sections\n- Highlight tempo markings and fermatas\n- Keep lines clean and straight\n\nCrossing out lyrics: If you've cut a section that has lyrics, strike through the words. Don't just bracket the bars and leave the lyrics visible. The accompanist's eye will naturally follow the text, and they may hesitate, wondering if you're going to sing those words. A simple line through the lyrics removes all doubt.\n\nComping vs playing the melody: In most professional settings, the accompanist will not play the melody from your sheet music — they'll comp (play the accompaniment as written, supporting your voice without doubling it). If you're lost during a cut, a good accompanist may subtly highlight the melody to help you find your place. But this is a rescue, not the default. Don't rely on the piano to carry the tune.",
+        adminNotes: "Explain why highlighting lyrics is a major distraction for sight-reading pianists."
       },
       {
         title: "Annotating Digitally",
@@ -554,7 +547,7 @@ export async function scaffoldAuditionGuidebook() {
     await addModuleWithLessons(lvl2Id, "Module 7: Physical Preparation of Your Music", 7, [
       {
         title: "Folder vs Taping",
-        notes: "Display Folders:\n- Use a display folder with clear plastic pockets — not a ring binder\n- Ring binders cause pages to drag or fall off the piano music stand\n- Ensure the plastic pockets are clear, fresh, and free of crinkles\n\nTaping Pages:\n- Tape pages front and back so no adhesive is exposed — exposed tape sticks pages together mid-song and causes skipped pages\n- Tape the front of page 1–2, then the back of page 2–3, then the front of page 3–4\n- This alternating pattern keeps exposed tape off the playing surface\n- Sits flat on the stand and turns easily\n\niPads in the room: fine, but ask the accompanist first. Some accompanists prefer paper (two pages visible at once, no app surprises). Glare is a real issue with glossy binder sleeves — choose non-glare sleeves.",
+        notes: "Display Folders:\n- Use a display folder with clear plastic pockets — not a ring binder\n- Ring binders cause pages to drag or fall off the piano music stand\n- Ensure the plastic pockets are clear, fresh, and free of crinkles\n\nTaping Pages:\n- Tape the front of page 1–2, then the back of page 2–3, then the front of page 3–4\n- This alternating pattern ensures no tape is exposed on the playing surface\n- Sits flat on the stand and turns easily",
         adminNotes: "Recommend a specific type of display folder that works well — brand, sleeve count, any specific features."
       },
       {
@@ -564,7 +557,7 @@ export async function scaffoldAuditionGuidebook() {
       },
       {
         title: "Always Keep the First Page & Printing Quality",
-        notes: "Even if your cut starts on page three, always keep page one visible in your folder. It provides the accompanist with the key signature, time signature, and the full context of the piece.\n\nPrinting Quality:\n- Ensure no staves are cut off at the edges\n- Music staves should be horizontally aligned — no crooked printing\n- Print in black and white, high contrast — not greyscale",
+        notes: "Even if your cut starts on page three, always keep page one visible in your folder. It provides the accompanist with the key signature, time signature, tempo marking, and the full context of the piece.\n\nThink about it from the accompanist's perspective: they open your music and see page three. Immediately their brain has to work out what key they're in, what time signature, what the song is, what the world is. If they can see page one — even if it's entirely crossed out — they download all that information in a split second and feel oriented.\n\nAs a rule of thumb: if removing the first page raises more questions than it answers, keep it.\n\nPrinting Quality:\n- Ensure no staves are cut off at the edges\n- Music staves should be horizontally aligned — no crooked printing\n- Print in black and white, high contrast — not greyscale\n- If you're using a photocopy, check for blurriness or fading. If the page looks even slightly grey, find the original and re-copy.",
         adminNotes: "Explain why keeping page one is a non-negotiable rule for professional auditions."
       }
     ]);
@@ -572,12 +565,12 @@ export async function scaffoldAuditionGuidebook() {
     await addModuleWithLessons(lvl2Id, "Module 8: How to Scan and Digitise Your Music", 8, [
       {
         title: "Why Scanning Matters & Scanning Tips",
-        notes: "A blurry, crooked, or low-contrast scan makes it very hard for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result\n\n**Piano-vocal scores vs piano-conductor scores:** Piano-vocal parts sometimes just double the melody — check before trusting a source. Some sources (e.g. Musicnotes) get an unfair blanket ban for this; the real skill is knowing how to read the accompaniment and confirm it isn't just melody. Some genres want the melody in the accompaniment (a lot of '30s–'40s writing) — that's the style, and it matters that the accompanist has it.\n\n**Prefer typeset over handwritten scores.** Handwritten piano-conductor scores from shows read badly under audition pressure.\n\n**Scan quality standard:** no blur. Black and white, high saturation/contrast. Use a proper scanning app (Adobe Scan, Dropbox scan, or similar). If a free download is blurry, fix it or find a better source — 'a smidge blurry' is still a problem for someone sight-reading.\n\nEveryone should reach the point where their whole book exists as clean one-for-one PDFs — no generational photocopies. Store originals; re-scan after any physical cut-and-paste so seams disappear.",
-        adminNotes: "Add recommended apps here — your preferred scanning app, any tips for phone scanning. Include note about checking piano-conductor scores vs piano-vocal."
+        notes: "A blurry, crooked, or low-contrast scan makes it very hard for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result",
+        adminNotes: "Add recommended apps here — your preferred scanning app, any tips for phone scanning."
       },
       {
         title: "Saving and Naming Your Files",
-        notes: "File naming matters, especially when submitting music digitally. Use a consistent, clear convention:\n\nFirst Name Last Name – Song Title – Show Title\nExample: Daniele Buatti – Part of Your World – The Little Mermaid\n\n- PDF format only — no photos, screenshots, or image files\n- Check your file is complete before sending — open it and scroll through every page\n\n**Organise by cut length.** Consider keeping separate folders for:\n- Full originals (unmarked scores)\n- 16-bar cuts\n- 32-bar cuts (useful for cruise-ship style auditions running tight on time)\n\nThis way you grab the right folder depending on the brief, rather than hunting through a single book.",
+        notes: "File naming matters, especially when submitting music digitally. Use a consistent, clear convention:\n\nFirst Name Last Name – Song Title – Show Title\nExample: Daniele Buatti – Part of Your World – The Little Mermaid\n\n- PDF format only — no photos, screenshots, or image files\n- Check your file is complete before sending — open it and scroll through every page",
         adminNotes: "Explain why sending JPGs or screenshots of sheet music causes problems in the audition room."
       }
     ]);
@@ -614,12 +607,12 @@ export async function scaffoldAuditionGuidebook() {
       },
       {
         title: "How to Approach & Walk Them Through the Music",
-        notes: "How to Approach:\n- Walk to the side of the piano — not behind it\n- Standing behind the piano means your music is upside down and you're crowding the accompanist's space\n- Own your space — stand tall, don't shrink\n- Smile. A warm 'How are you?' is a lovely opener\n\nWalking Them Through the Music:\n- Show them the structure of your cut — where it starts, where it ends\n- Highlight any tricky moments — unexpected modulations, fermatas, tight cues, cut-offs\n- Save tempo for last — let them absorb the context of the piece first",
+        notes: "How to Approach:\n- Walk to the side of the piano — not behind it\n- Standing behind the piano means your music is upside down and you're crowding the accompanist's space\n- Own your space — stand tall, don't shrink\n- Smile. A warm 'How are you?' is a lovely opener\n\nWalking Them Through the Music:\n- Show them the structure of your cut — where it starts, where it ends\n- Highlight any tricky moments — unexpected modulations, fermatas, tight cues, cut-offs\n- A useful question to ask yourself: does this raise more questions? If the accompanist will look at your music and wonder what's happening, you haven't communicated enough.\n- Save tempo for last — let them absorb the context of the piece first",
         adminNotes: "Explain why standing behind the piano is a common but highly disruptive mistake."
       },
       {
-        title: "Delivering Tempo & Introductions",
-        notes: "Once you've walked them through the music, get to the end of the cut, then turn back to the beginning and deliver your tempo.\n\nIntroduction or No Introduction?:\n- Be decisive about whether your piece has an introduction\n- If you don't want an introduction, mark this clearly in the music and tell the accompanist\n- If you do want an introduction, keep it purposeful — its job is to give you the key and the tempo",
+        title: "Delivering Tempo & Introductions [New]",
+        notes: "Once you've walked them through the music, get to the end of the cut, then turn back to the beginning and deliver your tempo.\n\nIntroduction or No Introduction?:\n- Be decisive about whether your piece has an introduction\n- If you don't want an introduction, mark this clearly in the music and tell the accompanist\n- If you do want an introduction, keep it purposeful — its job is to give you the key and the tempo\n\nA note on intro length: some people give themselves too much intro. Eight bars of piano before the vocal enters can feel like an eternity in an audition — for you, for the panel, and for the accompanist who has to play it. If you can start right on the vocal, and you have the confidence to do it, that can be a powerful choice.\n\nBut starting on the vocal requires conviction. You can't count yourself in from the piano and then hesitantly find the note. As an accompanist, all I need is your breath. One breath, and I know where we are. There's no need to tap, count, or explain. Just breathe and go.\n\nIf your intro is very short — a single chord, for example — you can write 'tacet' over the rest of the bar after that chord. The accompanist will play the chord and wait for you.\n\nIf the panel offers to cut the intro down, that's fine. They're trying to move things along. If you detect this happening, just nod and say yes. Don't fight to keep your eight-bar intro.",
         adminNotes: "Explain how to mark 'No Intro' or 'Start on Vocal' clearly in the sheet music."
       },
       {
@@ -637,7 +630,7 @@ export async function scaffoldAuditionGuidebook() {
       },
       {
         title: "The Order of Events & Closing the Audition",
-        notes: "The Order of Events:\n1. Enter the room with presence\n2. Acknowledge the panel and accompanist\n3. Approach the piano and walk through your music\n4. Deliver tempo\n5. Walk to your spot, ground yourself, and sing\n6. Thank the room, collect your music, and exit with grace",
+        notes: "The Order of Events:\n1. Enter the room with presence\n2. Acknowledge the panel and accompanist\n3. Approach the piano and walk through your music\n4. Deliver tempo\n5. Walk to your spot, ground yourself, and sing\n6. Thank the room, collect your music, and exit with grace\n\nIt's worth understanding what kind of room you're walking into. Some classes billed as 'mock auditions' are really acting-through-song classes in disguise. They give you feedback on your performance and your arc — which is valuable, but it's not the same thing as practising the act of auditioning. A true mock audition should rehearse the mechanics: walking in, handing over music, delivering tempo, singing cold, exiting. If you're in a room that leans toward acting feedback, recognise that and adjust your expectations.",
         adminNotes: "Walk through the sequence clearly. This is the choreography of the audition. Make it feel straightforward and achievable."
       }
     ]);
@@ -664,7 +657,7 @@ export async function scaffoldAuditionGuidebook() {
       {
         title: "Music, In-Room, and Mindset Mistakes",
         notes: "Music Mistakes:\n- Faded or grey printing\n- Missing pages\n- Lead sheets with no piano part\n- Blurry PDFs\n- Pencil annotations\n- Blocking out key signatures\n\nIn-Room Mistakes:\n- Shouting your tempo across the room\n- Giving tempo as just a number\n- Standing behind the piano\n- Rushing through the music handover\n- Apologising for your music\n- Not collecting your music",
-        adminNotes: "Your thoughts here — what are the internal mistakes? The ones that don't show up in the music but show up in the room? Over-explaining, apologizing, shrinking.\n\n[DRAFT – candidates for future lessons]\n- The 8-bar intro nobody needed\n- Uncrossed lyrics leading to 'wait, are you singing this bit?' conversations\n- Brackets at the very end of a play-through cut, implying missing pages\n- Exposed tape sticking pages together mid-audition\n- Frankenstein white-out cuts that fall apart at sight-reading\n- Bringing a JRB 'death song' cold to a 9am accompanist"
+        adminNotes: "Your thoughts here — what are the internal mistakes? The ones that don't show up in the music but show up in the room? Over-explaining, apologizing, shrinking."
       }
     ]);
 
@@ -676,6 +669,346 @@ export async function scaffoldAuditionGuidebook() {
   } catch (error) {
     console.error("Error scaffolding guidebook:", error);
     throw new Error("Failed to scaffold guidebook");
+  }
+}
+
+// --- Sync Updated Lesson Content ---
+// Updates existing lessons' notes in the DB by matching on module title + lesson title.
+// Safe to run if scaffold has already been executed. Will not create duplicates.
+export async function syncLessonContent() {
+  try {
+    const allModules = await db.select().from(modules);
+    const allLessons = await db.select().from(lessons);
+
+    // Define the updated lesson data (mirrors the scaffold data above)
+    const moduleUpdates: { moduleTitle: string; lessons: { title: string; notes: string; adminNotes: string }[] }[] = [
+      {
+        moduleTitle: "Module 1: Choosing Your Audition Repertoire",
+        lessons: [
+          {
+            title: "What Is Audition Repertoire?",
+            notes: "Your audition repertoire is the collection of songs you keep ready and polished — songs that represent who you are as a performer. A strong book gives you flexibility and confidence across a range of audition types.\n\nThe goal is to build a repertoire of six pieces that are aligned to your brand, your strengths, and your voice. These aren't songs you're learning — they're songs you own.\n\nDo you actually need twenty songs? No. Six go-to songs that you know inside out will serve you better than a binder full of material you're shaky on. If an audition comes up next week and you've got six songs you could sing in your sleep, you're ready. Brad would bring the same handful of songs to nearly every audition and it worked because he owned them.",
+            adminNotes: "Define audition repertoire in your own words. What does it mean to have a 'book'? Why do you need more than one song?"
+          },
+          {
+            title: "Intellectual Choice vs Vibe [New]",
+            notes: "Choosing a song isn't just about what you like. There are two lenses worth considering:\n\n1. Intellectual choice — does the song serve the audition? Does it suit the show, the brief, the room?\n2. Vibe / presentation / brand — does it feel like you? Does it showcase your voice and energy?\n\nBoth matter. The best song choices sit at the intersection of both.\n\nTIP: You wouldn't bring Seussical to a Ragtime audition. Know what the room is asking for.\n\nNow let's clear up a few myths.\n\nThe \"don't sing\" list doesn't exist. There is no secret blacklist of forbidden songs. If you nail a song, sing it. If Maybe This Time lands in your voice and you connect with it, sing Maybe This Time. If you want to sing a Disney song and it fits your brand, sing it. Panel members hear unfamiliar songs all day — sometimes hearing a classic done well is a genuine relief.\n\nWhat about songs that are \"too mature\" for your age? If you can connect with the content, it's fine. The blanket rule \"you're too young to sing that\" ignores nuance. If a song is about children and death and you have nothing to draw on, sure, skip it. But if it connects, and it aligns with your brand, you can make it work.\n\nAnd what about overdone songs? If Anything Goes is in your voice and you sing it well, keep it. The reason songs become \"overdone\" is because they're well-written and they work. A familiar song done confidently can actually work in your favour.",
+            adminNotes: "Give examples of bad song choices vs great song choices for specific audition rooms."
+          },
+          {
+            title: "Composers Worth Knowing [New]",
+            notes: "Musical theatre has a rich range of composers, each with their own distinct voice and demands. Some worth having in your repertoire:\n\n- Jason Robert Brown — emotionally complex, rhythmically intricate, vocally demanding\n- Stephen Sondheim — sophisticated harmonic language, text-driven, requires strong musicianship\n- Adam Guettel — contemporary, through-composed, less commonly performed\n\nThere's a general rule in the industry about three composers you should be careful bringing into an audition — and it has less to do with you and more to do with the accompaniment. Sondheim, Jason Robert Brown, and Adam Guettel are the ones that give accompanists pause.\n\nWhy? Sondheim writes for the world of each show. His orchestrations are dense and specific, and when reduced to a piano accompaniment they can be wacky to play — strange timings, unusual harmonic moves, parts that don't sit naturally under the hands. Not every Sondheim song is hard — anyone can whistle is lighter — but enough of them are that the reputation exists.\n\nJason Robert Brown is rock-and-roll and Billy Joel-informed, gospel and folk. The man himself has said: if you can't play his songs, they've been out for 25 years. He's got a point. But that doesn't change the fact that some of his songs are death for an accompanist, especially cold at 9am.\n\nAdam Guettel's work (Myths and Hymns, The Light in the Piazza) is through-composed and harmonically complex. Less commonly performed, but when it comes up, it demands real musicianship.\n\nDoes this mean you should never bring these composers? No. It means you should be aware that your cut may be harder for the accompanist to sight-read. If you bring a Sondheim song you've prepared and you know your cut cold, fine. But don't assume that singing a Sondheim song for a Sondheim show is a one-to-one advantage. It isn't.\n\nA better approach: choose songs that sit well in your voice and let you do your best work. The accompanist will follow you. But if your cut is rhythmically chaotic and harmonically thorny, you're adding risk.",
+            adminNotes: "Add more composers and your personal notes on each. What does each composer ask of a performer? Which voices do they suit?"
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 2: Where to Source Sheet Music",
+        lessons: [
+          {
+            title: "Recommended Sources [New]",
+            notes: "1. Musicnotes.com: Good for popular songs and musical theatre. Offers transpositions in multiple keys. Be aware that Musicnotes PDFs sometimes have the melody line embedded in the piano accompaniment — the right hand plays the vocal melody. Most professional accompanists are smart enough not to play the melody when you're singing, but it's something to check when you print your cut.\n2. Sheet Music Plus: Broader selection, including classical and more obscure musical theatre.\n3. Scribd: Subscription-based, user-uploaded content. Quality and legality varies — use with caution.\n\nWherever possible, look for a piano/vocal score rather than a lead sheet. The piano/vocal score gives the accompanist a full arrangement to work with. Lead sheets (just melody and chord symbols) don't give enough information.\n\nAlso: a typeset (computer-engraved) score is always preferable to a handwritten one. Handwritten scores are harder to sight-read — especially in the pressure of an audition. If all you have is a handwritten copy, consider getting it engraved professionally.",
+            adminNotes: "Add your personal notes on Musicnotes and Sheet Music Plus — what you recommend them for, any caveats."
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 4: Basic Music Terminology",
+        lessons: [
+          {
+            title: "Fermata, Caesura & Tempo Terms [New]",
+            notes: "Fermata: Tells the performer to hold a note or rest longer than its written value. If your song has a fermata, point it out to the accompanist during the handover. Not every fermata is obvious — sometimes the vocal holds while the accompaniment doesn't, so check the score.\n\nCaesura (Tram Tracks / Grand Pause): Indicates a complete break in the music. Everything stops. This is different from a fermata.\n\nThink of music as a ribbon flowing forward:\n- A fermata stretches the ribbon — it holds, stays tense, then resumes.\n- A caesura cuts the ribbon. Silence. Then you pick up again.\n\nWhen marking caesuras in your music, write two small slanted lines (//). The accompanist will know to stop and wait for your cue.\n\nRubato: 'Robbed time' — expressive freedom with rhythm. The singer leads, the accompaniment follows.\n\nColla Voce: 'With the voice' — the accompanist follows the singer's timing exactly.\n\nRallentando (Rall.) / Ritardando (Rit.): Gradual slowing of tempo.\n\nA Tempo: Return to the original tempo.",
+            adminNotes: "Explain these terms simply. Give examples of songs where these are commonly used."
+          },
+          {
+            title: "Colle Voce, Back Phrasing & Tacet [New]",
+            notes: "Colle Voce: 'With the voice.' The accompanist follows you. This is the default mode for most auditions — the pianist watches your breath and your phrasing and stays with you. It requires no special marking; it's simply good ensemble.\n\nBack Phrasing: Deliberately singing behind or ahead of the written rhythm. This is a stylistic choice, common in contemporary musical theatre and pop-influenced repertoire. If you are back phrasing, tell the accompanist. The phrase 'I'll be back phrasing this' is gold — it signals that you want the pianist to keep a steady tempo while you play with the timing.\n\nHow do you know if you're back phrasing? If you're singing a different rhythm to what's written — pushing ahead on some phrases, laying back on others — that's back phrasing.\n\nColla Voce and back phrasing are not the same thing:\n- Colla Voce: accompanist waits for you, follows your lead\n- Back Phrasing: accompanist stays steady, you move around the beat\n\nTacet: Means 'do not play.' If there are bars where you want the accompanist to be silent — perhaps for a dramatic moment or a held note — write 'tacet' clearly over those bars.",
+            adminNotes: "Explain back phrasing in your own words. What does it sound like? How do you communicate it to an accompanist?"
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 5: How to Cut Your Music",
+        lessons: [
+          {
+            title: "What Is a Cut? (16-Bar vs 32-Bar) [New]",
+            notes: "A cut is a shortened excerpt of your song — usually the most effective section that best showcases your voice and storytelling.\n\nFirst, let's talk about the term '16-bar cut.' It's become the default language, but bars are an arbitrary measurement. The real measure is time. A verse in 4/4 at a slow tempo might take 30 seconds. The same 16 bars in a fast pop-rock song might fly by in 12 seconds. So when you say '16-bar cut,' what you really mean is something that runs between 30 and 45 seconds.\n\nHere's what the numbers actually mean in the room:\n- 30-45 seconds: A tight, effective cut. Shows what you can do, doesn't outstay its welcome.\n- 45-60 seconds: Pushing it. If you're going past 45 seconds, it had better be worth it — every extra second needs to earn its place.\n- 60-90 seconds: A 32-bar equivalent. Allows for a more developed arc, but be aware of the room's energy.\n\nThere's a practical tradeoff to keep in mind: the pains and gains. If you sing a shorter cut, you give the panel more time. If they like what they hear, they may ask for a second song. A tight 30-second cut that leaves them wanting more is better than a 90-second cut that goes on too long. But this isn't gospel — some songs need a bit more room, and that's fine. Just know that every bar you add is a bar they have to sit through.",
+            adminNotes: "Give your own guidance on how to identify the right 16 or 32 bars. What are you looking for?"
+          },
+          {
+            title: "Making Logical, Performable Cuts [New]",
+            notes: "A good cut feels like a complete musical thought — not a fragment. It should make sense harmonically and emotionally, even without the context of the full song.\n\nLet's clear up a big misconception: your cut doesn't need an arc. The full song has an arc — that's the composer's job. Your cut just needs to communicate what the song is about. How much of the song's story can you keep in a short excerpt? The opposite is also a useful question: how much can you take out before the song makes no sense at all?\n\nHere are the practical principles:\n\n- Cut at the end of a phrase, not mid-thought. A bracket in the middle of a barline is messy and hard to read. Don't cut through a bar. If you need to start mid-bar, it's usually better to find a cleaner entry point.\n- Avoid starting on a pickup bar where possible. Starting on a weak beat can feel unsettled.\n- Don't start a cut on the word 'and' — it implies something happened before. If your cut starts on 'and' or 'but', the panel feels like they've missed something.\n- Don't jump around erratically. A cut that goes from half a verse to a second verse to a final belt is chaotic both for the accompanist and the listener. Sing a chunk. Get as much story as you can.\n- The ending of your cut should feel conclusive. If the song doesn't have a natural ending, that's fine — you can land on a held note or a cut-off. But make sure it doesn't just trail off.\n\nA good way to start cutting: look at the lyrics first. Put them in a Google Doc and read them as text. The natural shape of the lyrics will tell you where the cut might live. If you're jumping around between half-sentences, the cut is going to be hard to follow.\n\nOne more thing: contemporary musical theatre songs often get over-cut. People try to cram in too many sections — a bit of verse, a pre-chorus, a chorus, a bridge, a belt ending — and the result is a choppy, confusing excerpt. Sometimes a simpler cut from a single section does the job better.",
+            adminNotes: "Step-by-step: how do you find a good cutting point? What do you listen for? What makes a cut feel awkward or abrupt?"
+          },
+          {
+            title: "The Correct Bracket Notation [New]",
+            notes: "When marking a cut in your music, use a clear bracket system:\n- Use a thick black or red line to mark the start and end of your cut\n- Draw the cross from the bottom left corner to the top right corner of the bar\n- The bracket should point inward toward the music that is to be played\n- Don't face the brackets outward — it scrambles the brain's reading flow\n\nBox method: draw a box around the bars you're cutting, then cross from bottom left to top right. This is the cleanest visual signal. The box tells the accompanist 'do not play any of this' with no ambiguity.\n\nIf a bracket ends at the natural end of the song, you don't need to bracket it — the end of the page is clear enough. But if your instinct says to add one, it doesn't hurt.\n\nLabeling START and END: Optional. Some people find it gives them a psychological boost — like a little pump of confidence — to write 'START' at their entry point. It's fine if you want to do that. Just know it's not strictly necessary if your brackets are clear.\n\nUsing a single chord as an intro: If you want just one chord to set the tempo and then silence before you begin, write the chord and mark 'tacet' over the rest of the bar. This tells the accompanist: play that chord, then stop and wait for my breath.\n\nBonus tip: Use a ruler. Clean lines matter. A wobbly freehand cross can be ambiguous. A ruler sends a professional signal.",
+            adminNotes: "Add an image or diagram here showing correct bracket notation vs common mistakes."
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 6: How to Annotate and Mark Up Your Music",
+        lessons: [
+          {
+            title: "General Annotation Tips & Marking Cuts [New]",
+            notes: "- Use a pen, not pencil — pencil is too light and smudges\n- Use yellow highlighter only\n- Do not highlight lyrics\n- Highlight key and time signature changes, not entire sections\n- Highlight tempo markings and fermatas\n- Keep lines clean and straight\n\nCrossing out lyrics: If you've cut a section that has lyrics, strike through the words. Don't just bracket the bars and leave the lyrics visible. The accompanist's eye will naturally follow the text, and they may hesitate, wondering if you're going to sing those words. A simple line through the lyrics removes all doubt.\n\nComping vs playing the melody: In most professional settings, the accompanist will not play the melody from your sheet music — they'll comp (play the accompaniment as written, supporting your voice without doubling it). If you're lost during a cut, a good accompanist may subtly highlight the melody to help you find your place. But this is a rescue, not the default. Don't rely on the piano to carry the tune.",
+            adminNotes: "Explain why highlighting lyrics is a major distraction for sight-reading pianists."
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 7: Physical Preparation of Your Music",
+        lessons: [
+          {
+            title: "Always Keep the First Page & Printing Quality",
+            notes: "Even if your cut starts on page three, always keep page one visible in your folder. It provides the accompanist with the key signature, time signature, tempo marking, and the full context of the piece.\n\nThink about it from the accompanist's perspective: they open your music and see page three. Immediately their brain has to work out what key they're in, what time signature, what the song is, what the world is. If they can see page one — even if it's entirely crossed out — they download all that information in a split second and feel oriented.\n\nAs a rule of thumb: if removing the first page raises more questions than it answers, keep it.\n\nPrinting Quality:\n- Ensure no staves are cut off at the edges\n- Music staves should be horizontally aligned — no crooked printing\n- Print in black and white, high contrast — not greyscale\n- If you're using a photocopy, check for blurriness or fading. If the page looks even slightly grey, find the original and re-copy.",
+            adminNotes: "Explain why keeping page one is a non-negotiable rule for professional auditions."
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 10: Approaching and Talking to Your Accompanist",
+        lessons: [
+          {
+            title: "How to Approach & Walk Them Through the Music",
+            notes: "How to Approach:\n- Walk to the side of the piano — not behind it\n- Standing behind the piano means your music is upside down and you're crowding the accompanist's space\n- Own your space — stand tall, don't shrink\n- Smile. A warm 'How are you?' is a lovely opener\n\nWalking Them Through the Music:\n- Show them the structure of your cut — where it starts, where it ends\n- Highlight any tricky moments — unexpected modulations, fermatas, tight cues, cut-offs\n- A useful question to ask yourself: does this raise more questions? If the accompanist will look at your music and wonder what's happening, you haven't communicated enough.\n- Save tempo for last — let them absorb the context of the piece first",
+            adminNotes: "Explain why standing behind the piano is a common but highly disruptive mistake."
+          },
+          {
+            title: "Delivering Tempo & Introductions [New]",
+            notes: "Once you've walked them through the music, get to the end of the cut, then turn back to the beginning and deliver your tempo.\n\nIntroduction or No Introduction?:\n- Be decisive about whether your piece has an introduction\n- If you don't want an introduction, mark this clearly in the music and tell the accompanist\n- If you do want an introduction, keep it purposeful — its job is to give you the key and the tempo\n\nA note on intro length: some people give themselves too much intro. Eight bars of piano before the vocal enters can feel like an eternity in an audition — for you, for the panel, and for the accompanist who has to play it. If you can start right on the vocal, and you have the confidence to do it, that can be a powerful choice.\n\nBut starting on the vocal requires conviction. You can't count yourself in from the piano and then hesitantly find the note. As an accompanist, all I need is your breath. One breath, and I know where we are. There's no need to tap, count, or explain. Just breathe and go.\n\nIf your intro is very short — a single chord, for example — you can write 'tacet' over the rest of the bar after that chord. The accompanist will play the chord and wait for you.\n\nIf the panel offers to cut the intro down, that's fine. They're trying to move things along. If you detect this happening, just nod and say yes. Don't fight to keep your eight-bar intro.",
+            adminNotes: "Explain how to mark 'No Intro' or 'Start on Vocal' clearly in the sheet music."
+          },
+        ]
+      },
+      {
+        moduleTitle: "Module 11: Walking Into the Audition Room",
+        lessons: [
+          {
+            title: "The Order of Events & Closing the Audition",
+            notes: "The Order of Events:\n1. Enter the room with presence\n2. Acknowledge the panel and accompanist\n3. Approach the piano and walk through your music\n4. Deliver tempo\n5. Walk to your spot, ground yourself, and sing\n6. Thank the room, collect your music, and exit with grace\n\nIt's worth understanding what kind of room you're walking into. Some classes billed as 'mock auditions' are really acting-through-song classes in disguise. They give you feedback on your performance and your arc — which is valuable, but it's not the same thing as practising the act of auditioning. A true mock audition should rehearse the mechanics: walking in, handing over music, delivering tempo, singing cold, exiting. If you're in a room that leans toward acting feedback, recognise that and adjust your expectations.",
+            adminNotes: "Walk through the sequence clearly. This is the choreography of the audition. Make it feel straightforward and achievable."
+          },
+        ]
+      },
+    ];
+
+    let updated = 0;
+    for (const modUpdate of moduleUpdates) {
+      const dbModule = allModules.find(m => m.title === modUpdate.moduleTitle);
+      if (!dbModule) {
+        console.log(`Module not found: "${modUpdate.moduleTitle}" — skipping`);
+        continue;
+      }
+      for (const lessonUpdate of modUpdate.lessons) {
+        const dbLesson = allLessons.find(l => l.moduleId === dbModule.id && l.title === lessonUpdate.title);
+        if (!dbLesson) {
+          console.log(`Lesson not found: "${lessonUpdate.title}" in module "${modUpdate.moduleTitle}" — skipping`);
+          continue;
+        }
+        await db.update(lessons)
+          .set({
+            notes: lessonUpdate.notes,
+            adminNotes: lessonUpdate.adminNotes,
+          })
+          .where(eq(lessons.id, dbLesson.id));
+        updated++;
+      }
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/portal");
+    revalidatePath("/modules");
+    return { success: true, updatedLessons: updated };
+  } catch (error) {
+    console.error("Error syncing lesson content:", error);
+    throw new Error("Failed to sync lesson content: " + (error as Error).message);
+  }
+}
+
+// --- Course Restructure: Insert Module 1 (Choosing Your Audition Repertoire) ---
+// Creates the new module with 4 lessons and bumps all existing modules' displayOrder by 1.
+// Also syncs the expanded lesson content from the transcript integration pass.
+export async function restructureCourse() {
+  try {
+    // Find Level 1
+    const [lvl1] = await db.select().from(levels).where(eq(levels.displayOrder, 1)).limit(1);
+    if (!lvl1) throw new Error("Level 1 not found — run scaffold first");
+
+    const existingModules = await db.select().from(modules).where(eq(modules.levelId, lvl1.id));
+
+    // 1. Create new Module 1: Choosing Your Audition Repertoire
+    const [newMod] = await db.insert(modules).values({
+      title: "Module 1: Choosing Your Audition Repertoire",
+      levelId: lvl1.id,
+      displayOrder: 1,
+      isPublished: false,
+    }).returning();
+
+    const newLessons = [
+      {
+        title: "What Is Audition Repertoire?",
+        notes: "Your audition repertoire is the collection of songs you keep ready and polished — songs that represent who you are as a performer. A strong book gives you flexibility and confidence across a range of audition types.\n\nThe goal is to build a repertoire of six pieces that are aligned to your brand, your strengths, and your voice. These aren't songs you're learning — they're songs you own.\n\nDo you actually need twenty songs? No. Six go-to songs that you know inside out will serve you better than a binder full of material you're shaky on. If an audition comes up next week and you've got six songs you could sing in your sleep, you're ready. Brad would bring the same handful of songs to nearly every audition and it worked because he owned them.",
+        adminNotes: "Define audition repertoire in your own words. What does it mean to have a 'book'? Why do you need more than one song?"
+      },
+      {
+        title: "Intellectual Choice vs Vibe",
+        notes: "Choosing a song isn't just about what you like. There are two lenses worth considering:\n\n1. Intellectual choice — does the song serve the audition? Does it suit the show, the brief, the room?\n2. Vibe / presentation / brand — does it feel like you? Does it showcase your voice and energy?\n\nBoth matter. The best song choices sit at the intersection of both.\n\nTIP: You wouldn't bring Seussical to a Ragtime audition. Know what the room is asking for.\n\nNow let's clear up a few myths.\n\nThe \"don't sing\" list doesn't exist. There is no secret blacklist of forbidden songs. If you nail a song, sing it. If Maybe This Time lands in your voice and you connect with it, sing Maybe This Time. If you want to sing a Disney song and it fits your brand, sing it. Panel members hear unfamiliar songs all day — sometimes hearing a classic done well is a genuine relief.\n\nWhat about songs that are \"too mature\" for your age? If you can connect with the content, it's fine. The blanket rule \"you're too young to sing that\" ignores nuance. If a song is about children and death and you have nothing to draw on, sure, skip it. But if it connects, and it aligns with your brand, you can make it work.\n\nAnd what about overdone songs? If Anything Goes is in your voice and you sing it well, keep it. The reason songs become \"overdone\" is because they're well-written and they work. A familiar song done confidently can actually work in your favour.",
+        adminNotes: "Give examples of bad song choices vs great song choices for specific audition rooms."
+      },
+      {
+        title: "Learning New Songs vs Recycling Your Rep",
+        notes: "Stick with what is tried and tested unless you have ample time to fully integrate new material. Fresh material is a risk in high-pressure rooms.",
+        adminNotes: "Talk through when it makes sense to learn something new versus sticking with something tried and tested. What are the risks of each? When is fresh material worth the risk?"
+      },
+      {
+        title: "Composers Worth Knowing",
+        notes: "Musical theatre has a rich range of composers, each with their own distinct voice and demands. Some worth having in your repertoire:\n\n- Jason Robert Brown — emotionally complex, rhythmically intricate, vocally demanding\n- Stephen Sondheim — sophisticated harmonic language, text-driven, requires strong musicianship\n- Adam Guettel — contemporary, through-composed, less commonly performed\n\nThere's a general rule in the industry about three composers you should be careful bringing into an audition — and it has less to do with you and more to do with the accompaniment. Sondheim, Jason Robert Brown, and Adam Guettel are the ones that give accompanists pause.\n\nWhy? Sondheim writes for the world of each show. His orchestrations are dense and specific, and when reduced to a piano accompaniment they can be wacky to play — strange timings, unusual harmonic moves, parts that don't sit naturally under the hands. Not every Sondheim song is hard — anyone can whistle is lighter — but enough of them are that the reputation exists.\n\nJason Robert Brown is rock-and-roll and Billy Joel-informed, gospel and folk. The man himself has said: if you can't play his songs, they've been out for 25 years. He's got a point. But that doesn't change the fact that some of his songs are death for an accompanist, especially cold at 9am.\n\nAdam Guettel's work (Myths and Hymns, The Light in the Piazza) is through-composed and harmonically complex. Less commonly performed, but when it comes up, it demands real musicianship.\n\nDoes this mean you should never bring these composers? No. It means you should be aware that your cut may be harder for the accompanist to sight-read. If you bring a Sondheim song you've prepared and you know your cut cold, fine. But don't assume that singing a Sondheim song for a Sondheim show is a one-to-one advantage. It isn't.\n\nA better approach: choose songs that sit well in your voice and let you do your best work. The accompanist will follow you. But if your cut is rhythmically chaotic and harmonically thorny, you're adding risk.",
+        adminNotes: "Add more composers and your personal notes on each. What does each composer ask of a performer? Which voices do they suit?"
+      },
+      {
+        title: "Building Six Pieces",
+        notes: "Aim for six well-prepared, well-chosen pieces. They should collectively demonstrate range — not just vocal range, but emotional range, style range, and character range.\n\nSix songs you own completely are worth more than a binder of twenty you're still learning. If an audition comes up next week and you've got six songs you could sing in your sleep, you're ready. Focus on quality and ownership over quantity.",
+        adminNotes: "Give your framework here. What adjectives or categories help a student think about their six pieces? E.g. one uptempo, one ballad, one contemporary, one classic. Make this yours."
+      },
+    ];
+
+    for (let i = 0; i < newLessons.length; i++) {
+      await db.insert(lessons).values({
+        moduleId: newMod.id,
+        title: newLessons[i].title,
+        videoUrl: "",
+        duration: "00:00",
+        notes: newLessons[i].notes,
+        adminNotes: newLessons[i].adminNotes,
+        isPublished: false,
+        displayOrder: i + 1,
+      });
+    }
+
+    // 2. Bump only Level 1 existing modules' displayOrder by 1
+    const lvl1Mods = await db.select().from(modules).where(eq(modules.levelId, lvl1.id));
+    for (const mod of lvl1Mods) {
+      if (mod.id === newMod.id) continue;
+      await db.update(modules)
+        .set({ displayOrder: (mod.displayOrder ?? 0) + 1 })
+        .where(eq(modules.id, mod.id));
+    }
+
+    // 3. Sync expanded lesson content (matches actual DB titles)
+    const allLessons = await db.select().from(lessons);
+    const allUpdatedMods = await db.select().from(modules);
+
+    const updates: { moduleTitle: string; lessonTitle: string; notes: string; adminNotes: string }[] = [
+      // Module 2: Where to Source Sheet Music
+      {
+        moduleTitle: "Module 1: Where to Source Sheet Music",
+        lessonTitle: "Recommended Sources",
+        notes: "1. Musicnotes.com: Good for popular songs and musical theatre. Offers transpositions in multiple keys. Be aware that Musicnotes PDFs sometimes have the melody line embedded in the piano accompaniment — the right hand plays the vocal melody. Most professional accompanists are smart enough not to play the melody when you're singing, but it's something to check when you print your cut.\n2. Sheet Music Plus: Broader selection, including classical and more obscure musical theatre.\n3. Scribd: Subscription-based, user-uploaded content. Quality and legality varies — use with caution.\n\nWherever possible, look for a piano/vocal score rather than a lead sheet. The piano/vocal score gives the accompanist a full arrangement to work with. Lead sheets (just melody and chord symbols) don't give enough information.\n\nAlso: a typeset (computer-engraved) score is always preferable to a handwritten one. Handwritten scores are harder to sight-read — especially in the pressure of an audition. If all you have is a handwritten copy, consider getting it engraved professionally.",
+        adminNotes: "Add your personal notes on Musicnotes and Sheet Music Plus — what you recommend them for, any caveats."
+      },
+      // Module 3 (now): Basic Music Terminology
+      {
+        moduleTitle: "Module 3: Basic Music Terminology",
+        lessonTitle: "Fermata, Dal Segno & Musical Road Signs",
+        notes: "Fermata: Tells the performer to hold a note or rest longer than its written value. If your song has a fermata, point it out to the accompanist during the handover. Not every fermata is obvious — sometimes the vocal holds while the accompaniment doesn't, so check the score.\n\nCaesura (Tram Tracks / Grand Pause): Indicates a complete break in the music. Everything stops. This is different from a fermata.\n\nThink of music as a ribbon flowing forward:\n- A fermata stretches the ribbon — it holds, stays tense, then resumes.\n- A caesura cuts the ribbon. Silence. Then you pick up again.\n\nWhen marking caesuras in your music, write two small slanted lines (//). The accompanist will know to stop and wait for your cue.\n\nRubato: 'Robbed time' — expressive freedom with rhythm. The singer leads, the accompaniment follows.\n\nColla Voce: 'With the voice' — the accompanist follows the singer's timing exactly.\n\nRallentando (Rall.) / Ritardando (Rit.): Gradual slowing of tempo.\n\nA Tempo: Return to the original tempo.\n\nDal Segno (D.S.): Go back to the sign. Common in musical theatre cuts.",
+        adminNotes: "Explain these terms simply. Give examples of songs where these are commonly used."
+      },
+      {
+        moduleTitle: "Module 3: Basic Music Terminology",
+        lessonTitle: "Back Phrasing & Tacet — Critical Terms for Auditions",
+        notes: "Colle Voce: 'With the voice.' The accompanist follows you. This is the default mode for most auditions — the pianist watches your breath and your phrasing and stays with you. It requires no special marking; it's simply good ensemble.\n\nBack Phrasing: Deliberately singing behind or ahead of the written rhythm. This is a stylistic choice, common in contemporary musical theatre and pop-influenced repertoire. If you are back phrasing, tell the accompanist. The phrase 'I'll be back phrasing this' is gold — it signals that you want the pianist to keep a steady tempo while you play with the timing.\n\nHow do you know if you're back phrasing? If you're singing a different rhythm to what's written — pushing ahead on some phrases, laying back on others — that's back phrasing.\n\nColla Voce and back phrasing are not the same thing:\n- Colla Voce: accompanist waits for you, follows your lead\n- Back Phrasing: accompanist stays steady, you move around the beat\n\nTacet: Means 'do not play.' If there are bars where you want the accompanist to be silent — perhaps for a dramatic moment or a held note — write 'tacet' clearly over those bars.",
+        adminNotes: "Explain back phrasing in your own words. What does it sound like? How do you communicate it to an accompanist?"
+      },
+      // Module 4 (now): How to Cut Your Music
+      {
+        moduleTitle: "Module 4: How to Cut Your Music",
+        lessonTitle: "What Is a Cut? (16-Bar vs 32-Bar)",
+        notes: "A cut is a shortened excerpt of your song — usually the most effective section that best showcases your voice and storytelling.\n\nFirst, let's talk about the term '16-bar cut.' It's become the default language, but bars are an arbitrary measurement. The real measure is time. A verse in 4/4 at a slow tempo might take 30 seconds. The same 16 bars in a fast pop-rock song might fly by in 12 seconds. So when you say '16-bar cut,' what you really mean is something that runs between 30 and 45 seconds.\n\nHere's what the numbers actually mean in the room:\n- 30-45 seconds: A tight, effective cut. Shows what you can do, doesn't outstay its welcome.\n- 45-60 seconds: Pushing it. If you're going past 45 seconds, it had better be worth it — every extra second needs to earn its place.\n- 60-90 seconds: A 32-bar equivalent. Allows for a more developed arc, but be aware of the room's energy.\n\nThere's a practical tradeoff to keep in mind: the pains and gains. If you sing a shorter cut, you give the panel more time. If they like what they hear, they may ask for a second song. A tight 30-second cut that leaves them wanting more is better than a 90-second cut that goes on too long. But this isn't gospel — some songs need a bit more room, and that's fine. Just know that every bar you add is a bar they have to sit through.",
+        adminNotes: "Give your own guidance on how to identify the right 16 or 32 bars. What are you looking for?"
+      },
+      {
+        moduleTitle: "Module 4: How to Cut Your Music",
+        lessonTitle: "Making Logical, Performable Cuts",
+        notes: "A good cut feels like a complete musical thought — not a fragment. It should make sense harmonically and emotionally, even without the context of the full song.\n\nLet's clear up a big misconception: your cut doesn't need an arc. The full song has an arc — that's the composer's job. Your cut just needs to communicate what the song is about. How much of the song's story can you keep in a short excerpt? The opposite is also a useful question: how much can you take out before the song makes no sense at all?\n\nHere are the practical principles:\n\n- Cut at the end of a phrase, not mid-thought. A bracket in the middle of a barline is messy and hard to read. Don't cut through a bar. If you need to start mid-bar, it's usually better to find a cleaner entry point.\n- Avoid starting on a pickup bar where possible. Starting on a weak beat can feel unsettled.\n- Don't start a cut on the word 'and' — it implies something happened before. If your cut starts on 'and' or 'but', the panel feels like they've missed something.\n- Don't jump around erratically. A cut that goes from half a verse to a second verse to a final belt is chaotic both for the accompanist and the listener. Sing a chunk. Get as much story as you can.\n- The ending of your cut should feel conclusive. If the song doesn't have a natural ending, that's fine — you can land on a held note or a cut-off. But make sure it doesn't just trail off.\n\nA good way to start cutting: look at the lyrics first. Put them in a Google Doc and read them as text. The natural shape of the lyrics will tell you where the cut might live. If you're jumping around between half-sentences, the cut is going to be hard to follow.\n\nOne more thing: contemporary musical theatre songs often get over-cut. People try to cram in too many sections — a bit of verse, a pre-chorus, a chorus, a bridge, a belt ending — and the result is a choppy, confusing excerpt. Sometimes a simpler cut from a single section does the job better.",
+        adminNotes: "Step-by-step: how do you find a good cutting point? What do you listen for? What makes a cut feel awkward or abrupt?"
+      },
+      {
+        moduleTitle: "Module 4: How to Cut Your Music",
+        lessonTitle: "The Correct Bracket Notation",
+        notes: "When marking a cut in your music, use a clear bracket system:\n- Use a thick black or red line to mark the start and end of your cut\n- Draw the cross from the bottom left corner to the top right corner of the bar\n- The bracket should point inward toward the music that is to be played\n- Don't face the brackets outward — it scrambles the brain's reading flow\n\nBox method: draw a box around the bars you're cutting, then cross from bottom left to top right. This is the cleanest visual signal. The box tells the accompanist 'do not play any of this' with no ambiguity.\n\nIf a bracket ends at the natural end of the song, you don't need to bracket it — the end of the page is clear enough. But if your instinct says to add one, it doesn't hurt.\n\nLabeling START and END: Optional. Some people find it gives them a psychological boost — like a little pump of confidence — to write 'START' at their entry point. It's fine if you want to do that. Just know it's not strictly necessary if your brackets are clear.\n\nUsing a single chord as an intro: If you want just one chord to set the tempo and then silence before you begin, write the chord and mark 'tacet' over the rest of the bar. This tells the accompanist: play that chord, then stop and wait for my breath.\n\nBonus tip: Use a ruler. Clean lines matter. A wobbly freehand cross can be ambiguous. A ruler sends a professional signal.",
+        adminNotes: "Add an image or diagram here showing correct bracket notation vs common mistakes."
+      },
+      // Module 5 (now): How to Annotate
+      {
+        moduleTitle: "Module 5: How to Annotate and Mark Up Your Music",
+        lessonTitle: "General Annotation Tips & Marking Cuts",
+        notes: "- Use a pen, not pencil — pencil is too light and smudges\n- Use yellow highlighter only\n- Do not highlight lyrics\n- Highlight key and time signature changes, not entire sections\n- Highlight tempo markings and fermatas\n- Keep lines clean and straight\n\nCrossing out lyrics: If you've cut a section that has lyrics, strike through the words. Don't just bracket the bars and leave the lyrics visible. The accompanist's eye will naturally follow the text, and they may hesitate, wondering if you're going to sing those words. A simple line through the lyrics removes all doubt.\n\nComping vs playing the melody: In most professional settings, the accompanist will not play the melody from your sheet music — they'll comp (play the accompaniment as written, supporting your voice without doubling it). If you're lost during a cut, a good accompanist may subtly highlight the melody to help you find your place. But this is a rescue, not the default. Don't rely on the piano to carry the tune.",
+        adminNotes: "Explain why highlighting lyrics is a major distraction for sight-reading pianists."
+      },
+      // Module 6 (now): Physical Preparation
+      {
+        moduleTitle: "Module 6: Physical Preparation of Your Music",
+        lessonTitle: "Always Keep the First Page & Printing Quality",
+        notes: "Even if your cut starts on page three, always keep page one visible in your folder. It provides the accompanist with the key signature, time signature, tempo marking, and the full context of the piece.\n\nThink about it from the accompanist's perspective: they open your music and see page three. Immediately their brain has to work out what key they're in, what time signature, what the song is, what the world is. If they can see page one — even if it's entirely crossed out — they download all that information in a split second and feel oriented.\n\nAs a rule of thumb: if removing the first page raises more questions than it answers, keep it.\n\nPrinting Quality:\n- Ensure no staves are cut off at the edges\n- Music staves should be horizontally aligned — no crooked printing\n- Print in black and white, high contrast — not greyscale\n- If you're using a photocopy, check for blurriness or fading. If the page looks even slightly grey, find the original and re-copy.",
+        adminNotes: "Explain why keeping page one is a non-negotiable rule for professional auditions."
+      },
+      // Module 9 (now): Approaching and Talking to Your Accompanist
+      {
+        moduleTitle: "Module 9: Approaching and Talking to Your Accompanist",
+        lessonTitle: "How to Approach & Walk Them Through the Music",
+        notes: "How to Approach:\n- Walk to the side of the piano — not behind it\n- Standing behind the piano means your music is upside down and you're crowding the accompanist's space\n- Own your space — stand tall, don't shrink\n- Smile. A warm 'How are you?' is a lovely opener\n\nWalking Them Through the Music:\n- Show them the structure of your cut — where it starts, where it ends\n- Highlight any tricky moments — unexpected modulations, fermatas, tight cues, cut-offs\n- A useful question to ask yourself: does this raise more questions? If the accompanist will look at your music and wonder what's happening, you haven't communicated enough.\n- Save tempo for last — let them absorb the context of the piece first",
+        adminNotes: "Explain why standing behind the piano is a common but highly disruptive mistake."
+      },
+      {
+        moduleTitle: "Module 9: Approaching and Talking to Your Accompanist",
+        lessonTitle: "Delivering Tempo & Introductions",
+        notes: "Once you've walked them through the music, get to the end of the cut, then turn back to the beginning and deliver your tempo.\n\nIntroduction or No Introduction?:\n- Be decisive about whether your piece has an introduction\n- If you don't want an introduction, mark this clearly in the music and tell the accompanist\n- If you do want an introduction, keep it purposeful — its job is to give you the key and the tempo\n\nA note on intro length: some people give themselves too much intro. Eight bars of piano before the vocal enters can feel like an eternity in an audition — for you, for the panel, and for the accompanist who has to play it. If you can start right on the vocal, and you have the confidence to do it, that can be a powerful choice.\n\nBut starting on the vocal requires conviction. You can't count yourself in from the piano and then hesitantly find the note. As an accompanist, all I need is your breath. One breath, and I know where we are. There's no need to tap, count, or explain. Just breathe and go.\n\nIf your intro is very short — a single chord, for example — you can write 'tacet' over the rest of the bar after that chord. The accompanist will play the chord and wait for you.\n\nIf the panel offers to cut the intro down, that's fine. They're trying to move things along. If you detect this happening, just nod and say yes. Don't fight to keep your eight-bar intro.",
+        adminNotes: "Explain how to mark 'No Intro' or 'Start on Vocal' clearly in the sheet music."
+      },
+      // Module 10 (now): Walking Into the Audition Room
+      {
+        moduleTitle: "Module 10: Walking Into the Audition Room",
+        lessonTitle: "The Order of Events & Closing the Audition",
+        notes: "The Order of Events:\n1. Enter the room with presence\n2. Acknowledge the panel and accompanist\n3. Approach the piano and walk through your music\n4. Deliver tempo\n5. Walk to your spot, ground yourself, and sing\n6. Thank the room, collect your music, and exit with grace\n\nIt's worth understanding what kind of room you're walking into. Some classes billed as 'mock auditions' are really acting-through-song classes in disguise. They give you feedback on your performance and your arc — which is valuable, but it's not the same thing as practising the act of auditioning. A true mock audition should rehearse the mechanics: walking in, handing over music, delivering tempo, singing cold, exiting. If you're in a room that leans toward acting feedback, recognise that and adjust your expectations.",
+        adminNotes: "Walk through the sequence clearly. This is the choreography of the audition. Make it feel straightforward and achievable."
+      },
+    ];
+
+    let updated = 0;
+    for (const u of updates) {
+      const dbMod = allUpdatedMods.find(m => m.title === u.moduleTitle);
+      if (!dbMod) {
+        console.log(`Module not found: "${u.moduleTitle}" — skipping`);
+        continue;
+      }
+      const dbLes = allLessons.find(l => l.moduleId === dbMod.id && l.title === u.lessonTitle);
+      if (!dbLes) {
+        console.log(`Lesson not found: "${u.lessonTitle}" in "${u.moduleTitle}" — skipping`);
+        continue;
+      }
+      await db.update(lessons)
+        .set({ notes: u.notes, adminNotes: u.adminNotes })
+        .where(eq(lessons.id, dbLes.id));
+      updated++;
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/portal");
+    revalidatePath("/modules");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    return {
+      success: true,
+      newModule: "Module 1: Choosing Your Audition Repertoire",
+      newLessonsCreated: newLessons.length,
+      lessonsUpdated: updated,
+      modulesRenumbered: lvl1Mods.length,
+    };
+  } catch (error) {
+    console.error("Error restructuring course:", error);
+    throw new Error("Failed to restructure course: " + (error as Error).message);
   }
 }
 
@@ -762,168 +1095,6 @@ export async function toggleModuleVisibility(moduleId: string) {
   }
 }
 
-// --- Sync Scaffolder Content to Existing DB ---
-export async function syncUpdatedContent() {
-  try {
-    // Map of module title → lessons to update (matched by lesson title)
-    const updates: Record<string, { title: string; notes: string; adminNotes: string; isNew?: boolean }[]> = {
-      "Module 1: Choosing Your Audition Repertoire": [
-        {
-          title: "Intellectual Choice vs Vibe",
-          notes: "Choosing a song isn't just about what you like. There are two lenses worth considering:\n\n1. Intellectual choice — does the song serve the audition? Does it suit the show, the brief, the room?\n2. Vibe / presentation / brand — does it feel like you? Does it showcase your voice and energy?\n\nBoth matter. The best song choices sit at the intersection of both.\n\nTIP: You wouldn't bring Seussical to a Ragtime audition. Know what the room is asking for.\n\nChoose from brand first, sound second. Pick material because you connect with the text and what it represents — before you've worked out how it sounds on you or whether the cut will work. Jumping ahead to 'will the cut work?' is a way of ruling out songs prematurely.\n\nBallad vs up-tempo is a false binary. What panels usually mean is a mix of vocal production, energy, and character. You can deliver high energy in a ballad and a legit line in an up-tempo. When reading a brief, separate genre, tempo, vocal production, and acting content — they're different axes. Recent briefs increasingly say 'in the style of the show' rather than '16-bar up-tempo.' Ditch the binary.",
-          adminNotes: "Give examples of bad song choices vs great song choices for specific audition rooms. Expand on brand — what adjectives describe your performer identity?"
-        },
-        {
-          title: "Composers Worth Knowing",
-          notes: "Musical theatre has a rich range of composers, each with their own distinct voice and demands. Some worth having in your repertoire:\n\n- Jason Robert Brown — emotionally complex, rhythmically intricate, vocally demanding\n- Stephen Sondheim — sophisticated harmonic language, text-driven, requires strong musicianship\n- Adam Guettel — contemporary, through-composed, less commonly performed\n\n**'Do Not Sing' lists are a fallacy.** If a song matches your brand and you nail it, sing it — including overdone songs. Popular songs become under-sung precisely because everyone avoids them; a well-written classic can be a relief for a panel that's heard obscure material all day.\n\nThe one genuine caution is the hard-to-play composers: Sondheim, Jason Robert Brown, Adam Guettel. The reason isn't the songs — it's the accompaniment. Sondheim's piano reductions are collapsed orchestrations and can be strange to sight-read; JRB writes pianistically demanding rock/pop/gospel-informed parts. Even here it's a generalisation — both have simpler songs. Understand why the rule exists and apply judgement.\n\nAuditioning for a Sondheim show does not mean bringing a Sondheim song. Composer-matching isn't one-for-one, and any accompanist hired for a Sondheim audition will be on top of the rep anyway.\n\n**Mature rep** (songs about parenthood, loss, etc. sung by young performers) — less of a rule than schools suggest. If you genuinely connect with the content and it fits your brand, it can work; if you can't connect, that's the real reason not to sing it.",
-          adminNotes: "Add more composers and your personal notes on each. What does each composer ask of a performer? Which voices do they suit?"
-        },
-        {
-          title: "Building Six Pieces",
-          notes: "Aim for six well-prepared, well-chosen pieces. They should collectively demonstrate range — not just vocal range, but emotional range, style range, and character range.\n\n**Book discipline:** you only need a small set of go-to songs you know inside out — six is plenty. Bring only what you're prepared to sing in that room. Consider separate, cleanly stored folders: full originals, 16-bar cuts, 32-bar cuts (useful for cruise-ship style auditions running tight on time).",
-          adminNotes: "Give your framework here. What adjectives or categories help a student think about their six pieces? E.g. one uptempo, one ballad, one contemporary, one classic. Make this yours."
-        }
-      ],
-      "Module 4: Basic Music Terminology": [
-        {
-          title: "Fermata & Tempo Terms",
-          notes: "**Fermata:** Tells the performer to hold a note longer than its written value. If music is a ribbon flowing along, the fermata holds the ribbon still, then lets it flow again.\n\n**Caesura ('tram tracks'):** A complete cut in the sound. The ribbon is cut; silence; then you get back on. Something in the score (usually the vocal line) cues the re-entry.\n\nBoth the fermata and caesura must appear in **every stave**, not just the vocal line — everyone has to stop, not just the singer. Notation software does this automatically; if you're adding one by hand, add it to the accompaniment too. Note the printed fermata in the accompaniment may sit at a different point than the vocal one — that's deliberate.\n\nRubato: 'Robbed time' — expressive freedom with rhythm.\n\nColla Voce: 'With the voice' — accompanist follows the singer.\n\nRallentando (Rall.) / Ritardando (Rit.): Gradual slowing of tempo.\n\nA Tempo: Return to the original tempo.\n\nAnything that changes the rhythm or tempo of your song is good currency: fermata, caesura, tacet, colla voce. These symbols buy you freedom in the room.",
-          adminNotes: "Explain these terms simply. Give examples of songs where these are commonly used. Add an image showing fermata and caesura notation."
-        },
-        {
-          title: "Back Phrasing & Tacet",
-          notes: "**Tacet:** Means 'do not play'. If there are bars where you want the accompanist to be silent — perhaps for dramatic effect — write 'tacet' clearly over those bars.\n\n**Colla voce:** The accompanist follows the voice. The singer leads, the pianist waits and supports. Useful when you know the timing will be fluid.\n\n**Back-phrasing:** Singing deliberately off the written rhythm (behind or ahead of the beat). Most contemporary MT is effectively written back-phrased. If you know you back-phrase, telling your accompanist is gold: it means they hold the pulse steady rather than chasing you.\n\nColla voce and back-phrasing are different things — know which one you're asking for. Colla voce means 'follow me'; back-phrasing means 'I'm going to play with the rhythm, hold the pulse steady.'",
-          adminNotes: "Explain back phrasing in your own words. What does it sound like? How do you communicate it to an accompanist?"
-        }
-      ],
-      "Module 5: How to Cut Your Music": [
-        {
-          title: "What Is a Cut? (Time Over Bar Counts)",
-          notes: "A cut is a shortened excerpt of your song — the section that best showcases your voice and storytelling within the time you're given.\n\n**'16 bars' is lazy nomenclature** — bars are an arbitrary measurement. Think in time and story, not bar counts.\n\n- Target **30–45 seconds**. Pushing past 45 needs to be worth it; at a full minute you're adding padding (walking in, holding the final note) on top. Some briefs ask for 60–90 seconds — read the brief, but in the room, quicker and snappier usually lands better.\n- **Singing shorter gives the panel time back** and can open the door to being asked for a second song. Not gospel — a guideline, not a rule.\n\n**The 'story arc' of a cut is largely an illusion.** Sing a chunk. Get as much story as you can, but don't contort the song into a Frankenstein of half-sentences and jumps. The test isn't 'does it have an arc' — it's 'would someone watching feel lost?'\n\n**Songs aren't designed to be cut.** Don't hack them apart in weird places. Often the cleanest cut is a chunk the composer already stitched together (e.g. from the key change to the end).\n\n**Contemporary MT resists heavy trimming:** intro fragment → jump to end belt reads as chaotic, and a short cut can leave the panel wondering what they missed. If you can hold space and deliver storytelling in a short cut, fine — but know the trade-off.\n\nSome songs simply work better as longer cuts, some as shorter. A held final note alone can be 15 seconds — budget for it.",
-          adminNotes: "Give your own guidance on how to identify the right section. What are you looking for?"
-        },
-        {
-          title: "Making Clean, Performable Cuts",
-          notes: "A good cut feels like a complete musical thought — not a fragment. It should make sense harmonically and emotionally, even without the context of the full song.\n\n- Cut at the end of a phrase, not mid-thought\n- Avoid starting on a pickup bar where possible\n- The ending of your cut should feel conclusive\n- **Never cut mid-bar.** Don't start or end a cut partway through a bar; it forces extra barlines and reads as messy. Cut clean at barlines.\n\n**Elaborate patchwork cuts are a mental game more than a practical asset.** When it comes time to communicate a complicated cut to an accompanist under pressure, complexity costs you. Keep it simple.\n\n**There is no consequence to trying.** Draft cuts in pencil, test them, commit in pen when it's final.",
-          adminNotes: "Step-by-step: how do you find a good cutting point? What do you listen for? What makes a cut feel awkward or abrupt?"
-        }
-      ],
-      "Module 6: How to Annotate and Mark Up Your Music": [
-        {
-          title: "General Annotation Tips & Marking Cuts",
-          notes: "- Use a pen, not pencil — pencil is too light and smudges\n- Use yellow highlighter only\n- Do not highlight lyrics\n- Highlight key and time signature changes, clef changes, and (optionally) brackets at page turns\n- Highlight tempo markings and fermatas — highlight the symbol itself, not a giant stroke across the system\n- Keep lines clean and straight — use a ruler\n- Pencil while drafting, pen when committed\n\n**Never cut mid-bar.** Don't start or end a cut partway through a bar; it forces extra barlines and reads as messy. Cut clean at barlines.\n\n**Cross-outs:** Box the excluded bars, then draw a diagonal line from bottom-left to top-right. The box matters — without it, the accompanist can be unsure whether an edge bar is in or out.\n\n**Brackets face the music that is to be played.** Reversed brackets scramble the read. Think of brackets as a portal: in here, out there. Don't bracket the final bars if you're simply playing through to the printed end — a closing bracket implies more music follows.\n\n**Always keep the first page**, even if it's entirely crossed out. It carries the title, key signature, time signature, and context — the accompanist downloads the whole world of the song in one glance. It also means you don't need to re-insert time signatures into later pages (and if the piece is in common time, you never needed to add 'C' anyway). Put the title at the top of the first page.\n\n**Cross out any lyrics you are not singing.** A simple ruled strike-through is enough — no white-out needed. This saves the pre-song conversation from 'wait, are you singing this bit?'\n\n**Start/End labels and smiley faces:** optional. They don't hurt, and if writing 'start' gives you certainty, do it.\n\n**White-out / cut-and-paste reconstruction:** generally discouraged. Done meticulously it can work, but most attempts produce scores that are hard to trust at sight. If you go this route, get the result transcribed or checked — and always re-scan so seams and shadows disappear.\n\n**Duets:** Leave the other vocal line in. It doesn't throw the accompanist, and it can actually help them help you.",
-          adminNotes: "Explain why highlighting lyrics is a major distraction for sight-reading pianists. Include images showing correct cross-out technique and bracket orientation."
-        }
-      ],
-      "Module 7: Physical Preparation of Your Music": [
-        {
-          title: "Folder vs Taping",
-          notes: "Display Folders:\n- Use a display folder with clear plastic pockets — not a ring binder\n- Ring binders cause pages to drag or fall off the piano music stand\n- Ensure the plastic pockets are clear, fresh, and free of crinkles\n\nTaping Pages:\n- Tape pages front and back so no adhesive is exposed — exposed tape sticks pages together mid-song and causes skipped pages\n- Tape the front of page 1–2, then the back of page 2–3, then the front of page 3–4\n- This alternating pattern keeps exposed tape off the playing surface\n- Sits flat on the stand and turns easily\n\niPads in the room: fine, but ask the accompanist first. Some accompanists prefer paper (two pages visible at once, no app surprises). Glare is a real issue with glossy binder sleeves — choose non-glare sleeves.",
-          adminNotes: "Recommend a specific type of display folder that works well — brand, sleeve count, any specific features."
-        }
-      ],
-      "Module 8: How to Scan and Digitise Your Music": [
-        {
-          title: "Why Scanning Matters & Scanning Tips",
-          notes: "A blurry, crooked, or low-contrast scan makes it very hard for an accompanist to sight-read your music under high-pressure audition room lighting.\n\nScanning Tips:\n- Align pages neatly — no wonky angles\n- Black should appear truly black — not grey or faded\n- High resolution — no pixelation or blurriness\n- Monochrome (black and white) — not greyscale or colour\n- Scan one page at a time for the cleanest result\n\n**Piano-vocal scores vs piano-conductor scores:** Piano-vocal parts sometimes just double the melody — check before trusting a source. Some sources (e.g. Musicnotes) get an unfair blanket ban for this; the real skill is knowing how to read the accompaniment and confirm it isn't just melody. Some genres want the melody in the accompaniment (a lot of '30s–'40s writing) — that's the style, and it matters that the accompanist has it.\n\n**Prefer typeset over handwritten scores.** Handwritten piano-conductor scores from shows read badly under audition pressure.\n\n**Scan quality standard:** no blur. Black and white, high saturation/contrast. Use a proper scanning app (Adobe Scan, Dropbox scan, or similar). If a free download is blurry, fix it or find a better source — 'a smidge blurry' is still a problem for someone sight-reading.\n\nEveryone should reach the point where their whole book exists as clean one-for-one PDFs — no generational photocopies. Store originals; re-scan after any physical cut-and-paste so seams disappear.",
-          adminNotes: "Add recommended apps here — your preferred scanning app, any tips for phone scanning. Include note about checking piano-conductor scores vs piano-vocal."
-        },
-        {
-          title: "Saving and Naming Your Files",
-          notes: "File naming matters, especially when submitting music digitally. Use a consistent, clear convention:\n\nFirst Name Last Name – Song Title – Show Title\nExample: Daniele Buatti – Part of Your World – The Little Mermaid\n\n- PDF format only — no photos, screenshots, or image files\n- Check your file is complete before sending — open it and scroll through every page\n\n**Organise by cut length.** Consider keeping separate folders for:\n- Full originals (unmarked scores)\n- 16-bar cuts\n- 32-bar cuts (useful for cruise-ship style auditions running tight on time)\n\nThis way you grab the right folder depending on the brief, rather than hunting through a single book.",
-          adminNotes: "Explain why sending JPGs or screenshots of sheet music causes problems in the audition room."
-        }
-      ],
-      "Module 13: Common Mistakes — What Not to Do": [
-        {
-          title: "Music, In-Room, and Mindset Mistakes",
-          notes: "Music Mistakes:\n- Faded or grey printing\n- Missing pages\n- Lead sheets with no piano part\n- Blurry PDFs\n- Pencil annotations\n- Blocking out key signatures\n\nIn-Room Mistakes:\n- Shouting your tempo across the room\n- Giving tempo as just a number\n- Standing behind the piano\n- Rushing through the music handover\n- Apologising for your music\n- Not collecting your music",
-          adminNotes: "Your thoughts here — what are the internal mistakes? The ones that don't show up in the music but show up in the room? Over-explaining, apologizing, shrinking.\n\n[DRAFT – candidates for future lessons]\n- The 8-bar intro nobody needed\n- Uncrossed lyrics leading to 'wait, are you singing this bit?' conversations\n- Brackets at the very end of a play-through cut, implying missing pages\n- Exposed tape sticking pages together mid-audition\n- Frankenstein white-out cuts that fall apart at sight-reading\n- Bringing a JRB 'death song' cold to a 9am accompanist"
-        }
-      ]
-    };
-
-    // Also handle the renamed lesson title in M5
-    const m5rename = {
-      oldTitle: "What Is a Cut? (16-Bar vs 32-Bar)",
-      newTitle: "What Is a Cut? (Time Over Bar Counts)"
-    };
-
-    for (const [modTitle, lessonUpdates] of Object.entries(updates)) {
-      const mods = await db.select().from(modules).where(eq(modules.title, modTitle)).limit(1);
-      if (mods.length === 0) {
-        console.warn(`Module not found: ${modTitle}`);
-        continue;
-      }
-      const modId = mods[0].id;
-
-      for (const upd of lessonUpdates) {
-        const existingLessons = await db.select().from(lessons)
-          .where(and(eq(lessons.moduleId, modId), eq(lessons.title, upd.title)));
-        
-        if (existingLessons.length > 0) {
-          await db.update(lessons)
-            .set({ notes: upd.notes, adminNotes: upd.adminNotes })
-            .where(eq(lessons.id, existingLessons[0].id));
-        }
-      }
-
-      // Handle the renamed M5 lesson
-      if (modTitle === "Module 5: How to Cut Your Music") {
-        const oldLessons = await db.select().from(lessons)
-          .where(and(eq(lessons.moduleId, modId), eq(lessons.title, m5rename.oldTitle)));
-        if (oldLessons.length > 0) {
-          await db.update(lessons)
-            .set({ title: m5rename.newTitle })
-            .where(eq(lessons.id, oldLessons[0].id));
-        }
-
-        // Add the new Intros and Endings lesson if it doesn't exist
-        const existingNew = await db.select().from(lessons)
-          .where(and(eq(lessons.moduleId, modId), eq(lessons.title, "Intros and Endings")));
-        if (existingNew.length === 0) {
-          const maxOrder = await db.select({ maxOrder: lessons.displayOrder }).from(lessons)
-            .where(eq(lessons.moduleId, modId));
-          const nextOrder = maxOrder.length > 0 && maxOrder[0].maxOrder !== null ? maxOrder[0].maxOrder + 1 : 1;
-          await db.insert(lessons).values({
-            moduleId: modId,
-            title: "Intros and Endings",
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-            duration: "05:00",
-            notes: "**Most people give themselves too much intro.** Two bars is usually plenty; eight is almost never needed.\n\nYou can drop straight in on the vocal with no intro at all — the accompanist only needs your breath. This requires confidence, and it connects to presentation and brand: are you someone who can take a note and go?\n\nDon't count yourself in out loud.\n\n**Alternative to a full intro bar: a single chord.** Mark the bar with the chord, write 'tacet' for what the piano shouldn't play, and 'play' where the accompaniment re-enters. This removes a whole bar where tempo and communication can go wrong — you take the pitch, you set the tempo yourself.\n\n**Endings:** If your cut ends on something unresolved, the panel may not know you've finished. Consider ending somewhere that resolves, or adding a simple ending. Watch your final gesture — it's part of signalling you're done.",
-            adminNotes: "Brad suggests a demo video showing the single-chord intro technique in action.",
-            isPublished: false,
-            hasVideo: true,
-            videoStatus: "not_started",
-            displayOrder: nextOrder,
-            isNew: true,
-          });
-        }
-      }
-
-      // Handle renamed M4 lesson
-      if (modTitle === "Module 4: Basic Music Terminology") {
-        const oldTitle = "Back Phrasing & Tacet";
-        const newTitle = "Back Phrasing, Colla Voce & Tacet";
-        const oldLessons = await db.select().from(lessons)
-          .where(and(eq(lessons.moduleId, modId), eq(lessons.title, oldTitle)));
-        if (oldLessons.length > 0) {
-          await db.update(lessons)
-            .set({ title: newTitle })
-            .where(eq(lessons.id, oldLessons[0].id));
-        }
-      }
-    }
-
-    revalidatePath("/admin");
-    revalidatePath("/modules");
-    return { success: true };
-  } catch (error) {
-    console.error("Error syncing updated content:", error);
-    throw new Error("Failed to sync updated content");
-  }
-}
-
 export async function publishAllLessons() {
   try {
     await db.update(lessons).set({ isPublished: true });
@@ -936,5 +1107,55 @@ export async function publishAllLessons() {
   } catch (error: any) {
     console.error("Error publishing all lessons:", error.message);
     throw new Error("Failed to publish all lessons: " + error.message);
+  }
+}
+
+export async function fixCourseStructure() {
+  try {
+    // Get all levels in order
+    const allLevels = await db.select().from(levels).orderBy(levels.displayOrder);
+    // Get all modules ordered by level then displayOrder
+    const allMods = await db.select().from(modules).orderBy(modules.displayOrder);
+
+    let globalNum = 0;
+
+    for (const lvl of allLevels) {
+      const lvlMods = allMods.filter(m => m.levelId === lvl.id)
+        .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0));
+
+      for (let i = 0; i < lvlMods.length; i++) {
+        globalNum++;
+
+        // Fix displayOrder to be sequential within level
+        const correctDisplayOrder = i + 1;
+        if ((lvlMods[i].displayOrder ?? 0) !== correctDisplayOrder) {
+          await db.update(modules)
+            .set({ displayOrder: correctDisplayOrder })
+            .where(eq(modules.id, lvlMods[i].id));
+        }
+
+        // Fix title to match global sequential number
+        const oldTitle = lvlMods[i].title;
+        const titleBody = oldTitle.includes(": ")
+          ? oldTitle.split(": ").slice(1).join(": ")
+          : oldTitle;
+        const newTitle = `Module ${globalNum}: ${titleBody}`;
+        if (newTitle !== oldTitle) {
+          await db.update(modules)
+            .set({ title: newTitle })
+            .where(eq(modules.id, lvlMods[i].id));
+        }
+      }
+    }
+
+    revalidatePath("/admin");
+    revalidatePath("/admin/tree");
+    revalidatePath("/admin/modules");
+    revalidatePath("/portal");
+    revalidatePath("/modules");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error fixing course structure:", error.message);
+    throw new Error("Failed to fix course structure: " + error.message);
   }
 }
