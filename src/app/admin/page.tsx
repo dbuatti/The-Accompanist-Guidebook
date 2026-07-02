@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, syncUpdatedContent } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, syncUpdatedContent, scaffoldAuditionGuidebook } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { 
   Layers, ChevronDown, ChevronUp, Plus, Loader2
@@ -87,6 +87,7 @@ export default function AdminPage() {
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState<string | null>(null);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isScaffolding, setIsScaffolding] = useState(false);
 
   // ADHD-friendly UI States
   const [searchQuery, setSearchQuery] = useState("");
@@ -438,8 +439,30 @@ export default function AdminPage() {
         totalLessons={stats.totalLessons}
       />
 
-      {/* Sync Content Button */}
-      <div className="flex justify-end mb-4">
+      {/* Sync Content Buttons */}
+      <div className="flex justify-end gap-2 mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={async () => {
+            if (!confirm("This will seed the entire course (13 modules, 40+ lessons). Continue?")) return;
+            setIsScaffolding(true);
+            try {
+              await scaffoldAuditionGuidebook();
+              showSuccess("Course scaffolded! You can now publish lessons from the dashboard.");
+              fetchData();
+            } catch {
+              showError("Scaffold failed — check DB connection");
+            } finally {
+              setIsScaffolding(false);
+            }
+          }}
+          disabled={isScaffolding || isSyncing}
+          className="h-8 text-xs"
+        >
+          {isScaffolding ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
+          {isScaffolding ? "Scaffolding..." : "Scaffold Course"}
+        </Button>
         <Button
           variant="outline"
           size="sm"
@@ -456,7 +479,7 @@ export default function AdminPage() {
               setIsSyncing(false);
             }
           }}
-          disabled={isSyncing}
+          disabled={isSyncing || isScaffolding}
           className="h-8 text-xs"
         >
           {isSyncing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : null}
