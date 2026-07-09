@@ -686,36 +686,58 @@ export async function syncLessonContent() {
     const allModules = await db.select().from(modules);
     const allLessons = await db.select().from(lessons);
 
-    // Define the updated lesson data (mirrors the scaffold data above)
     const moduleUpdates = lessonContent;
 
     let updated = 0;
+    let created = 0;
     for (const modUpdate of moduleUpdates) {
       const dbModule = allModules.find(m => m.title === modUpdate.moduleTitle);
       if (!dbModule) {
         console.log(`Module not found: "${modUpdate.moduleTitle}" — skipping`);
         continue;
       }
+
+      // Find the highest displayOrder in this module for new lessons
+      const moduleLessons = allLessons.filter(l => l.moduleId === dbModule.id);
+      const maxOrder = moduleLessons.reduce((max, l) => Math.max(max, l.displayOrder), 0);
+      let nextOrder = maxOrder + 1;
+
       for (const lessonUpdate of modUpdate.lessons) {
-        const dbLesson = allLessons.find(l => l.moduleId === dbModule.id && l.title === lessonUpdate.title);
+        let dbLesson = allLessons.find(l => l.moduleId === dbModule.id && l.title === lessonUpdate.title);
+
         if (!dbLesson) {
-          console.log(`Lesson not found: "${lessonUpdate.title}" in module "${modUpdate.moduleTitle}" — skipping`);
-          continue;
-        }
-        await db.update(lessons)
-          .set({
+          // Create the missing lesson
+          const [inserted] = await db.insert(lessons).values({
+            moduleId: dbModule.id,
+            title: lessonUpdate.title,
+            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            duration: "05:00",
             notes: lessonUpdate.notes,
             adminNotes: lessonUpdate.adminNotes,
-          })
-          .where(eq(lessons.id, dbLesson.id));
-        updated++;
+            isPublished: false,
+            hasVideo: false,
+            videoStatus: "not_started",
+            displayOrder: nextOrder,
+          }).returning();
+          dbLesson = inserted;
+          created++;
+          nextOrder++;
+        } else {
+          await db.update(lessons)
+            .set({
+              notes: lessonUpdate.notes,
+              adminNotes: lessonUpdate.adminNotes,
+            })
+            .where(eq(lessons.id, dbLesson.id));
+          updated++;
+        }
       }
     }
 
     revalidatePath("/admin");
     revalidatePath("/portal");
     revalidatePath("/modules");
-    return { success: true, updatedLessons: updated };
+    return { success: true, updatedLessons: updated, createdLessons: created };
   } catch (error) {
     console.error("Error syncing lesson content:", error);
     throw new Error("Failed to sync lesson content: " + (error as Error).message);

@@ -520,7 +520,9 @@ export default function AdminPage() {
             setIsSyncing(true);
             try {
               const result = await syncLessonContent();
-              showSuccess(`Synced ${result.updatedLessons} lessons`);
+              const parts = [`Updated ${result.updatedLessons} lessons`];
+              if (result.createdLessons) parts.push(`Created ${result.createdLessons} new`);
+              showSuccess(parts.join(", "));
               fetchData();
             } catch {
               showError("Failed to sync lesson content");
