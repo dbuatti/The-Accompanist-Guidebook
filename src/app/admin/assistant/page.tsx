@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getCourseContent, scaffoldAuditionGuidebook } from "@/app/actions";
+import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, Sparkles, BookOpen, BrainCircuit, CheckCircle2, Copy, Check, ArrowRight, HelpCircle } from "lucide-react";
@@ -183,7 +184,7 @@ Please write the complete, client-facing lesson notes. Use a warm, professional,
                     {level.modules.map((module: any) => (
                       <div key={module.id} className="space-y-1">
                         <div className="text-[11px] font-semibold text-muted-foreground/80 px-2">
-                          {module.title}
+                          {formatModuleTitle(module)}
                         </div>
                         <div className="space-y-0.5">
                           {module.lessons.map((lesson: any) => {

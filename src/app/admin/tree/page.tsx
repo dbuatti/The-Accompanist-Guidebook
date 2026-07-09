@@ -17,6 +17,7 @@ import {
   getLevelsOnly,
   toggleModuleVisibility
 } from "@/app/actions";
+import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -447,8 +448,8 @@ export default function AdminTreePage() {
                                       <span 
                                         className="font-medium text-foreground text-sm truncate cursor-pointer hover:underline"
                                         onClick={() => startEditing(module.id, module.title)}
-                                      >
-                                        {module.title}
+                                        >
+                                          {formatModuleTitle(module)}
                                       </span>
                                     )}
                                   </div>

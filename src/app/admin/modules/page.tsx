@@ -12,6 +12,7 @@ import {
   updateModuleWrapUpVideo,
   toggleModuleVisibility,
 } from "@/app/actions";
+import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -424,7 +425,7 @@ export default function ModuleStudioPage() {
                           }`}
                         >
                           <FolderOpen className={`w-4 h-4 shrink-0 ${isActive ? "text-primary-foreground" : "text-amber-600"}`} />
-                          <span className="text-xs truncate flex-1">{module.title}</span>
+                          <span className="text-xs truncate flex-1">{formatModuleTitle(module)}</span>
                           <button
                             onClick={(e) => handleToggleVisibility(e, module.id)}
                             className={`shrink-0 p-0.5 rounded transition-colors ${

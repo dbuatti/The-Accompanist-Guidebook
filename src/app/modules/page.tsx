@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { getCourseContent, getProgress, toggleLessonProgress, ensureUserExists, publishAllLessons } from "@/app/actions";
+import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -142,7 +143,7 @@ export default function ModulesPage() {
                     <FolderOpen className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? "text-primary-foreground/80" : isHidden ? "text-muted-foreground/30" : "text-amber-500"}`} />
                     <div className="min-w-0 flex-1">
                       <span className={`text-sm font-medium leading-snug block ${isActive ? "" : isHidden ? "text-muted-foreground/50 italic" : ""}`}>
-                        {mod.title}
+                        {formatModuleTitle(mod)}
                         {isHidden && (
                           <span className="ml-2 text-[10px] font-normal not-italic text-muted-foreground/40 uppercase tracking-wider">Coming soon</span>
                         )}
@@ -295,7 +296,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
             </div>
             <span className="text-[11px] text-muted-foreground">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">{module.title}</h1>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">{formatModuleTitle(module)}</h1>
 
           {/* Module progress */}
           {isLoggedIn && lessons.length > 0 && (() => {

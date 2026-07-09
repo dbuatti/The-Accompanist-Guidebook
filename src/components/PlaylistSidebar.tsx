@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckCircle2, Circle, PlayCircle, Layers } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, formatModuleTitle } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Lesson {
@@ -15,6 +15,7 @@ interface Lesson {
 interface Module {
   id: string;
   title: string;
+  moduleNumber?: number;
   lessons: Lesson[];
 }
 
@@ -60,7 +61,7 @@ const PlaylistSidebar = ({
                   <div key={module.id} className="space-y-2">
                     {/* Tier 2: Module Header */}
                     <h4 className="px-2 text-xs font-semibold text-muted-foreground/80">
-                      {module.title}
+                      {formatModuleTitle(module)}
                     </h4>
 
                     {/* Tier 3: Lessons */}

@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, restructureCourse, fixCourseStructure, toggleModuleVisibility } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, restructureCourse, fixCourseStructure, toggleModuleVisibility, syncLessonContent } from "@/app/actions";
+import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { 
   Layers, ChevronDown, ChevronUp, Plus, Loader2, Eye, EyeOff
@@ -107,6 +108,7 @@ export default function AdminPage() {
   const [isCreatingLesson, setIsCreatingLesson] = useState(false);
   const [isRestructuring, setIsRestructuring] = useState(false);
   const [isFixingTitles, setIsFixingTitles] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // ADHD Scratchpad State
   const [scratchpad, setScratchpad] = useState("");
@@ -209,7 +211,7 @@ export default function AdminPage() {
           if (lesson.isPublished) publishedLessons++;
           else {
             draftLessons++;
-            draftLessonsList.push({ ...lesson, moduleTitle: module.title });
+            draftLessonsList.push({ ...lesson, moduleTitle: formatModuleTitle(module) });
           }
 
           if (lesson.hasVideo) {
@@ -509,6 +511,27 @@ export default function AdminPage() {
           {isFixingTitles ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
           {isFixingTitles ? "Fixing..." : "Fix Structure"}
         </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          disabled={isSyncing}
+          onClick={async () => {
+            if (!confirm("This will sync expanded lesson notes for all modules in the sync array. Continue?")) return;
+            setIsSyncing(true);
+            try {
+              const result = await syncLessonContent();
+              showSuccess(`Synced ${result.updatedLessons} lessons`);
+              fetchData();
+            } catch {
+              showError("Failed to sync lesson content");
+            } finally {
+              setIsSyncing(false);
+            }
+          }}
+        >
+          {isSyncing ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : null}
+          {isSyncing ? "Syncing..." : "Sync Content"}
+        </Button>
       </div>
 
       {/* ADHD Search & Filter Bar */}
@@ -573,7 +596,7 @@ export default function AdminPage() {
                                 className="flex items-center gap-2 hover:opacity-80 transition-all text-left"
                               >
                                 {isModuleCollapsed ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
-                                <h4 className="text-lg font-serif font-medium text-foreground">{module.title}</h4>
+                                <h4 className="text-lg font-serif font-medium text-foreground">{formatModuleTitle(module)}</h4>
                               </button>
                             </div>
                             <div className="flex items-center gap-2">
