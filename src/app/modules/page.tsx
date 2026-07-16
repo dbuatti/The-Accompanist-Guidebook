@@ -23,6 +23,7 @@ import {
   Eye,
   EyeOff,
   Music,
+  FileText,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -41,14 +42,34 @@ export default function ModulesPage() {
   const [expandedLevels, setExpandedLevels] = useState<Record<string, boolean>>({});
   const [progressData, setProgressData] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const initialModuleSet = useRef(false);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
   }, [selectedModuleId]);
 
+  useEffect(() => {
+    if (selectedModuleId) {
+      const url = new URL(window.location.href);
+      url.searchParams.set("module", selectedModuleId);
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [selectedModuleId]);
+
   const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
 
   useEffect(() => { fetchData(); }, []);
+
+  useEffect(() => {
+    if (!initialModuleSet.current && !isPending) {
+      const params = new URLSearchParams(window.location.search);
+      const moduleId = params.get("module");
+      if (moduleId) {
+        setSelectedModuleId(moduleId);
+      }
+      initialModuleSet.current = true;
+    }
+  }, [isPending]);
 
   const fetchData = async () => {
     try {
@@ -114,6 +135,15 @@ export default function ModulesPage() {
           <span className="text-sm font-medium leading-snug block">Course Introduction</span>
         </div>
       </button>
+
+      {/* Full Curriculum */}
+      <Link
+        href="/curriculum"
+        className="flex items-center gap-3 w-full text-left px-3 py-3 rounded-xl transition-all hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
+      >
+        <FileText className="w-4 h-4 shrink-0 text-muted-foreground/50" />
+        <span className="text-sm font-medium leading-snug block">View Full Curriculum</span>
+      </Link>
       {content.map((level) => (
         <div key={level.id}>
           <button
