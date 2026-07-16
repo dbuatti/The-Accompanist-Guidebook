@@ -408,7 +408,7 @@ export async function scaffoldAuditionGuidebook() {
         await db.insert(lessons).values({
           moduleId: modId,
           title: les.title,
-          videoUrl: les.videoUrl || "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+          videoUrl: les.videoUrl || "",
           duration: les.duration || "05:00",
           notes: les.notes || "",
           adminNotes: les.adminNotes || "",
@@ -710,7 +710,7 @@ export async function syncLessonContent() {
           const [inserted] = await db.insert(lessons).values({
             moduleId: dbModule.id,
             title: lessonUpdate.title,
-            videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+            videoUrl: "",
             duration: "05:00",
             notes: lessonUpdate.notes,
             adminNotes: lessonUpdate.adminNotes,
