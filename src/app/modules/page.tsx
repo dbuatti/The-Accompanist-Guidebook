@@ -121,7 +121,7 @@ export default function ModulesPage() {
 
   const nav = (
     <div className="space-y-6">
-      {/* Course Introduction */}
+      {/* All Modules */}
       <button
         onClick={() => setSelectedModuleId(null)}
         className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
@@ -130,26 +130,12 @@ export default function ModulesPage() {
             : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
         }`}
       >
-        <BookOpen className={`w-4 h-4 shrink-0 mt-0.5 ${!selectedModuleId ? "text-primary-foreground/80" : "text-emerald-500"}`} />
+        <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${!selectedModuleId ? "text-primary-foreground/80" : "text-muted-foreground/50"}`} />
         <div className="min-w-0 flex-1">
-          <span className="text-sm font-medium leading-snug block">Course Introduction</span>
+          <span className="text-sm font-medium leading-snug block">All Modules</span>
         </div>
       </button>
 
-      {/* Full Curriculum */}
-      <button
-        onClick={() => setSelectedModuleId("__curriculum__")}
-        className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
-          selectedModuleId === "__curriculum__"
-            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
-            : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
-        }`}
-      >
-        <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${selectedModuleId === "__curriculum__" ? "text-primary-foreground/80" : "text-muted-foreground/50"}`} />
-        <div className="min-w-0 flex-1">
-          <span className="text-sm font-medium leading-snug block">View Full Curriculum</span>
-        </div>
-      </button>
       {content.map((level) => (
         <div key={level.id}>
           <button
@@ -277,14 +263,8 @@ export default function ModulesPage() {
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          {selectedModuleId === "__curriculum__" ? (
+          {!selectedModuleId ? (
             <CurriculumView content={content} onSelectModule={setSelectedModuleId} />
-          ) : !selectedModuleId ? (
-            <WelcomePage onStart={() => {
-              if (content.length > 0 && content[0].modules?.length > 0) {
-                setSelectedModuleId(content[0].modules[0].id);
-              }
-            }} />
           ) : !currentModule ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-12">
               <BookOpen className="w-20 h-20 mb-6 opacity-15" />
@@ -606,81 +586,119 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
   const totalLessons = content.reduce((sum: number, lvl: any) => sum + lvl.modules.reduce((s: number, mod: any) => s + mod.lessons.length, 0), 0);
 
   return (
-    <div>
-      <div className="relative border-b border-border/20 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent">
-        <div className="max-w-3xl mx-auto px-6 sm:px-10 pt-14 pb-10 text-center">
-          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-            <FileText className="w-6 h-6 text-primary" />
+    <div className="animate-in fade-in duration-500">
+      <div className="relative border-b border-border/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-primary/[0.02] to-transparent" />
+        <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/[0.03] blur-3xl" />
+        <div className="relative max-w-3xl mx-auto px-6 sm:px-10 pt-16 pb-12 text-center">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-primary/10">
+            <Layers className="w-7 h-7 text-primary" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight mb-2">
-            Full Curriculum
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary leading-tight mb-3">
+            Course Curriculum
           </h1>
           <p className="text-sm text-muted-foreground/60">
-            {totalModules} modules &middot; {totalLessons} lessons
+            {totalModules} modules spanning {totalLessons} lessons
           </p>
+          <div className="flex items-center justify-center gap-6 mt-6 text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary/30" />
+              Level 1: Foundations
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/50" />
+              Level 2: Preparation
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/50" />
+              Level 3: Collaboration
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-12 space-y-10">
-        {content.map((level: any, li: number) => (
+      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-14 space-y-14">
+        {content.map((level: any, li: number) => {
+          const levelColors = ["", "", ""];
+          const levelDots = ["bg-primary/30", "bg-amber-400/50", "bg-emerald-400/50"];
+          return (
           <section key={level.id}>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/40">
-                Level {li + 1}
-              </span>
-              <div className="flex-1 h-px bg-border/30" />
+            <div className="flex items-center gap-4 mb-8">
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${li === 0 ? "bg-primary/10" : li === 1 ? "bg-amber-400/10" : "bg-emerald-400/10"}`}>
+                <span className={`text-xs font-bold ${li === 0 ? "text-primary" : li === 1 ? "text-amber-600" : "text-emerald-600"}`}>
+                  {li + 1}
+                </span>
+              </div>
+              <div>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${li === 0 ? "text-primary/50" : li === 1 ? "text-amber-500/50" : "text-emerald-500/50"}`}>
+                  Level {li + 1}
+                </span>
+                <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{level.title}</h2>
+              </div>
+              <div className="flex-1 h-px bg-gradient-to-r from-border/40 to-transparent ml-auto max-w-[120px]" />
             </div>
-            <h2 className="text-xl font-serif font-bold text-primary mb-6">{level.title}</h2>
 
-            <div className="space-y-4">
-              {level.modules.map((mod: any) => (
-                <div key={mod.id} className="border border-border/20 rounded-2xl bg-card/30 hover:bg-card/50 transition-colors">
-                  <button
-                    onClick={() => onSelectModule(mod.id)}
-                    className="flex items-center gap-4 w-full text-left p-5"
-                  >
-                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 border border-primary/10">
-                      <Layers className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-serif font-semibold text-primary">
-                        {formatModuleTitle(mod)}
-                      </h3>
-                      <p className="text-xs text-muted-foreground/60 mt-1">
-                        {mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}
-                      </p>
-                    </div>
-                    <FileText className="w-4 h-4 text-muted-foreground/30 shrink-0" />
-                  </button>
+            <div className="grid gap-5">
+              {level.modules.map((mod: any, mi: number) => {
+                const modNum = content.slice(0, li).reduce((s: number, l: any) => s + l.modules.length, 0) + mi + 1;
+                return (
+                <div key={mod.id} className="group relative">
+                  <div className="absolute -inset-0.5 rounded-2xl bg-gradient-to-b from-primary/[0.04] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                  <div className="relative border border-border/20 rounded-2xl bg-card/40 hover:bg-card/60 hover:border-primary/15 hover:shadow-md hover:shadow-primary/[0.02] transition-all duration-200">
+                    <button
+                      onClick={() => onSelectModule(mod.id)}
+                      className="flex items-center gap-4 w-full text-left p-5"
+                    >
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${li === 0 ? "bg-primary/[0.06] border-primary/10" : li === 1 ? "bg-amber-400/[0.06] border-amber-400/10" : "bg-emerald-400/[0.06] border-emerald-400/10"}`}>
+                        <span className={`text-sm font-bold ${li === 0 ? "text-primary/60" : li === 1 ? "text-amber-600/60" : "text-emerald-600/60"}`}>
+                          {String(modNum).padStart(2, "0")}
+                        </span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-serif font-semibold text-primary group-hover:text-primary/80 transition-colors">
+                          {formatModuleTitle(mod)}
+                        </h3>
+                        <p className="text-xs text-muted-foreground/50 mt-1 flex items-center gap-2">
+                          <span className="flex items-center gap-1">
+                            <FileText className="w-3 h-3" />
+                            {mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}
+                          </span>
+                        </p>
+                      </div>
+                      <div className="w-7 h-7 rounded-full border border-border/30 flex items-center justify-center group-hover:border-primary/30 group-hover:bg-primary/5 transition-all shrink-0">
+                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
+                      </div>
+                    </button>
 
-                  {mod.lessons.length > 0 && (
-                    <div className="border-t border-border/10 mx-5">
-                      {mod.lessons.map((lesson: any, i: number) => (
-                        <button
-                          key={lesson.id}
-                          onClick={() => onSelectModule(mod.id)}
-                          className="flex items-center gap-3 w-full text-left py-2.5 px-1 hover:bg-accent/10 rounded-lg transition-colors group"
-                        >
-                          <span className="w-5 h-5 rounded-md bg-primary/5 flex items-center justify-center text-[10px] font-bold text-muted-foreground/50 shrink-0">
-                            {i + 1}
-                          </span>
-                          <span className="text-sm text-foreground/70 group-hover:text-primary transition-colors truncate">
-                            {lesson.title}
-                          </span>
-                          {lesson.duration && (
-                            <span className="text-[11px] text-muted-foreground/40 ml-auto shrink-0">
-                              {lesson.duration}
+                    {mod.lessons.length > 0 && (
+                      <div className="border-t border-border/10 mx-5 pb-2">
+                        {mod.lessons.map((lesson: any, i: number) => (
+                          <button
+                            key={lesson.id}
+                            onClick={() => onSelectModule(mod.id)}
+                            className="flex items-center gap-3 w-full text-left py-2.5 px-2 hover:bg-accent/10 rounded-lg transition-colors group/lesson"
+                          >
+                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${li === 0 ? "bg-primary/[0.04] text-primary/40" : li === 1 ? "bg-amber-400/[0.04] text-amber-600/40" : "bg-emerald-400/[0.04] text-emerald-600/40"}`}>
+                              {i + 1}
                             </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                            <span className="text-sm text-foreground/60 group-hover/lesson:text-primary transition-colors truncate">
+                              {lesson.title}
+                            </span>
+                            {lesson.duration && (
+                              <span className="text-[10px] text-muted-foreground/30 ml-auto shrink-0">
+                                {lesson.duration}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
-              ))}
+              )})}
             </div>
           </section>
-        ))}
+        )})}
       </div>
     </div>
   );
