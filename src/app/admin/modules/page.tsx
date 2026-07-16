@@ -66,7 +66,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 export type BlockType =
   | "heading"

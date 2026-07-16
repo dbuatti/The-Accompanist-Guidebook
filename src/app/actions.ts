@@ -7,7 +7,7 @@ import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { GoogleGenAI } from "@google/genai";
 
-const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 // Initialize Gemini client with the provided API key
 const ai = new GoogleGenAI({ apiKey: "AIzaSyB34MlHrrNdpuvJO-6T4NeMwD72msKRRr0" });

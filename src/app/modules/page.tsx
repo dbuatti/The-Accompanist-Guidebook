@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, getProgress, toggleLessonProgress, ensureUserExists, publishAllLessons } from "@/app/actions";
+import { getCourseContent, getProgress, toggleLessonProgress, publishAllLessons } from "@/app/actions";
 import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -31,7 +31,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import VideoPlayer from "@/components/VideoPlayer";
 import Link from "next/link";
 
-const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 export default function ModulesPage() {
   const router = useRouter();
@@ -74,7 +74,6 @@ export default function ModulesPage() {
   const fetchData = async () => {
     try {
       if (session?.user?.id) {
-        await ensureUserExists(session.user.id, session.user.email, session.user.name);
         const progress = await getProgress(session.user.id);
         setProgressData(progress);
       }

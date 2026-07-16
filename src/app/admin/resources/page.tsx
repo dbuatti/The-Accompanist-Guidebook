@@ -9,7 +9,7 @@ import { showSuccess, showError } from "@/utils/toast";
 import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 
-const ADMIN_EMAILS = ["daniele.buatti@gmail.com"];
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 interface Resource {
   title: string;
