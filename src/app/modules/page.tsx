@@ -137,13 +137,19 @@ export default function ModulesPage() {
       </button>
 
       {/* Full Curriculum */}
-      <Link
-        href="/curriculum"
-        className="flex items-center gap-3 w-full text-left px-3 py-3 rounded-xl transition-all hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
+      <button
+        onClick={() => setSelectedModuleId("__curriculum__")}
+        className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
+          selectedModuleId === "__curriculum__"
+            ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+            : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
+        }`}
       >
-        <FileText className="w-4 h-4 shrink-0 text-muted-foreground/50" />
-        <span className="text-sm font-medium leading-snug block">View Full Curriculum</span>
-      </Link>
+        <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${selectedModuleId === "__curriculum__" ? "text-primary-foreground/80" : "text-muted-foreground/50"}`} />
+        <div className="min-w-0 flex-1">
+          <span className="text-sm font-medium leading-snug block">View Full Curriculum</span>
+        </div>
+      </button>
       {content.map((level) => (
         <div key={level.id}>
           <button
@@ -271,7 +277,9 @@ export default function ModulesPage() {
         </header>
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
-          {!selectedModuleId ? (
+          {selectedModuleId === "__curriculum__" ? (
+            <CurriculumView content={content} onSelectModule={setSelectedModuleId} />
+          ) : !selectedModuleId ? (
             <WelcomePage onStart={() => {
               if (content.length > 0 && content[0].modules?.length > 0) {
                 setSelectedModuleId(content[0].modules[0].id);
@@ -591,6 +599,91 @@ function parseNotesToBlocks(notes: string) {
     else { listCounter = 0; blocks.push({ type: "paragraph", content: t }); }
   }
   return blocks;
+}
+
+function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectModule: (id: string) => void }) {
+  const totalModules = content.reduce((sum: number, lvl: any) => sum + lvl.modules.length, 0);
+  const totalLessons = content.reduce((sum: number, lvl: any) => sum + lvl.modules.reduce((s: number, mod: any) => s + mod.lessons.length, 0), 0);
+
+  return (
+    <div>
+      <div className="relative border-b border-border/20 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent">
+        <div className="max-w-3xl mx-auto px-6 sm:px-10 pt-14 pb-10 text-center">
+          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <FileText className="w-6 h-6 text-primary" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight mb-2">
+            Full Curriculum
+          </h1>
+          <p className="text-sm text-muted-foreground/60">
+            {totalModules} modules &middot; {totalLessons} lessons
+          </p>
+        </div>
+      </div>
+
+      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-12 space-y-10">
+        {content.map((level: any, li: number) => (
+          <section key={level.id}>
+            <div className="flex items-center gap-3 mb-6">
+              <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                Level {li + 1}
+              </span>
+              <div className="flex-1 h-px bg-border/30" />
+            </div>
+            <h2 className="text-xl font-serif font-bold text-primary mb-6">{level.title}</h2>
+
+            <div className="space-y-4">
+              {level.modules.map((mod: any) => (
+                <div key={mod.id} className="border border-border/20 rounded-2xl bg-card/30 hover:bg-card/50 transition-colors">
+                  <button
+                    onClick={() => onSelectModule(mod.id)}
+                    className="flex items-center gap-4 w-full text-left p-5"
+                  >
+                    <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 border border-primary/10">
+                      <Layers className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-serif font-semibold text-primary">
+                        {formatModuleTitle(mod)}
+                      </h3>
+                      <p className="text-xs text-muted-foreground/60 mt-1">
+                        {mod.lessons.length} lesson{mod.lessons.length !== 1 ? "s" : ""}
+                      </p>
+                    </div>
+                    <FileText className="w-4 h-4 text-muted-foreground/30 shrink-0" />
+                  </button>
+
+                  {mod.lessons.length > 0 && (
+                    <div className="border-t border-border/10 mx-5">
+                      {mod.lessons.map((lesson: any, i: number) => (
+                        <button
+                          key={lesson.id}
+                          onClick={() => onSelectModule(mod.id)}
+                          className="flex items-center gap-3 w-full text-left py-2.5 px-1 hover:bg-accent/10 rounded-lg transition-colors group"
+                        >
+                          <span className="w-5 h-5 rounded-md bg-primary/5 flex items-center justify-center text-[10px] font-bold text-muted-foreground/50 shrink-0">
+                            {i + 1}
+                          </span>
+                          <span className="text-sm text-foreground/70 group-hover:text-primary transition-colors truncate">
+                            {lesson.title}
+                          </span>
+                          {lesson.duration && (
+                            <span className="text-[11px] text-muted-foreground/40 ml-auto shrink-0">
+                              {lesson.duration}
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 function findModule(content: any[], moduleId: string | null): any | null {
