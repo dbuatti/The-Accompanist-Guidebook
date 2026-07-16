@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Users, BookOpen, ArrowLeft, Sparkles, BrainCircuit, GitFork, PenLine } from "lucide-react";
+import { Users, BookOpen, ArrowLeft, Sparkles, GitFork } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AdminNav = () => {
@@ -26,19 +26,9 @@ const AdminNav = () => {
       icon: Users,
     },
     {
-      title: "AI Assistant",
-      href: "/admin/assistant",
-      icon: BrainCircuit,
-    },
-    {
-      title: "Admin Resources",
+      title: "Resources",
       href: "/admin/resources",
       icon: Sparkles,
-    },
-    {
-      title: "Module Studio",
-      href: "/admin/modules",
-      icon: PenLine,
     },
   ];
 
