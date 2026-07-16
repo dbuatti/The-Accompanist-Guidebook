@@ -254,7 +254,7 @@ export default function ModulesPage() {
               <div className="p-4">{nav}</div>
             </SheetContent>
           </Sheet>
-          <span className="text-sm font-serif font-semibold text-primary">{currentModule?.title || "Modules"}</span>
+          <span className="text-sm font-serif font-semibold text-primary truncate max-w-[180px]">{currentModule?.title || "All Modules"}</span>
           {session ? (
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
           ) : (
@@ -306,15 +306,15 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
       {/* Hero header */}
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
-        <div className="relative max-w-3xl mx-auto px-6 sm:px-10 pt-14 pb-10">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="h-6 px-3 rounded-full bg-primary/10 flex items-center gap-1.5">
-              <Layers className="w-3 h-3 text-primary" />
-              <span className="text-[11px] font-bold uppercase tracking-wider text-primary">Module</span>
+        <div className="relative max-w-3xl mx-auto px-5 sm:px-10 pt-10 sm:pt-14 pb-8 sm:pb-10">
+          <div className="flex items-center gap-2 mb-3 sm:mb-4">
+            <div className="h-5 sm:h-6 px-2.5 sm:px-3 rounded-full bg-primary/10 flex items-center gap-1.5">
+              <Layers className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary" />
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-primary">Module</span>
             </div>
-            <span className="text-[11px] text-muted-foreground">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
+            <span className="text-[10px] sm:text-[11px] text-muted-foreground">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">{formatModuleTitle(module)}</h1>
+          <h1 className="text-xl sm:text-3xl font-serif font-bold text-primary leading-tight">{formatModuleTitle(module)}</h1>
 
           {/* Module progress */}
           {isLoggedIn && lessons.length > 0 && (() => {
@@ -353,17 +353,17 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
       </div>
 
       {/* Lessons */}
-      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-12">
-        <div className="space-y-12">
+      <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-12">
+        <div className="space-y-10 sm:space-y-12">
           {lessons.map((lesson: any, i: number) => (
             <article key={lesson.id} id={`lesson-${lesson.id}`}>
               {/* Lesson header */}
-              <div className="flex items-start gap-5 mb-8">
-                <div className="flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/8 text-primary text-sm font-bold shrink-0 mt-0.5 border border-primary/10">
+              <div className="flex items-start gap-4 sm:gap-5 mb-6 sm:mb-8">
+                <div className="flex items-center justify-center w-8 sm:w-10 h-8 sm:h-10 rounded-xl sm:rounded-2xl bg-primary/8 text-primary text-xs sm:text-sm font-bold shrink-0 mt-0.5 border border-primary/10">
                   {i + 1}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
+                  <h2 className="text-lg sm:text-2xl font-serif font-bold text-primary leading-snug">{lesson.title}</h2>
                   <div className="flex items-center gap-3 mt-2.5">
                     {lesson.duration && <span className="text-xs text-muted-foreground/60">{lesson.duration}</span>}
                     {isLoggedIn && (
@@ -590,17 +590,17 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
       <div className="relative border-b border-border/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-primary/[0.02] to-transparent" />
         <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/[0.03] blur-3xl" />
-        <div className="relative max-w-3xl mx-auto px-6 sm:px-10 pt-16 pb-12 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5 ring-1 ring-primary/10">
-            <Layers className="w-7 h-7 text-primary" />
+        <div className="relative max-w-3xl mx-auto px-5 sm:px-10 pt-10 sm:pt-16 pb-8 sm:pb-12 text-center">
+          <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 sm:mb-5 ring-1 ring-primary/10">
+            <Layers className="w-6 sm:w-7 h-6 sm:h-7 text-primary" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-primary leading-tight mb-3">
+          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-primary leading-tight mb-2 sm:mb-3">
             Course Curriculum
           </h1>
-          <p className="text-sm text-muted-foreground/60">
+          <p className="text-xs sm:text-sm text-muted-foreground/60">
             {totalModules} modules spanning {totalLessons} lessons
           </p>
-          <div className="flex items-center justify-center gap-6 mt-6 text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-1.5 mt-5 sm:mt-6 text-[10px] sm:text-[11px] text-muted-foreground/50 uppercase tracking-wider font-medium">
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-primary/30" />
               Level 1: Foundations
@@ -617,7 +617,7 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-6 sm:px-10 py-14 space-y-14">
+      <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-14 space-y-12 sm:space-y-14">
         {content.map((level: any, li: number) => {
           const levelColors = ["", "", ""];
           const levelDots = ["bg-primary/30", "bg-amber-400/50", "bg-emerald-400/50"];
