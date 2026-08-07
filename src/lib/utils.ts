@@ -13,6 +13,4 @@ export function formatModuleTitle(module: { title: string; moduleNumber?: number
   return title;
 }
 
-export function stripPrefix(title: string): string {
-  return title.replace(/^Module \d+: /, "");
-}
+

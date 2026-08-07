@@ -122,7 +122,7 @@ export default function ModuleStudioPage() {
 
   const fetchData = async () => {
     try {
-      const data = await getCourseContent(true);
+      const data = await getCourseContent();
       setContent(data);
       if (data.length > 0 && data[0].modules?.length > 0) {
         const firstModule = data[0].modules[0];

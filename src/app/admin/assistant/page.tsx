@@ -37,7 +37,7 @@ export default function AdminAssistantPage() {
 
   const fetchContent = async () => {
     try {
-      const data = await getCourseContent(true);
+      const data = await getCourseContent();
       setContent(data);
       
       // Select first lesson by default if available

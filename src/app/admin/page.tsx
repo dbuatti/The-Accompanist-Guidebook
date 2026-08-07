@@ -184,7 +184,7 @@ export default function AdminPage() {
   const fetchData = async () => {
     try {
       const [courseData, levelsData] = await Promise.all([
-        getCourseContent(true),
+        getCourseContent(),
         getLevelsOnly()
       ]);
       setContent(courseData);

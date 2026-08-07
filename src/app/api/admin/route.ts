@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { syncLessonContent, restructureCourse, fixCourseStructure, scaffoldAuditionGuidebook, stripModuleNumberPrefixes } from "@/app/actions";
+import { auth } from "@/lib/auth/server";
+import { isAdmin } from "@/lib/admin";
 
 export async function POST(request: NextRequest) {
+  const { data: session } = await auth.getSession();
+  if (!isAdmin(session?.user?.email)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const body = await request.json();
     const { action } = body;

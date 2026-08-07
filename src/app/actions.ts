@@ -8,20 +8,22 @@ import { revalidatePath } from "next/cache";
 import { GoogleGenAI } from "@google/genai";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
+import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
 
-// Initialize Gemini client with the provided API key
-const ai = new GoogleGenAI({ apiKey: "AIzaSyB34MlHrrNdpuvJO-6T4NeMwD72msKRRr0" });
+// Initialize Gemini client with the API key from the environment
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // --- User Management Actions ---
-export async function ensureUserExists(userId: string, email: string, name?: string) {
+export async function ensureUserExists() {
   try {
-    const existing = await db.select().from(users).where(eq(users.id, userId));
+    const user = await requireUser();
+    const existing = await db.select().from(users).where(eq(users.id, user.id));
     if (existing.length === 0) {
-      const role = ADMIN_EMAILS.includes(email.toLowerCase()) ? "admin" : "user";
+      const role = user.email && ADMIN_EMAILS.includes(user.email.toLowerCase()) ? "admin" : "user";
       await db.insert(users).values({
-        id: userId,
-        email,
-        name: name || null,
+        id: user.id,
+        email: user.email!,
+        name: user.name || null,
         role,
       });
     }
@@ -37,6 +39,7 @@ export async function ensureUserExists(userId: string, email: string, name?: str
 }
 
 export async function getAllUsers() {
+  await requireAdmin();
   try {
     return await db.select().from(users).orderBy(desc(users.createdAt));
   } catch (error: any) {
@@ -46,6 +49,7 @@ export async function getAllUsers() {
 }
 
 export async function updateUser(userId: string, data: { name?: string, role?: string }) {
+  await requireAdmin();
   try {
     await db.update(users).set(data).where(eq(users.id, userId));
     revalidatePath("/admin/users");
@@ -56,6 +60,7 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
 }
 
 export async function deleteUser(userId: string) {
+  await requireAdmin();
   try {
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
@@ -66,9 +71,10 @@ export async function deleteUser(userId: string) {
 }
 
 // --- Progress Actions ---
-export async function getProgress(userId: string) {
+export async function getProgress() {
   try {
-    const results = await db.select().from(progress).where(eq(progress.userId, userId));
+    const user = await requireUser();
+    const results = await db.select().from(progress).where(eq(progress.userId, user.id));
     return results;
   } catch (error: any) {
     console.error("Error fetching progress (FULL ERROR):", error.message);
@@ -76,10 +82,11 @@ export async function getProgress(userId: string) {
   }
 }
 
-export async function saveVideoProgress(userId: string, lessonId: string, seconds: number) {
+export async function saveVideoProgress(lessonId: string, seconds: number) {
   try {
+    const user = await requireUser();
     await db.insert(progress)
-      .values({ userId, lessonId, lastPosition: seconds })
+      .values({ userId: user.id, lessonId, lastPosition: seconds })
       .onConflictDoUpdate({
         target: [progress.userId, progress.lessonId],
         set: { lastPosition: seconds }
@@ -89,22 +96,23 @@ export async function saveVideoProgress(userId: string, lessonId: string, second
   }
 }
 
-export async function toggleLessonProgress(userId: string, lessonId: string) {
+export async function toggleLessonProgress(lessonId: string) {
   try {
+    const user = await requireUser();
     const existing = await db
       .select()
       .from(progress)
-      .where(and(eq(progress.userId, userId), eq(progress.lessonId, lessonId)));
+      .where(and(eq(progress.userId, user.id), eq(progress.lessonId, lessonId)));
 
     if (existing.length > 0 && existing[0].completedAt) {
       await db
         .update(progress)
         .set({ completedAt: null })
-        .where(and(eq(progress.userId, userId), eq(progress.lessonId, lessonId)));
+        .where(and(eq(progress.userId, user.id), eq(progress.lessonId, lessonId)));
       return { completed: false };
     } else {
       await db.insert(progress)
-        .values({ userId, lessonId, completedAt: new Date() })
+        .values({ userId: user.id, lessonId, completedAt: new Date() })
         .onConflictDoUpdate({
           target: [progress.userId, progress.lessonId],
           set: { completedAt: new Date() }
@@ -118,8 +126,11 @@ export async function toggleLessonProgress(userId: string, lessonId: string) {
 }
 
 // --- Content Management Actions ---
-export async function getCourseContent(isAdmin: boolean = false) {
+export async function getCourseContent() {
   try {
+    const user = await getCurrentUser();
+    const isAdmin = ADMIN_EMAILS.includes((user?.email || "").toLowerCase());
+
     const allLevels = await db.select().from(levels).orderBy(asc(levels.displayOrder));
     const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
     
@@ -173,6 +184,7 @@ export async function getLevelsOnly() {
 }
 
 export async function createLevel(title: string) {
+  await requireAdmin();
   try {
     const result = await db.insert(levels).values({ title }).returning();
     revalidatePath("/admin");
@@ -185,6 +197,7 @@ export async function createLevel(title: string) {
 }
 
 export async function updateLevel(levelId: string, title: string) {
+  await requireAdmin();
   try {
     await db.update(levels).set({ title }).where(eq(levels.id, levelId));
     revalidatePath("/admin");
@@ -196,6 +209,7 @@ export async function updateLevel(levelId: string, title: string) {
 }
 
 export async function deleteLevel(levelId: string) {
+  await requireAdmin();
   try {
     // Set levelId to null for any modules in this level
     await db.update(modules).set({ levelId: null }).where(eq(modules.levelId, levelId));
@@ -209,6 +223,7 @@ export async function deleteLevel(levelId: string) {
 }
 
 export async function createModule(title: string, levelId?: string) {
+  await requireAdmin();
   try {
     const result = await db.insert(modules).values({ title, levelId: levelId || null }).returning();
     revalidatePath("/admin");
@@ -221,6 +236,7 @@ export async function createModule(title: string, levelId?: string) {
 }
 
 export async function updateModule(moduleId: string, title: string) {
+  await requireAdmin();
   try {
     await db.update(modules).set({ title }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
@@ -232,6 +248,7 @@ export async function updateModule(moduleId: string, title: string) {
 }
 
 export async function deleteModule(moduleId: string) {
+  await requireAdmin();
   try {
     await db.delete(modules).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
@@ -243,6 +260,7 @@ export async function deleteModule(moduleId: string) {
 }
 
 export async function updateModuleLevel(moduleId: string, levelId: string | null) {
+  await requireAdmin();
   try {
     await db.update(modules).set({ levelId }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
@@ -268,6 +286,7 @@ export async function updateLesson(
     filmingDate?: Date | null;
   }
 ) {
+  await requireAdmin();
   try {
     await db.update(lessons).set({
       title: data.title,
@@ -281,7 +300,7 @@ export async function updateLesson(
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
     }).where(eq(lessons.id, lessonId));
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
@@ -292,6 +311,7 @@ export async function updateLesson(
 }
 
 export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
+  await requireAdmin();
   try {
     const result = await db.insert(lessons).values({ 
       ...data, 
@@ -301,7 +321,7 @@ export async function createLesson(moduleId: string, data: { title: string, vide
       filmingDate: data.filmingDate ?? null,
     }).returning();
     revalidatePath("/admin");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/admin/tree");
     return result[0];
   } catch (error: any) {
@@ -311,10 +331,11 @@ export async function createLesson(moduleId: string, data: { title: string, vide
 }
 
 export async function deleteLesson(lessonId: string) {
+  await requireAdmin();
   try {
     await db.delete(lessons).where(eq(lessons.id, lessonId));
     revalidatePath("/admin");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/admin/tree");
   } catch (error: any) {
     console.error("Error deleting lesson (FULL ERROR):", error.message);
@@ -324,6 +345,7 @@ export async function deleteLesson(lessonId: string) {
 
 // --- Gemini AI Generation Action ---
 export async function generateLessonNotes(lessonId: string, templateType: string = "standard") {
+  await requireAdmin();
   try {
     // 1. Fetch the lesson details
     const [lesson] = await db.select().from(lessons).where(eq(lessons.id, lessonId));
@@ -362,7 +384,7 @@ Format the output beautifully with clear headings, bullet points, and bold text.
       .set({ notes: generatedNotes })
       .where(eq(lessons.id, lessonId));
 
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
 
@@ -375,11 +397,12 @@ Format the output beautifully with clear headings, bullet points, and bold text.
 
 // --- One-Click Course Scaffolder Action ---
 export async function scaffoldAuditionGuidebook() {
+  await requireAdmin();
   try {
     // 1. Ensure the 3 default levels exist
-    let lvl1 = await db.select().from(levels).where(eq(levels.displayOrder, 1));
-    let lvl2 = await db.select().from(levels).where(eq(levels.displayOrder, 2));
-    let lvl3 = await db.select().from(levels).where(eq(levels.displayOrder, 3));
+    const lvl1 = await db.select().from(levels).where(eq(levels.displayOrder, 1));
+    const lvl2 = await db.select().from(levels).where(eq(levels.displayOrder, 2));
+    const lvl3 = await db.select().from(levels).where(eq(levels.displayOrder, 3));
 
     let lvl1Id = lvl1[0]?.id;
     let lvl2Id = lvl2[0]?.id;
@@ -668,7 +691,7 @@ export async function scaffoldAuditionGuidebook() {
     ]);
 
     revalidatePath("/admin");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
     return { success: true };
@@ -682,6 +705,7 @@ export async function scaffoldAuditionGuidebook() {
 // Updates existing lessons' notes in the DB by matching on module title + lesson title.
 // Safe to run if scaffold has already been executed. Will not create duplicates.
 export async function syncLessonContent() {
+  await requireAdmin();
   try {
     const allModules = await db.select().from(modules);
     const allLessons = await db.select().from(lessons);
@@ -735,7 +759,7 @@ export async function syncLessonContent() {
     }
 
     revalidatePath("/admin");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/modules");
     return { success: true, updatedLessons: updated, createdLessons: created };
   } catch (error) {
@@ -748,6 +772,7 @@ export async function syncLessonContent() {
 // Creates the new module with 4 lessons and bumps all existing modules' displayOrder by 1.
 // Also syncs the expanded lesson content from the transcript integration pass.
 export async function restructureCourse() {
+  await requireAdmin();
   try {
     // Find Level 1
     const [lvl1] = await db.select().from(levels).where(eq(levels.displayOrder, 1)).limit(1);
@@ -859,7 +884,7 @@ export async function restructureCourse() {
     }
 
     revalidatePath("/admin");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/modules");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
@@ -878,6 +903,7 @@ export async function restructureCourse() {
 
 // --- Resource Actions ---
 export async function addResource(lessonId: string, title: string, url: string, description?: string) {
+  await requireAdmin();
   try {
     const maxOrder = await db.select({ maxOrder: resources.displayOrder }).from(resources).where(eq(resources.lessonId, lessonId));
     const nextOrder = (maxOrder.length > 0 && maxOrder[0].maxOrder !== null) ? maxOrder[0].maxOrder + 1 : 0;
@@ -896,17 +922,8 @@ export async function addResource(lessonId: string, title: string, url: string, 
   }
 }
 
-export async function updateResource(id: string, data: { title?: string; url?: string; description?: string }) {
-  try {
-    await db.update(resources).set(data).where(eq(resources.id, id));
-    revalidatePath("/admin/modules");
-  } catch (error: any) {
-    console.error("Error updating resource:", error.message);
-    throw new Error("Failed to update resource: " + error.message);
-  }
-}
-
 export async function deleteResource(id: string) {
+  await requireAdmin();
   try {
     await db.delete(resources).where(eq(resources.id, id));
     revalidatePath("/admin/modules");
@@ -916,20 +933,8 @@ export async function deleteResource(id: string) {
   }
 }
 
-export async function renameModule(moduleId: string, newTitle: string) {
-  try {
-    await db.update(modules).set({ title: newTitle }).where(eq(modules.id, moduleId));
-    revalidatePath("/admin");
-    revalidatePath("/admin/tree");
-    revalidatePath("/admin/modules");
-    revalidatePath("/modules");
-  } catch (error: any) {
-    console.error("Error renaming module:", error.message);
-    throw new Error("Failed to rename module: " + error.message);
-  }
-}
-
 export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: string) {
+  await requireAdmin();
   try {
     await db.update(modules).set({ wrapUpVideoUrl }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
@@ -943,6 +948,7 @@ export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: 
 }
 
 export async function toggleModuleVisibility(moduleId: string) {
+  await requireAdmin();
   try {
     const mod = await db.select({ isPublished: modules.isPublished }).from(modules).where(eq(modules.id, moduleId)).limit(1);
     if (mod.length === 0) throw new Error("Module not found");
@@ -960,12 +966,13 @@ export async function toggleModuleVisibility(moduleId: string) {
 }
 
 export async function publishAllLessons() {
+  await requireAdmin();
   try {
     await db.update(lessons).set({ isPublished: true });
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/modules");
     return { success: true };
   } catch (error: any) {
@@ -975,6 +982,7 @@ export async function publishAllLessons() {
 }
 
 export async function fixCourseStructure() {
+  await requireAdmin();
   try {
     // Get all levels in order
     const allLevels = await db.select().from(levels).orderBy(levels.displayOrder);
@@ -1015,7 +1023,7 @@ export async function fixCourseStructure() {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/modules");
     return { success: true };
   } catch (error: any) {
@@ -1025,6 +1033,7 @@ export async function fixCourseStructure() {
 }
 
 export async function stripModuleNumberPrefixes() {
+  await requireAdmin();
   try {
     const allMods = await db.select().from(modules);
     let updated = 0;
@@ -1040,7 +1049,7 @@ export async function stripModuleNumberPrefixes() {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
-    revalidatePath("/portal");
+    revalidatePath("/modules");
     revalidatePath("/modules");
     return { success: true, updated };
   } catch (error: any) {
