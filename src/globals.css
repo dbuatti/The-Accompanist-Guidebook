@@ -4,36 +4,36 @@
 
 @layer base {
   :root {
-    /* Warm Cream / Sheet Music Palette */
-    --background: 40 30% 98%;
-    --foreground: 20 10% 15%;
+    /* Clean Editorial / Pine & Paper Palette */
+    --background: 40 30% 99%;
+    --foreground: 210 25% 10%;
 
-    --card: 40 20% 96%;
-    --card-foreground: 20 10% 15%;
+    --card: 40 25% 100%;
+    --card-foreground: 210 25% 10%;
 
-    --popover: 40 30% 98%;
-    --popover-foreground: 20 10% 15%;
+    --popover: 40 30% 100%;
+    --popover-foreground: 210 25% 10%;
 
-    --primary: 25 40% 30%;
+    --primary: 172 42% 24%;
     --primary-foreground: 40 30% 98%;
 
-    --secondary: 35 20% 90%;
-    --secondary-foreground: 25 40% 30%;
+    --secondary: 170 16% 93%;
+    --secondary-foreground: 172 38% 18%;
 
-    --muted: 35 10% 90%;
-    --muted-foreground: 25 10% 40%;
+    --muted: 40 12% 95%;
+    --muted-foreground: 30 10% 40%;
 
-    --accent: 45 50% 50%;
-    --accent-foreground: 40 30% 98%;
+    --accent: 42 60% 50%;
+    --accent-foreground: 210 25% 10%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 35 20% 85%;
-    --input: 35 20% 85%;
-    --ring: 25 40% 30%;
+    --border: 40 14% 88%;
+    --input: 40 14% 84%;
+    --ring: 172 42% 24%;
 
-    --radius: 0.75rem;
+    --radius: 0.625rem;
   }
 }
 

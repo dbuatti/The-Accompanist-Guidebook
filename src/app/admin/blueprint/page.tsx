@@ -379,7 +379,7 @@ export default function BlueprintPage() {
 
         <SectionTitle id="b-ui">B11 · Frontend &amp; design system</SectionTitle>
         <ul className="mt-3 space-y-2 text-[15px] leading-relaxed text-foreground/85">
-          <Bullet>Design language: a <strong>&ldquo;Warm Cream / Sheet Music&rdquo;</strong> palette (cream background, deep-brown primary, gold accent) with a dotted sheet-music texture on landing/auth, Inter for body text and Playfair Display for serif headings. Generous rounding (<code>--radius: 0.75rem</code>).</Bullet>
+          <Bullet>Design language: a <strong>&ldquo;Clean Editorial / Pine &amp; Paper&rdquo;</strong> palette (paper-white background, deep pine-green primary, brass accent) with a dotted sheet-music texture on landing/auth, Inter for body text and Playfair Display for serif headings. Moderate rounding (<code>--radius: 0.625rem</code>).</Bullet>
           <Bullet>All primitives are shadcn/ui on Radix, installed locally under <code>src/components/ui/</code> (do not edit per <code>AI_RULES.md</code>); bespoke components live in <code>src/components/</code> and <code>src/components/admin/</code>.</Bullet>
           <Bullet>Responsive: a fixed 320px sidebar collapses into a slide-over <code>Sheet</code> drawer below <code>lg</code>. A single admin shell (<code>AdminNav</code>) tabs across the back-office.</Bullet>
         </ul>

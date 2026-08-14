@@ -167,7 +167,7 @@ export default function ModulesPage() {
                         : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
                     }`}
                   >
-                    <FolderOpen className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? "text-primary-foreground/80" : isHidden ? "text-muted-foreground/30" : "text-amber-500"}`} />
+                    <FolderOpen className={`w-4 h-4 shrink-0 mt-0.5 ${isActive ? "text-primary-foreground/80" : isHidden ? "text-muted-foreground/30" : "text-primary/60"}`} />
                     <div className="min-w-0 flex-1">
                       <span className={`text-sm font-medium leading-snug block ${isActive ? "" : isHidden ? "text-muted-foreground/50 italic" : ""}`}>
                         {formatModuleTitle(mod)}
@@ -311,7 +311,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
       {/* Hero header */}
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-10 pt-10 sm:pt-14 pb-8 sm:pb-10">
+        <div className="relative max-w-4xl mx-auto px-5 sm:px-10 pt-10 sm:pt-14 pb-8 sm:pb-10">
           <div className="flex items-center gap-2 mb-3 sm:mb-4">
             <div className="h-5 sm:h-6 px-2.5 sm:px-3 rounded-full bg-primary/10 flex items-center gap-1.5">
               <Layers className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary" />
@@ -358,7 +358,7 @@ function ModuleContent({ module, isLessonCompleted, onToggleComplete, isLoggedIn
       </div>
 
       {/* Lessons */}
-      <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-12">
+      <div className="max-w-4xl mx-auto px-5 sm:px-10 py-10 sm:py-12">
         <div className="space-y-10 sm:space-y-12">
           {lessons.map((lesson: any, i: number) => (
             <article key={lesson.id} id={`lesson-${lesson.id}`}>
@@ -465,28 +465,28 @@ function LessonNotes({ notes }: { notes: string }) {
 function BlockDisplay({ block }: { block: { type: string; content: string; order?: number } }) {
   switch (block.type) {
     case "heading":
-      return <h3 className="text-base font-serif font-semibold text-primary/90 mt-8 mb-3 first:mt-0">{renderMarkdown(block.content)}</h3>;
+      return <h3 className="text-xl font-serif font-semibold text-primary/90 mt-10 mb-4 first:mt-0 leading-snug">{renderMarkdown(block.content)}</h3>;
     case "bullet_list":
-      return <div className="flex items-start gap-3 pl-1"><span className="w-1 h-1 rounded-full bg-primary/30 mt-2.5 shrink-0" /><p className="text-[15px] text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p></div>;
+      return <div className="flex items-start gap-3 pl-1"><span className="w-1 h-1 rounded-full bg-primary/30 mt-[9px] shrink-0" /><p className="text-base text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p></div>;
     case "numbered_list":
-      return <div className="flex items-start gap-3 pl-1"><span className="text-xs font-bold text-primary/40 mt-[3px] shrink-0 tabular-nums">{block.order}.</span><p className="text-[15px] text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p></div>;
+      return <div className="flex items-start gap-3 pl-1"><span className="text-sm font-bold text-primary/50 mt-0.5 shrink-0 tabular-nums">{block.order}.</span><p className="text-base text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p></div>;
     case "callout":
       return (
-        <div className="bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 rounded-2xl p-5 my-6">
+        <div className="bg-amber-50/80 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/30 rounded-xl p-5 my-8">
           <div className="flex items-start gap-3.5">
             <div className="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
               <Lightbulb className="w-4 h-4 text-amber-600" />
             </div>
-            <p className="text-[15px] text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p>
+            <p className="text-base text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p>
           </div>
         </div>
       );
     case "quote":
-      return <blockquote className="border-l-[3px] border-primary/20 pl-6 py-2 my-6 text-[15px] text-foreground/60 italic leading-relaxed">{renderMarkdown(block.content)}</blockquote>;
+      return <blockquote className="border-l-[3px] border-primary/25 pl-6 py-2 my-8 text-base text-foreground/60 italic leading-relaxed">{renderMarkdown(block.content)}</blockquote>;
     case "divider":
       return <div className="my-8 flex items-center gap-4"><div className="flex-1 h-px bg-gradient-to-r from-transparent via-border/30 to-transparent" /></div>;
     default:
-      return <p className="text-[15px] text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p>;
+      return <p className="text-base text-foreground/80 leading-relaxed">{renderMarkdown(block.content)}</p>;
   }
 }
 
@@ -557,7 +557,7 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
               Level 2: Preparation
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-400/50" />
               Level 3: Collaboration
             </span>
           </div>
@@ -569,13 +569,13 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
           return (
           <section key={level.id}>
             <div className="flex items-center gap-4 mb-8">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${li === 0 ? "bg-primary/10" : li === 1 ? "bg-amber-400/10" : "bg-emerald-400/10"}`}>
-                <span className={`text-xs font-bold ${li === 0 ? "text-primary" : li === 1 ? "text-amber-600" : "text-emerald-600"}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${li === 0 ? "bg-primary/10" : li === 1 ? "bg-amber-400/10" : "bg-blue-400/10"}`}>
+                <span className={`text-xs font-bold ${li === 0 ? "text-primary" : li === 1 ? "text-amber-600" : "text-blue-600"}`}>
                   {li + 1}
                 </span>
               </div>
               <div>
-                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${li === 0 ? "text-primary/50" : li === 1 ? "text-amber-500/50" : "text-emerald-500/50"}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${li === 0 ? "text-primary/50" : li === 1 ? "text-amber-500/50" : "text-blue-500/50"}`}>
                   Level {li + 1}
                 </span>
                 <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{level.title}</h2>
@@ -594,8 +594,8 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
                       onClick={() => onSelectModule(mod.id)}
                       className="flex items-center gap-4 w-full text-left p-5"
                     >
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${li === 0 ? "bg-primary/[0.06] border-primary/10" : li === 1 ? "bg-amber-400/[0.06] border-amber-400/10" : "bg-emerald-400/[0.06] border-emerald-400/10"}`}>
-                        <span className={`text-sm font-bold ${li === 0 ? "text-primary/60" : li === 1 ? "text-amber-600/60" : "text-emerald-600/60"}`}>
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${li === 0 ? "bg-primary/[0.06] border-primary/10" : li === 1 ? "bg-amber-400/[0.06] border-amber-400/10" : "bg-blue-400/[0.06] border-blue-400/10"}`}>
+                        <span className={`text-sm font-bold ${li === 0 ? "text-primary/60" : li === 1 ? "text-amber-600/60" : "text-blue-600/60"}`}>
                           {String(modNum).padStart(2, "0")}
                         </span>
                       </div>
@@ -623,7 +623,7 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
                             onClick={() => onSelectModule(mod.id)}
                             className="flex items-center gap-3 w-full text-left py-2.5 px-2 hover:bg-accent/10 rounded-lg transition-colors group/lesson"
                           >
-                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${li === 0 ? "bg-primary/[0.04] text-primary/40" : li === 1 ? "bg-amber-400/[0.04] text-amber-600/40" : "bg-emerald-400/[0.04] text-emerald-600/40"}`}>
+                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${li === 0 ? "bg-primary/[0.04] text-primary/40" : li === 1 ? "bg-amber-400/[0.04] text-amber-600/40" : "bg-blue-400/[0.04] text-blue-600/40"}`}>
                               {i + 1}
                             </span>
                             <span className="text-sm text-foreground/60 group-hover/lesson:text-primary transition-colors truncate">
