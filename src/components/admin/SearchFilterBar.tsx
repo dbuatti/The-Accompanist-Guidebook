@@ -2,14 +2,13 @@
 
 import React from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Plus } from "lucide-react";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import { Search } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 
 interface SearchFilterBarProps {
@@ -19,9 +18,6 @@ interface SearchFilterBarProps {
   onStatusFilterChange: (val: string) => void;
   videoFilter: string;
   onVideoFilterChange: (val: string) => void;
-  energyFilter: string;
-  onEnergyFilterChange: (val: string) => void;
-  onAddLevel: () => void;
 }
 
 export default function SearchFilterBar({
@@ -31,22 +27,19 @@ export default function SearchFilterBar({
   onStatusFilterChange,
   videoFilter,
   onVideoFilterChange,
-  energyFilter,
-  onEnergyFilterChange,
-  onAddLevel,
 }: SearchFilterBarProps) {
   return (
-    <div className="bg-card/30 border border-border/50 rounded-2xl p-4 mb-8 flex flex-col sm:flex-row gap-4 items-center justify-between">
+    <div className="flex flex-col sm:flex-row gap-3 items-center">
       <div className="relative w-full sm:max-w-xs">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Quick search lessons..."
+          placeholder="Find a lesson..."
           value={searchQuery}
           onChange={(e) => onSearchQueryChange(e.target.value)}
           className="pl-9 bg-background/50 border-border/80 h-9 text-sm"
         />
       </div>
-      <div className="flex flex-wrap gap-3 w-full sm:w-auto justify-end">
+      <div className="flex flex-wrap gap-2 w-full sm:w-auto">
         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
           <SelectTrigger className="w-32 h-9 text-xs bg-background/50">
             <SelectValue placeholder="Status" />
@@ -68,22 +61,6 @@ export default function SearchFilterBar({
             <SelectItem value="no_video">No Video</SelectItem>
           </SelectContent>
         </Select>
-
-        <Select value={energyFilter} onValueChange={onEnergyFilterChange}>
-          <SelectTrigger className="w-36 h-9 text-xs bg-background/50">
-            <SelectValue placeholder="Energy Level" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Energy Levels</SelectItem>
-            <SelectItem value="low">Low Energy (Quick Tasks)</SelectItem>
-            <SelectItem value="medium">Medium Energy</SelectItem>
-            <SelectItem value="high">High Energy (Deep Focus)</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Button onClick={onAddLevel} className="bg-primary h-9 text-xs">
-          <Plus className="w-4 h-4 mr-1.5" /> Add Level
-        </Button>
       </div>
     </div>
   );

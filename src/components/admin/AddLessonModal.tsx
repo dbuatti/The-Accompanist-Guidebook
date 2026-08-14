@@ -13,12 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "@/components/ui/select";
 import { Sparkles, Video, FileText, Plus, Loader2 } from "lucide-react";
 
@@ -29,8 +29,6 @@ interface AddLessonModalProps {
   onTitleChange: (val: string) => void;
   duration: string;
   onDurationChange: (val: string) => void;
-  energy: string;
-  onEnergyChange: (val: string) => void;
   hasVideo: boolean;
   onHasVideoChange: (val: boolean) => void;
   template: string;
@@ -46,8 +44,6 @@ export default function AddLessonModal({
   onTitleChange,
   duration,
   onDurationChange,
-  energy,
-  onEnergyChange,
   hasVideo,
   onHasVideoChange,
   template,
@@ -64,7 +60,7 @@ export default function AddLessonModal({
             Create New Lesson Draft
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            Set up your lesson draft with ADHD-friendly templates and energy mapping.
+            Set up your lesson draft with a pre-applied writing template.
           </DialogDescription>
         </DialogHeader>
 
@@ -84,36 +80,18 @@ export default function AddLessonModal({
             />
           </div>
 
-          {/* Duration & Energy */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Label htmlFor="lesson-duration" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Duration (MM:SS)
-              </Label>
-              <Input
-                id="lesson-duration"
-                placeholder="05:00"
-                value={duration}
-                onChange={(e) => onDurationChange(e.target.value)}
-                className="h-10 bg-background border-border/80 text-sm"
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="lesson-energy" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Energy Level Required
-              </Label>
-              <Select value={energy} onValueChange={onEnergyChange}>
-                <SelectTrigger id="lesson-energy" className="h-10 bg-background border-border/80 text-xs">
-                  <SelectValue placeholder="Select energy" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low Energy (Quick Tasks)</SelectItem>
-                  <SelectItem value="medium">Medium Energy</SelectItem>
-                  <SelectItem value="high">High Energy (Deep Focus)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          {/* Duration */}
+          <div className="space-y-1.5">
+            <Label htmlFor="lesson-duration" className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+              Duration (MM:SS)
+            </Label>
+            <Input
+              id="lesson-duration"
+              placeholder="05:00"
+              value={duration}
+              onChange={(e) => onDurationChange(e.target.value)}
+              className="h-10 bg-background border-border/80 text-sm"
+            />
           </div>
 
           {/* Video Requirement Toggle */}

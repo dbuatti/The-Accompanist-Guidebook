@@ -335,7 +335,6 @@ export async function updateLesson(
     hasVideo?: boolean;
     videoStatus?: string;
     filmingDate?: Date | null;
-    energyLevel?: string;
   }
 ) {
   await requireAdmin();
@@ -351,7 +350,6 @@ export async function updateLesson(
       hasVideo: data.hasVideo ?? true,
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
-      energyLevel: data.energyLevel ?? 'medium',
     }).where(eq(lessons.id, lessonId));
     revalidatePath("/modules");
     revalidatePath("/admin");
@@ -363,7 +361,7 @@ export async function updateLesson(
   }
 }
 
-export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null, energyLevel?: string }) {
+export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
   await requireAdmin();
   try {
     const result = await db.insert(lessons).values({
@@ -372,7 +370,6 @@ export async function createLesson(moduleId: string, data: { title: string, vide
       hasVideo: data.hasVideo ?? true,
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
-      energyLevel: data.energyLevel ?? 'medium',
     }).returning();
     revalidatePath("/admin");
     revalidatePath("/modules");

@@ -1,4 +1,3 @@
-import AdminNav from "@/components/AdminNav";
 import CopyDocumentButton from "@/components/admin/CopyDocumentButton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,8 +56,7 @@ function DollarPill({ children }: { children: React.ReactNode }) {
 
 export default function StrategyPage() {
   return (
-    <div className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
-      <AdminNav />
+    <div className="max-w-4xl mx-auto">
 
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-primary/[0.06] via-card/40 to-transparent p-8">

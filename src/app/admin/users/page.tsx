@@ -23,7 +23,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Trash2, UserCog, Mail, Calendar } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
-import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
 
@@ -90,9 +89,7 @@ export default function AdminUsersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8 max-w-5xl mx-auto">
-      <AdminNav />
-
+    <div>
       <div className="mb-8">
         <h2 className="text-xl font-serif font-semibold text-primary">Member Management</h2>
         <p className="text-sm text-muted-foreground">Manage access levels and view registered members.</p>

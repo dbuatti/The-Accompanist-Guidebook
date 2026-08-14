@@ -3,16 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Users, BookOpen, ArrowLeft, Sparkles, GitFork, Compass, Target, Layers, BrainCircuit } from "lucide-react";
+import { Users, BookOpen, ArrowLeft, Compass, Target, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const adminNavItems = [
-  { title: "Content", href: "/admin", icon: BookOpen },
-  { title: "Module Studio", href: "/admin/modules", icon: Layers },
-  { title: "Tree", href: "/admin/tree", icon: GitFork },
+  { title: "Curriculum", href: "/admin", icon: BookOpen },
   { title: "Users", href: "/admin/users", icon: Users },
-  { title: "AI", href: "/admin/assistant", icon: BrainCircuit },
-  { title: "Resources", href: "/admin/resources", icon: Sparkles },
+  { title: "Workspace", href: "/admin/resources", icon: Sparkles },
   { title: "Blueprint", href: "/admin/blueprint", icon: Compass },
   { title: "Strategy", href: "/admin/strategy", icon: Target },
 ];
@@ -32,7 +29,7 @@ const AdminNav = () => {
           <h1 className="text-3xl font-serif font-bold text-primary">Admin Dashboard</h1>
         </div>
       </div>
-      
+
       <nav className="flex gap-2 border-b border-border pb-px overflow-x-auto">
         {adminNavItems.map((item) => {
           const isActive = pathname === item.href;
@@ -42,8 +39,8 @@ const AdminNav = () => {
               href={item.href}
               className={cn(
                 "flex items-center gap-2 px-4 py-2 text-sm font-medium transition-colors relative whitespace-nowrap",
-                isActive 
-                  ? "text-primary border-b-2 border-primary" 
+                isActive
+                  ? "text-primary border-b-2 border-primary"
                   : "text-muted-foreground hover:text-primary"
               )}
             >

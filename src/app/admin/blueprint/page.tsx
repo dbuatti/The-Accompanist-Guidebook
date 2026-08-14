@@ -1,4 +1,3 @@
-import AdminNav from "@/components/AdminNav";
 import CopyDocumentButton from "@/components/admin/CopyDocumentButton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -33,8 +32,7 @@ function SubTitle({ children }: { children: React.ReactNode }) {
 
 export default function BlueprintPage() {
   return (
-    <div className="min-h-screen bg-background p-8 max-w-4xl mx-auto">
-      <AdminNav />
+    <div className="max-w-4xl mx-auto">
 
       {/* Hero */}
       <div className="relative overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-primary/[0.06] via-card/40 to-transparent p-8">
@@ -206,8 +204,8 @@ export default function BlueprintPage() {
         </ul>
         <SubTitle>Admin / authoring surface</SubTitle>
         <ul className="mt-2 space-y-2 text-[15px] leading-relaxed text-foreground/85">
-          <Bullet>Content studio with a video-production pipeline per lesson (<code className="rounded bg-muted px-1.5 py-0.5">not_started → scheduled → filmed → edited → uploaded</code>), energy-level tagging, filming dates, draft/publish toggles, and bulk actions (publish all, restructure course, fix structure, sync from source).</Bullet>
-          <Bullet>Curriculum tree manager, members manager, an AI Copilot that hand-builds a tailored prompt to paste into Claude/ChatGPT, and a one-click course scaffolder.</Bullet>
+          <Bullet><Resolved />Single unified Curriculum editor (<code className="rounded bg-muted px-1.5 py-0.5">/admin</code>) replaced the three overlapping pages that used to edit the same lesson/module data (Content, Module Studio, Tree). One tree pane (levels/modules/lessons — create, rename, delete, move, reorder, publish) plus one context-aware detail pane (module settings, or the full lesson editor) — no more guessing which page does what.</Bullet>
+          <Bullet>Lesson editor: video-production pipeline (<code className="rounded bg-muted px-1.5 py-0.5">not_started → scheduled → filmed → edited → uploaded</code>), filming dates, block-based rich-text notes, resources, cliffnotes, writing templates, Gemini AI generation, and an AI-prompt copy tool — plus a members manager and a Tools menu for bulk actions (publish all, restructure course, fix structure, sync from source, scaffold).</Bullet>
         </ul>
         <p className="mt-3 text-xs italic text-muted-foreground">
           Account base at audit: ~8 real users, 1 test admin (<code>admin@accompanist.com</code>), and an orphan

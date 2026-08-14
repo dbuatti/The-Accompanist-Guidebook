@@ -6,7 +6,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Loader2, ExternalLink, Copy, Check, Presentation, FileText, MessageSquare, Sparkles, Calendar, Kanban } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
-import AdminNav from "@/components/AdminNav";
 import { authClient } from "@/lib/auth/client";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
@@ -94,9 +93,7 @@ export default function AdminResourcesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-8 max-w-5xl mx-auto">
-      <AdminNav />
-
+    <div>
       <div className="mb-8">
         <h2 className="text-xl font-serif font-semibold text-primary flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-accent" />
