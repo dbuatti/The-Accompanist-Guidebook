@@ -10,8 +10,7 @@ import { GoogleGenAI } from "@google/genai";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
 
-// Initialize Gemini client with the API key from the environment
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Gemini client is lazily instantiated inside generateLessonNotes to avoid an eager env read at module load.
 
 // --- User Management Actions ---
 export async function ensureUserExists() {
@@ -45,6 +44,58 @@ export async function getAllUsers() {
   } catch (error: any) {
     console.error("Error fetching users (FULL ERROR):", error.message);
     return [];
+  }
+}
+
+export async function getLearnerStats() {
+  await requireAdmin();
+  try {
+    const allUsers = await db.select().from(users);
+    const allProgress = await db.select().from(progress);
+    const allLessons = await db.select().from(lessons);
+
+    const totalUsers = allUsers.length;
+    const now = new Date();
+    const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+    const signupsThisMonth = allUsers.filter(u => new Date(u.createdAt) >= monthAgo).length;
+
+    // Per-lesson completion counts
+    const lessonCompletion: Record<string, number> = {};
+    for (const p of allProgress) {
+      if (p.completedAt) {
+        lessonCompletion[p.lessonId] = (lessonCompletion[p.lessonId] || 0) + 1;
+      }
+    }
+
+    // Top 5 most-completed lessons
+    const lessonMap = new Map(allLessons.map(l => [l.id, l]));
+    const topLessons = Object.entries(lessonCompletion)
+      .map(([lessonId, count]) => ({ lesson: lessonMap.get(lessonId), completions: count }))
+      .filter(x => x.lesson)
+      .sort((a, b) => b.completions - a.completions)
+      .slice(0, 5);
+
+    // Per-user progress
+    const userProgressCount: Record<string, number> = {};
+    for (const p of allProgress) {
+      if (p.completedAt) {
+        userProgressCount[p.userId] = (userProgressCount[p.userId] || 0) + 1;
+      }
+    }
+
+    const totalCompletions = allProgress.filter(p => p.completedAt).length;
+
+    return {
+      totalUsers,
+      signupsThisMonth,
+      totalCompletions,
+      totalProgressRows: allProgress.length,
+      topLessons,
+      userProgressCount,
+    };
+  } catch (error: any) {
+    console.error("Error fetching learner stats (FULL ERROR):", error.message);
+    return null;
   }
 }
 
@@ -284,6 +335,7 @@ export async function updateLesson(
     hasVideo?: boolean;
     videoStatus?: string;
     filmingDate?: Date | null;
+    energyLevel?: string;
   }
 ) {
   await requireAdmin();
@@ -299,6 +351,7 @@ export async function updateLesson(
       hasVideo: data.hasVideo ?? true,
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
+      energyLevel: data.energyLevel ?? 'medium',
     }).where(eq(lessons.id, lessonId));
     revalidatePath("/modules");
     revalidatePath("/admin");
@@ -310,15 +363,16 @@ export async function updateLesson(
   }
 }
 
-export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
+export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null, energyLevel?: string }) {
   await requireAdmin();
   try {
-    const result = await db.insert(lessons).values({ 
-      ...data, 
+    const result = await db.insert(lessons).values({
+      ...data,
       moduleId,
       hasVideo: data.hasVideo ?? true,
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
+      energyLevel: data.energyLevel ?? 'medium',
     }).returning();
     revalidatePath("/admin");
     revalidatePath("/modules");
@@ -340,6 +394,42 @@ export async function deleteLesson(lessonId: string) {
   } catch (error: any) {
     console.error("Error deleting lesson (FULL ERROR):", error.message);
     throw new Error("Failed to delete lesson: " + error.message);
+  }
+}
+
+export async function reorderLesson(lessonId: string, direction: "up" | "down") {
+  await requireAdmin();
+  try {
+    const [current] = await db.select().from(lessons).where(eq(lessons.id, lessonId));
+    if (!current) throw new Error("Lesson not found");
+
+    const siblings = await db.select()
+      .from(lessons)
+      .where(eq(lessons.moduleId, current.moduleId))
+      .orderBy(asc(lessons.displayOrder));
+
+    const idx = siblings.findIndex(l => l.id === lessonId);
+    if (idx === -1) throw new Error("Lesson not found in module");
+
+    const swapIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= siblings.length) {
+      return { success: true, message: "Already at edge" };
+    }
+
+    const swapLesson = siblings[swapIdx];
+    const currentOrder = current.displayOrder ?? idx;
+    const swapOrder = swapLesson.displayOrder ?? swapIdx;
+
+    await db.update(lessons).set({ displayOrder: swapOrder }).where(eq(lessons.id, current.id));
+    await db.update(lessons).set({ displayOrder: currentOrder }).where(eq(lessons.id, swapLesson.id));
+
+    revalidatePath("/admin");
+    revalidatePath("/modules");
+    revalidatePath("/admin/tree");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error reordering lesson (FULL ERROR):", error.message);
+    throw new Error("Failed to reorder lesson: " + error.message);
   }
 }
 
@@ -370,7 +460,8 @@ Please write the complete, client-facing lesson notes in Markdown format. Use a 
 
 Format the output beautifully with clear headings, bullet points, and bold text. Do not include any conversational intro or outro, just output the markdown content directly.`;
 
-    // 3. Call Gemini API
+    // 3. Call Gemini API (lazy-instantiate the client to avoid an eager env read at module load)
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: prompt,
@@ -760,7 +851,6 @@ export async function syncLessonContent() {
 
     revalidatePath("/admin");
     revalidatePath("/modules");
-    revalidatePath("/modules");
     return { success: true, updatedLessons: updated, createdLessons: created };
   } catch (error) {
     console.error("Error syncing lesson content:", error);
@@ -885,7 +975,6 @@ export async function restructureCourse() {
 
     revalidatePath("/admin");
     revalidatePath("/modules");
-    revalidatePath("/modules");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
     return {
@@ -973,7 +1062,6 @@ export async function publishAllLessons() {
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
-    revalidatePath("/modules");
     return { success: true };
   } catch (error: any) {
     console.error("Error publishing all lessons:", error.message);
@@ -1024,7 +1112,6 @@ export async function fixCourseStructure() {
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
-    revalidatePath("/modules");
     return { success: true };
   } catch (error: any) {
     console.error("Error fixing course structure:", error.message);
@@ -1049,7 +1136,6 @@ export async function stripModuleNumberPrefixes() {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
-    revalidatePath("/modules");
     revalidatePath("/modules");
     return { success: true, updated };
   } catch (error: any) {

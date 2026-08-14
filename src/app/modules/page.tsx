@@ -251,7 +251,7 @@ export default function ModulesPage() {
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="lg:hidden h-14 border-b border-border/30 flex items-center justify-between px-4 shrink-0">
           <Sheet>
-            <SheetTrigger asChild><Button variant="ghost" size="icon"><Menu className="w-5 h-5" /></Button></SheetTrigger>
+            <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="w-5 h-5" /></Button></SheetTrigger>
             <SheetContent side="left" className="w-80 p-0">
               <div className="p-6 border-b border-border/30">
                 <h1 className="text-base font-serif font-bold text-primary">The Accompanist Guidebook</h1>
@@ -261,7 +261,7 @@ export default function ModulesPage() {
           </Sheet>
           <span className="text-sm font-serif font-semibold text-primary truncate max-w-[180px]">{currentModule?.title || "All Modules"}</span>
           {session ? (
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground"><LogOut className="w-4 h-4" /></Button>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground" aria-label="Log out"><LogOut className="w-4 h-4" /></Button>
           ) : (
             <Link href="/auth/sign-in" className="text-[11px] text-primary hover:underline">Sign in</Link>
           )}
@@ -520,6 +520,7 @@ function parseNotesToBlocks(notes: string) {
     else if (t.startsWith("# ")) blocks.push({ type: "heading", content: t.replace("# ", "") });
     else if (t.startsWith("- ") || t.startsWith("* ")) blocks.push({ type: "bullet_list", content: t.replace(/^[-*] /, "") });
     else if (/^\d+\.\s/.test(t)) { listCounter++; blocks.push({ type: "numbered_list", content: t.replace(/^\d+\.\s/, ""), order: listCounter }); }
+    else if (t.startsWith("> [!tip] ")) blocks.push({ type: "callout", content: t.replace("> [!tip] ", "") });
     else if (t.startsWith("> ")) blocks.push({ type: "quote", content: t.replace("> ", "") });
     else if (t === "---") blocks.push({ type: "divider", content: "" });
     else { listCounter = 0; blocks.push({ type: "paragraph", content: t }); }

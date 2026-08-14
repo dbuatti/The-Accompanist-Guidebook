@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, restructureCourse, fixCourseStructure, toggleModuleVisibility, syncLessonContent } from "@/app/actions";
+import { getCourseContent, updateLesson, createModule, createLevel, createLesson, getLevelsOnly, updateModuleLevel, deleteLesson, generateLessonNotes, restructureCourse, fixCourseStructure, toggleModuleVisibility, syncLessonContent, getLearnerStats } from "@/app/actions";
 import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { 
@@ -20,6 +20,7 @@ import SearchFilterBar from "../../components/admin/SearchFilterBar";
 import AddLessonModal from "../../components/admin/AddLessonModal";
 import ZenFocusMode from "../../components/admin/ZenFocusMode";
 import LessonCard from "../../components/admin/LessonCard";
+import LearnerStats from "../../components/admin/LearnerStats";
 
 // Icons & Colors Mapping
 import { Battery, BatteryCharging, BatteryLow } from "lucide-react";
@@ -83,6 +84,7 @@ export default function AdminPage() {
   const { data: session, isPending: isAuthPending } = authClient.useSession();
   const [content, setContent] = useState<any[]>([]);
   const [levels, setLevels] = useState<any[]>([]);
+  const [learnerStats, setLearnerStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
@@ -124,21 +126,15 @@ export default function AdminPage() {
   const [celebrationMessage, setCelebrationMessage] = useState("");
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      fetchData();
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-    fetchData();
-    
+
     const savedScratchpad = localStorage.getItem("adhd_scratchpad");
     if (savedScratchpad) {
       setScratchpad(savedScratchpad);
     }
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   // Pomodoro Timer Logic
   useEffect(() => {
@@ -183,12 +179,14 @@ export default function AdminPage() {
 
   const fetchData = async () => {
     try {
-      const [courseData, levelsData] = await Promise.all([
+      const [courseData, levelsData, stats] = await Promise.all([
         getCourseContent(),
-        getLevelsOnly()
+        getLevelsOnly(),
+        getLearnerStats(),
       ]);
       setContent(courseData);
       setLevels(levelsData);
+      setLearnerStats(stats);
     } catch (error) {
       showError("Failed to load content");
     } finally {
@@ -247,6 +245,7 @@ export default function AdminPage() {
         hasVideo: lessonData.hasVideo ?? true,
         videoStatus: lessonData.videoStatus ?? 'not_started',
         filmingDate: lessonData.filmingDate ? new Date(lessonData.filmingDate) : null,
+        energyLevel: lessonData.energyLevel ?? 'medium',
       });
       
       if (lessonData.isPublished) {
@@ -401,6 +400,7 @@ export default function AdminPage() {
         hasVideo: newLessonHasVideo,
         videoStatus: 'not_started',
         filmingDate: null,
+        energyLevel: newLessonEnergy,
       });
       
       setIsAddModalOpen(false);
@@ -450,13 +450,23 @@ export default function AdminPage() {
       <DopamineCelebration show={showCelebration} message={celebrationMessage} />
 
       {/* ADHD Gamified Stats Dashboard */}
-      <StatsDashboard 
+      <StatsDashboard
         courseProgress={stats.courseProgress}
         videoProgress={stats.videoProgress}
         draftLessons={stats.draftLessons}
         publishedLessons={stats.publishedLessons}
         totalLessons={stats.totalLessons}
       />
+
+      {/* Learner Statistics */}
+      {learnerStats && (
+        <LearnerStats
+          totalUsers={learnerStats.totalUsers}
+          signupsThisMonth={learnerStats.signupsThisMonth}
+          totalCompletions={learnerStats.totalCompletions}
+          topLessons={learnerStats.topLessons}
+        />
+      )}
 
       {/* ADHD Brain Dump & Next Action Row */}
       <BrainDumpScratchpad 

@@ -26,15 +26,10 @@ export default function AdminResourcesPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      // Auth is verified server-side by admin/layout.tsx; nothing to fetch here.
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   const resources: Resource[] = [
     {

@@ -67,6 +67,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
+import { adminNavItems } from "@/components/AdminNav";
 
 export type BlockType =
   | "heading"
@@ -109,16 +110,10 @@ export default function ModuleStudioPage() {
   const [wrapUpVideoValue, setWrapUpVideoValue] = useState("");
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      fetchData();
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-    fetchData();
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   const fetchData = async () => {
     try {
@@ -174,6 +169,7 @@ export default function ModuleStudioPage() {
         hasVideo: lesson.hasVideo ?? true,
         videoStatus: lesson.videoStatus ?? "not_started",
         filmingDate: lesson.filmingDate ? new Date(lesson.filmingDate) : null,
+        energyLevel: lesson.energyLevel ?? "medium",
       });
       const newContent = content.map((level) => ({
         ...level,
@@ -209,6 +205,7 @@ export default function ModuleStudioPage() {
         hasVideo: true,
         videoStatus: lesson.videoStatus ?? "not_started",
         filmingDate: lesson.filmingDate ? new Date(lesson.filmingDate) : null,
+        energyLevel: lesson.energyLevel ?? "medium",
       });
       const newContent = content.map((level) => ({
         ...level,
@@ -370,13 +367,7 @@ export default function ModuleStudioPage() {
             <ArrowLeft className="w-3 h-3" /> Modules
           </Link>
           <div className="w-px h-4 bg-border/40 mx-1" />
-          {[
-            { title: "Content", href: "/admin", icon: BookOpen },
-            { title: "Tree", href: "/admin/tree", icon: GitFork },
-            { title: "Users", href: "/admin/users", icon: Users },
-            { title: "AI", href: "/admin/assistant", icon: BrainCircuit },
-            { title: "Resources", href: "/admin/resources", icon: Sparkles },
-          ].map((item) => {
+          {adminNavItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
@@ -934,6 +925,7 @@ function parseNotesToBlocks(notes: string): DocBlock[] {
     else if (trimmed.startsWith("# ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("# ", "") }); }
     else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) { listCounter = 0; blocks.push({ id, type: "bullet_list", content: trimmed.replace(/^[-*] /, "") }); }
     else if (/^\d+\.\s/.test(trimmed)) { listCounter++; blocks.push({ id, type: "numbered_list", content: trimmed.replace(/^\d+\.\s/, ""), order: listCounter }); }
+    else if (trimmed.startsWith("> [!tip] ")) { listCounter = 0; blocks.push({ id, type: "callout", content: trimmed.replace("> [!tip] ", "") }); }
     else if (trimmed.startsWith("> ")) { listCounter = 0; blocks.push({ id, type: "quote", content: trimmed.replace("> ", "") }); }
     else if (trimmed === "---") { listCounter = 0; blocks.push({ id, type: "divider", content: "" }); }
     else { listCounter = 0; blocks.push({ id, type: "paragraph", content: trimmed }); }
@@ -949,7 +941,7 @@ function blocksToNotes(blocks: DocBlock[]): string {
       case "bullet_list": return `- ${block.content}`;
       case "numbered_list": return `${block.order ?? 1}. ${block.content}`;
       case "quote": return `> ${block.content}`;
-      case "callout": return `> ${block.content}`;
+      case "callout": return `> [!tip] ${block.content}`;
       case "divider": return "---";
       default: return block.content;
     }

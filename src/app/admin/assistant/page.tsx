@@ -24,16 +24,10 @@ export default function AdminAssistantPage() {
   const [copiedPrompt, setCopiedPrompt] = useState(false);
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      fetchContent();
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-    fetchContent();
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   const fetchContent = async () => {
     try {

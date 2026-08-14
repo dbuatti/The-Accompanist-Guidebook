@@ -2,18 +2,19 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  getCourseContent, 
-  createLevel, 
-  updateLevel, 
-  deleteLevel, 
-  createModule, 
-  updateModule, 
-  deleteModule, 
+import {
+  getCourseContent,
+  createLevel,
+  updateLevel,
+  deleteLevel,
+  createModule,
+  updateModule,
+  deleteModule,
   updateModuleLevel,
   createLesson,
   updateLesson,
   deleteLesson,
+  reorderLesson,
   getLevelsOnly,
   toggleModuleVisibility
 } from "@/app/actions";
@@ -55,16 +56,10 @@ export default function AdminTreePage() {
   const [collapsedNodes, setCollapsedNodes] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      fetchData();
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-    fetchData();
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   const fetchData = async () => {
     try {
@@ -221,6 +216,7 @@ export default function AdminTreePage() {
         hasVideo: true,
         videoStatus: "not_started",
         filmingDate: null,
+        energyLevel: "medium",
       });
       showSuccess("Lesson draft created successfully!");
       await fetchData();
@@ -258,6 +254,18 @@ export default function AdminTreePage() {
       await fetchData();
     } catch (error) {
       showError("Failed to delete lesson");
+    } finally {
+      setIsActionPending(null);
+    }
+  };
+
+  const handleReorderLesson = async (lessonId: string, direction: "up" | "down") => {
+    setIsActionPending(`reorder-${lessonId}`);
+    try {
+      await reorderLesson(lessonId, direction);
+      await fetchData();
+    } catch (error) {
+      showError("Failed to reorder lesson");
     } finally {
       setIsActionPending(null);
     }
@@ -553,10 +561,30 @@ export default function AdminTreePage() {
                                               )}
                                             </div>
 
-                                            <div className="flex items-center gap-2">
-                                              <Button 
-                                                size="icon" 
-                                                variant="ghost" 
+                                            <div className="flex items-center gap-1">
+                                              <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                                onClick={() => handleReorderLesson(lesson.id, "up")}
+                                                disabled={isActionPending === `reorder-${lesson.id}`}
+                                                title="Move lesson up"
+                                              >
+                                                <ChevronRight className="w-4 h-4 -rotate-90" />
+                                              </Button>
+                                              <Button
+                                                size="icon"
+                                                variant="ghost"
+                                                className="h-8 w-8 text-muted-foreground hover:text-primary"
+                                                onClick={() => handleReorderLesson(lesson.id, "down")}
+                                                disabled={isActionPending === `reorder-${lesson.id}`}
+                                                title="Move lesson down"
+                                              >
+                                                <ChevronRight className="w-4 h-4 rotate-90" />
+                                              </Button>
+                                              <Button
+                                                size="icon"
+                                                variant="ghost"
                                                 className="h-8 w-8 text-muted-foreground hover:text-destructive"
                                                 onClick={() => handleDeleteLesson(lesson.id)}
                                                 disabled={isActionPending === lesson.id}

@@ -3,34 +3,22 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Users, BookOpen, ArrowLeft, Sparkles, GitFork } from "lucide-react";
+import { Users, BookOpen, ArrowLeft, Sparkles, GitFork, Compass, Target, Layers, BrainCircuit } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+export const adminNavItems = [
+  { title: "Content", href: "/admin", icon: BookOpen },
+  { title: "Module Studio", href: "/admin/modules", icon: Layers },
+  { title: "Tree", href: "/admin/tree", icon: GitFork },
+  { title: "Users", href: "/admin/users", icon: Users },
+  { title: "AI", href: "/admin/assistant", icon: BrainCircuit },
+  { title: "Resources", href: "/admin/resources", icon: Sparkles },
+  { title: "Blueprint", href: "/admin/blueprint", icon: Compass },
+  { title: "Strategy", href: "/admin/strategy", icon: Target },
+];
 
 const AdminNav = () => {
   const pathname = usePathname();
-
-  const navItems = [
-    {
-      title: "Course Content",
-      href: "/admin",
-      icon: BookOpen,
-    },
-    {
-      title: "Curriculum Tree",
-      href: "/admin/tree",
-      icon: GitFork,
-    },
-    {
-      title: "Manage Users",
-      href: "/admin/users",
-      icon: Users,
-    },
-    {
-      title: "Resources",
-      href: "/admin/resources",
-      icon: Sparkles,
-    },
-  ];
 
   return (
     <div className="flex flex-col space-y-4 mb-8">
@@ -46,7 +34,7 @@ const AdminNav = () => {
       </div>
       
       <nav className="flex gap-2 border-b border-border pb-px overflow-x-auto">
-        {navItems.map((item) => {
+        {adminNavItems.map((item) => {
           const isActive = pathname === item.href;
           return (
             <Link

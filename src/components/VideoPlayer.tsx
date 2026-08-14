@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 interface VideoPlayerProps {
   url: string;
@@ -20,6 +20,7 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const playerRef = useRef<any>(null);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
+  const playerDomId = useId();
 
   const getYoutubeId = (url: string) => {
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
@@ -94,7 +95,7 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
     <div className="relative aspect-video w-full overflow-hidden rounded-xl shadow-2xl bg-black ring-1 ring-white/10">
       <iframe
         ref={iframeRef}
-        id="yt-player"
+        id={playerDomId}
         src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1`}
         title="YouTube video player"
         className="absolute inset-0 w-full h-full"

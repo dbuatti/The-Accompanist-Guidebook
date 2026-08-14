@@ -37,16 +37,10 @@ export default function AdminUsersPage() {
   const [isActionPending, setIsActionPending] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthPending && !session) {
-      router.push("/auth/sign-in");
-      return;
+    if (!isAuthPending && session) {
+      fetchUsers();
     }
-    if (session && (!session.user.email || !ADMIN_EMAILS.includes(session.user.email.toLowerCase()))) {
-      router.push("/modules");
-      return;
-    }
-    fetchUsers();
-  }, [session, isAuthPending, router]);
+  }, [session, isAuthPending]);
 
   const fetchUsers = async () => {
     try {

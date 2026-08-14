@@ -50,6 +50,7 @@ export const lessons = pgTable('lessons', {
   hasVideo: boolean('has_video').default(true).notNull(),
   videoStatus: varchar('video_status', { length: 50 }).default('not_started').notNull(),
   filmingDate: timestamp('filming_date'),
+  energyLevel: varchar('energy_level', { length: 20 }).default('medium').notNull(),
 });
 
 export const resources = pgTable('resources', {
