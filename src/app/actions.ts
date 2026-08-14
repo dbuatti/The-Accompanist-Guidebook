@@ -47,6 +47,29 @@ export async function getAllUsers() {
   }
 }
 
+export async function getPaidStatus() {
+  try {
+    const user = await requireUser();
+    const existing = await db.select().from(users).where(eq(users.id, user.id));
+    return { isPaid: existing.length > 0 && existing[0].isPaid === true };
+  } catch (error: any) {
+    console.error("Error fetching paid status (FULL ERROR):", error.message);
+    return { isPaid: false };
+  }
+}
+
+export async function markAsPaid() {
+  try {
+    const user = await requireUser();
+    await db.update(users).set({ isPaid: true }).where(eq(users.id, user.id));
+    revalidatePath("/modules");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error marking user as paid (FULL ERROR):", error.message);
+    throw new Error("Failed to mark as paid: " + error.message);
+  }
+}
+
 export async function getLearnerStats() {
   await requireAdmin();
   try {
@@ -182,8 +205,15 @@ export async function getCourseContent() {
     const user = await getCurrentUser();
     const isAdmin = ADMIN_EMAILS.includes((user?.email || "").toLowerCase());
 
+    let isPaid = false;
+    if (user) {
+      const dbUser = await db.select().from(users).where(eq(users.id, user.id));
+      isPaid = dbUser.length > 0 && dbUser[0].isPaid === true;
+    }
+
     const allLevels = await db.select().from(levels).orderBy(asc(levels.displayOrder));
     const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
+    const freeLevelId = allLevels[0]?.id ?? null;
     
     let allLessons;
     if (isAdmin) {
@@ -207,12 +237,17 @@ export async function getCourseContent() {
         return {
           ...mod,
           moduleNumber,
+          isFree: mod.levelId === freeLevelId,
           lessons: allLessons.filter(lesson => lesson.moduleId === mod.id).map(lesson => ({
             ...lesson,
             resources: resourceMap.get(lesson.id) || [],
           }))
         };
-      }).filter(mod => isAdmin || mod.lessons.length > 0);
+      }).filter(mod => {
+        if (isAdmin) return true;
+        if (mod.lessons.length === 0) return false;
+        return isPaid || mod.isFree;
+      });
 
       return {
         ...lvl,

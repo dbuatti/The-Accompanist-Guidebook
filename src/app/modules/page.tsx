@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { getCourseContent, getProgress, toggleLessonProgress, publishAllLessons, ensureUserExists } from "@/app/actions";
+import { getCourseContent, getProgress, toggleLessonProgress, publishAllLessons, ensureUserExists, getPaidStatus, markAsPaid } from "@/app/actions";
 import { formatModuleTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -24,6 +24,8 @@ import {
   EyeOff,
   Music,
   FileText,
+  Lock,
+  Sparkles,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -41,8 +43,11 @@ export default function ModulesPage() {
   const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
   const [expandedLevels, setExpandedLevels] = useState<Record<string, boolean>>({});
   const [progressData, setProgressData] = useState<any[]>([]);
+  const [isPaid, setIsPaid] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const initialModuleSet = useRef(false);
+
+  const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
@@ -77,11 +82,44 @@ export default function ModulesPage() {
     }
   }, [isPending]);
 
+  // Handle return from Stripe: ?paid=1 (or a pending_paid cookie set for
+  // anonymous buyers who had to sign in before the flag could be applied).
+  useEffect(() => {
+    if (isPending) return;
+    const params = new URLSearchParams(window.location.search);
+    const hasPaidParam = params.get("paid") === "1";
+    const hasPendingCookie = document.cookie.split(";").some((c) => c.trim().startsWith("pending_paid=1"));
+
+    if (!hasPaidParam && !hasPendingCookie) return;
+
+    if (!session?.user) {
+      document.cookie = "pending_paid=1; path=/; max-age=3600";
+      router.push("/auth/sign-in");
+      return;
+    }
+
+    const applyPurchase = async () => {
+      try {
+        await markAsPaid();
+        document.cookie = "pending_paid=1; path=/; max-age=0";
+        params.delete("paid");
+        window.history.replaceState({}, "", window.location.pathname + params.toString());
+        setIsPaid(true);
+        showSuccess("Course unlocked — welcome aboard!");
+        fetchData();
+      } catch {
+        showError("Couldn't confirm your purchase yet — please try again.");
+      }
+    };
+    applyPurchase();
+  }, [session, isPending]);
+
   const fetchData = async () => {
     try {
       if (session?.user?.id) {
-        const progress = await getProgress();
+        const [progress, paid] = await Promise.all([getProgress(), getPaidStatus()]);
         setProgressData(progress);
+        setIsPaid(paid.isPaid);
       }
       const data = await getCourseContent();
       setContent(data);
@@ -186,6 +224,24 @@ export default function ModulesPage() {
           )}
         </div>
       ))}
+
+      {session && !isAdmin && !isPaid && paymentLink && (
+        <div className="rounded-xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-4">
+          <div className="flex items-center gap-2 mb-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span className="text-xs font-bold text-primary">Unlock the Full Course</span>
+          </div>
+          <p className="text-[11px] text-muted-foreground mb-3">Get access to every module, lesson, and resource.</p>
+          <a
+            href={paymentLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 w-full bg-primary text-primary-foreground text-xs font-medium py-2 rounded-lg hover:bg-primary/90 transition-colors"
+          >
+            Get Full Access
+          </a>
+        </div>
+      )}
     </div>
   );
 
@@ -269,7 +325,7 @@ export default function ModulesPage() {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {!selectedModuleId ? (
-            <CurriculumView content={content} onSelectModule={setSelectedModuleId} />
+            <CurriculumView content={content} onSelectModule={setSelectedModuleId} isPaid={isPaid} isAdmin={isAdmin} paymentLink={paymentLink} />
           ) : !currentModule ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-12">
               <BookOpen className="w-20 h-20 mb-6 opacity-15" />
@@ -528,7 +584,7 @@ function parseNotesToBlocks(notes: string) {
   return blocks;
 }
 
-function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectModule: (id: string) => void }) {
+function CurriculumView({ content, onSelectModule, isPaid, isAdmin, paymentLink }: { content: any[]; onSelectModule: (id: string) => void; isPaid: boolean; isAdmin: boolean; paymentLink: string | undefined }) {
   const totalModules = content.reduce((sum: number, lvl: any) => sum + lvl.modules.length, 0);
   const totalLessons = content.reduce((sum: number, lvl: any) => sum + lvl.modules.reduce((s: number, mod: any) => s + mod.lessons.length, 0), 0);
 
@@ -565,6 +621,27 @@ function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectM
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-14 space-y-12 sm:space-y-14">
+        {!isPaid && !isAdmin && (
+          <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.06] to-transparent p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/10">
+              <Lock className="w-4 h-4 text-primary" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-primary">You're viewing the free preview</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">Level 1 is open to everyone. Unlock Levels 2 &amp; 3 for the full course.</p>
+            </div>
+            {paymentLink && (
+              <a
+                href={paymentLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-4 py-2.5 rounded-lg hover:bg-primary/90 transition-colors shrink-0"
+              >
+                <Sparkles className="w-3.5 h-3.5" /> Unlock Full Course
+              </a>
+            )}
+          </div>
+        )}
         {content.map((level: any, li: number) => {
           return (
           <section key={level.id}>
