@@ -26,6 +26,7 @@ import {
   FileText,
   Lock,
   ArrowRight,
+  Feather,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -204,6 +205,17 @@ export default function ModulesPage() {
 
   const nav = (
     <div className="space-y-6">
+      {/* Welcome */}
+      <Link
+        href="/welcome"
+        className="flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
+      >
+        <Feather className="w-4 h-4 shrink-0 mt-0.5 text-muted-foreground/50" />
+        <div className="min-w-0 flex-1">
+          <span className="text-sm font-medium leading-snug block">Course welcome</span>
+        </div>
+      </Link>
+
       {/* All Modules */}
       <button
         onClick={() => setSelectedModuleId(null)}

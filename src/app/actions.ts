@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { users, progress, levels, modules, lessons, resources } from "@/lib/schema";
+import { users, progress, levels, modules, lessons, resources, welcomeContent } from "@/lib/schema";
 import { lessonContent } from "./actions/lessonContent";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -67,6 +67,36 @@ export async function markAsPaid() {
   } catch (error: any) {
     console.error("Error marking user as paid (FULL ERROR):", error.message);
     throw new Error("Failed to mark as paid: " + error.message);
+  }
+}
+
+// --- Welcome Content Actions ---
+export async function getWelcomeContent() {
+  try {
+    await requireUser();
+    const rows = await db.select().from(welcomeContent).where(eq(welcomeContent.id, "welcome"));
+    return rows.length > 0 ? { title: rows[0].title, content: rows[0].content } : null;
+  } catch (error: any) {
+    console.error("Error fetching welcome content (FULL ERROR):", error.message);
+    return null;
+  }
+}
+
+export async function updateWelcomeContent(title: string, content: string) {
+  await requireAdmin();
+  try {
+    await db.insert(welcomeContent)
+      .values({ id: "welcome", title, content })
+      .onConflictDoUpdate({
+        target: welcomeContent.id,
+        set: { title, content, updatedAt: new Date() },
+      });
+    revalidatePath("/welcome");
+    revalidatePath("/admin/welcome");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating welcome content (FULL ERROR):", error.message);
+    throw new Error("Failed to update welcome content: " + error.message);
   }
 }
 

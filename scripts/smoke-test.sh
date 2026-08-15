@@ -116,13 +116,17 @@ code=$(http_code "/api/auth")
 
 # ---------------------------------------------------------------------------
 echo
-echo "6) Robots + favicon served"
+echo "6) Robots + icon served"
 # ---------------------------------------------------------------------------
 code=$(http_code "/robots.txt")
 [ "$code" = "200" ] && ok "GET /robots.txt -> 200" || bad "GET /robots.txt -> $code"
 
-code=$(http_code "/favicon.ico")
-[ "$code" = "200" ] && ok "GET /favicon.ico -> 200" || bad "GET /favicon.ico -> $code"
+icon_body=$(curl -sL --max-time 20 "${BASE}/")
+if echo "$icon_body" | grep -q '<link rel="icon"'; then
+  ok "Home HTML emits a favicon <link rel=\"icon\">"
+else
+  bad "No <link rel=\"icon\"> in home HTML (icon.tsx not wired)"
+fi
 
 # ---------------------------------------------------------------------------
 echo

@@ -53,6 +53,13 @@ export const lessons = pgTable('lessons', {
   filmingDate: timestamp('filming_date'),
 });
 
+export const welcomeContent = pgTable('welcome_content', {
+  id: text('id').primaryKey().default('welcome'),
+  title: text('title').notNull().default('A letter from Daniele'),
+  content: text('content').notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const resources = pgTable('resources', {
   id: uuid('id').defaultRandom().primaryKey(),
   lessonId: uuid('lesson_id').references(() => lessons.id, { onDelete: 'cascade' }).notNull(),

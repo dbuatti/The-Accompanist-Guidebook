@@ -12,7 +12,7 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif"
 
 export const metadata: Metadata = {
   title: "The Audition Guidebook",
-  description: "A musical theatre learning portal",
+  description: "A video course for musical theatre performers — prepare your music, deliver your tempo, and collaborate with confidence.",
 };
 
 export default function RootLayout({
@@ -24,7 +24,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
-        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/modules" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
+        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/welcome" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
           <Providers>
             <TooltipProvider>
               {children}
