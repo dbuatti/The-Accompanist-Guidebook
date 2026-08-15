@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Compass, ShieldCheck, Building2, Database, Cloud, KeyRound, Cpu, Video, Sparkles } from "lucide-react";
 
 export const metadata = {
-  title: "Blueprint · Admin · The Accompanist Guidebook",
+  title: "Blueprint · Admin · The Audition Guidebook",
   description: "Architecture and business product analysis (admin only).",
   robots: { index: false, follow: false },
 };
@@ -51,7 +51,7 @@ export default function BlueprintPage() {
           </div>
           <h1 className="mt-4 font-serif text-3xl font-bold text-primary sm:text-4xl">The Blueprint</h1>
           <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-            A single, self-contained document that explains how The Accompanist Guidebook works as a piece of
+            A single, self-contained document that explains how The Audition Guidebook works as a piece of
             software <em>and</em> as a product. Written so that handing this page — and nothing else — to a fresh
             Claude session gives it a complete, accurate mental model of the app: what it is, who it serves, where
             every piece lives, and which decisions are still open.
@@ -97,7 +97,7 @@ export default function BlueprintPage() {
           <table className="w-full border-collapse text-sm">
             <tbody className="divide-y divide-border/40">
               <FactRow k="Public brand">
-                <strong>The Accompanist Guidebook</strong> — appears in the landing hero, the course sidebar, the
+                <strong>The Audition Guidebook</strong> — appears in the landing hero, the course sidebar, the
                 sign-in page, and the root document title.
               </FactRow>
               <FactRow k="Internal / course codename">
@@ -106,7 +106,7 @@ export default function BlueprintPage() {
                 public-facing brand was settled.
               </FactRow>
               <FactRow k="Package name">
-                <code className="rounded bg-muted px-1.5 py-0.5">accompanist-guidebook</code> (in
+                <code className="rounded bg-muted px-1.5 py-0.5">audition-guidebook</code> (in
                 <code className="rounded bg-muted px-1.5 py-0.5">package.json</code>)
               </FactRow>
               <FactRow k="Repository">
@@ -126,7 +126,7 @@ export default function BlueprintPage() {
 
         <SectionTitle id="a-what">A2 · What this product is</SectionTitle>
         <p className="mt-3 text-[15px] leading-relaxed text-foreground/85">
-          The Accompanist Guidebook is a web-based video course platform — a learning portal that teaches musical
+          The Audition Guidebook is a web-based video course platform — a learning portal that teaches musical
           theatre performers how to audition from the vantage point of the person sitting at the piano. The curriculum
           is delivered as a three-tier hierarchy (Levels &rarr; Modules &rarr; Lessons), each lesson pairing an embedded
           YouTube video, written lesson notes (a small Markdown dialect), and curated external resources. Learners sign
@@ -505,7 +505,7 @@ export default function BlueprintPage() {
         <Card className="mt-4 border-primary/15 bg-primary/[0.03]">
           <CardContent className="space-y-3 p-6 text-[15px] leading-relaxed text-foreground/85">
             <p>
-              <strong>The Accompanist Guidebook</strong> is a pre-launch, one-operator video course platform that
+              <strong>The Audition Guidebook</strong> is a pre-launch, one-operator video course platform that
               teaches musical theatre singers how to audition — taught from the vantage point of the audition pianist
               (instructor Daniele Buatti). Built with <strong>Next.js 14 (App Router, TypeScript)</strong> using
               <strong> Server Actions</strong> as the API, a <strong>Neon serverless Postgres</strong> database accessed

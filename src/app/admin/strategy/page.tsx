@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, DollarSign, Clock, Target, Rocket, AlertTriangle, Banknote } from "lucide-react";
 
 export const metadata = {
-  title: "Strategy · Admin · The Accompanist Guidebook",
+  title: "Strategy · Admin · The Audition Guidebook",
   description: "Positioning, value proposition, valuation, and tiered growth roadmap (admin only).",
   robots: { index: false, follow: false },
 };

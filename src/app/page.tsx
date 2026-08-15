@@ -43,7 +43,7 @@ export default function Home() {
               <Music size={18} />
             </div>
             <span className="font-serif font-bold text-primary text-lg tracking-tight">
-              The Accompanist Guidebook
+              The Audition Guidebook
             </span>
           </Link>
           <nav className="flex items-center gap-3">
@@ -198,7 +198,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Music className="w-4 h-4 text-primary/40" />
-              <span className="text-[11px] text-muted-foreground/60">The Accompanist Guidebook</span>
+              <span className="text-[11px] text-muted-foreground/60">The Audition Guidebook</span>
             </div>
             <p className="text-[11px] text-muted-foreground/40 uppercase tracking-[0.2em]">
               Educational Resource &copy; 2026

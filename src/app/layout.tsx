@@ -11,7 +11,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 
 export const metadata: Metadata = {
-  title: "The Accompanist Guidebook",
+  title: "The Audition Guidebook",
   description: "A musical theatre learning portal",
 };
 

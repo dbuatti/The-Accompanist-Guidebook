@@ -23,7 +23,7 @@ export default async function AuthPage({
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/10">
             <Music size={32} />
           </div>
-          <h1 className="text-3xl font-serif font-bold text-primary">The Accompanist Guidebook</h1>
+          <h1 className="text-3xl font-serif font-bold text-primary">The Audition Guidebook</h1>
           <p className="text-muted-foreground italic">Sign in to track your progress</p>
         </div>
 

@@ -277,7 +277,7 @@ export default function ModulesPage() {
               <Music className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-base font-serif font-bold text-primary leading-tight">The Accompanist Guidebook</h1>
+              <h1 className="text-base font-serif font-bold text-primary leading-tight">The Audition Guidebook</h1>
               <p className="text-[10px] text-muted-foreground mt-0.5">Course modules &amp; resources</p>
             </div>
           </div>
@@ -332,7 +332,7 @@ export default function ModulesPage() {
             <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="w-5 h-5" /></Button></SheetTrigger>
             <SheetContent side="left" className="w-80 p-0">
               <div className="p-6 border-b border-border/30">
-                <h1 className="text-base font-serif font-bold text-primary">The Accompanist Guidebook</h1>
+                <h1 className="text-base font-serif font-bold text-primary">The Audition Guidebook</h1>
               </div>
               <div className="p-4">{nav}</div>
             </SheetContent>
