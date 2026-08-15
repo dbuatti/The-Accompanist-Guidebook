@@ -47,6 +47,8 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        "accent-bright": "hsl(var(--accent-bright))",
+        periwinkle: "hsl(var(--periwinkle))",
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",

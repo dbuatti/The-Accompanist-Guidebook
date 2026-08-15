@@ -4,34 +4,38 @@
 
 @layer base {
   :root {
-    /* Clean Editorial / Pine & Paper Palette */
+    /* The Audition Guidebook — Navy · Periwinkle · Mauve */
     --background: 40 30% 99%;
-    --foreground: 210 25% 10%;
+    --foreground: 221 45% 12%;
 
     --card: 40 25% 100%;
-    --card-foreground: 210 25% 10%;
+    --card-foreground: 221 45% 12%;
 
     --popover: 40 30% 100%;
-    --popover-foreground: 210 25% 10%;
+    --popover-foreground: 221 45% 12%;
 
-    --primary: 172 42% 24%;
+    --primary: 221 51% 25%;
     --primary-foreground: 40 30% 98%;
 
-    --secondary: 170 16% 93%;
-    --secondary-foreground: 172 38% 18%;
+    --secondary: 235 30% 93%;
+    --secondary-foreground: 242 24% 45%;
 
-    --muted: 40 12% 95%;
-    --muted-foreground: 30 10% 40%;
+    --muted: 221 20% 95%;
+    --muted-foreground: 242 15% 42%;
 
-    --accent: 42 60% 50%;
-    --accent-foreground: 210 25% 10%;
+    --accent: 312 21% 73%;
+    --accent-foreground: 221 51% 25%;
+
+    --accent-bright: 211 52% 43%;
+
+    --periwinkle: 235 25% 57%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 40 14% 88%;
-    --input: 40 14% 84%;
-    --ring: 172 42% 24%;
+    --border: 235 20% 88%;
+    --input: 235 20% 84%;
+    --ring: 221 51% 25%;
 
     --radius: 0.625rem;
   }

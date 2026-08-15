@@ -103,12 +103,12 @@ export default function Home() {
         </div>
 
         {/* What you'll master — soft mint band */}
-        <section className="w-full mt-16 sm:mt-20 bg-secondary/60 py-16 sm:py-20">
+        <section className="w-full mt-16 sm:mt-20 bg-periwinkle/40 py-16 sm:py-20">
           <div className="max-w-4xl mx-auto px-6">
             <div className="flex items-center gap-3 justify-center mb-10">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/60" />
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">What you&apos;ll master</span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/60" />
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent-bright/60" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">What you&apos;ll master</span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent-bright/60" />
             </div>
             <div className="grid sm:grid-cols-3 gap-5">
               {[
@@ -121,7 +121,7 @@ export default function Home() {
                     <div className="w-10 h-10 rounded-lg bg-primary/8 flex items-center justify-center border border-primary/10 transition-colors group-hover:bg-primary/10">
                       <item.icon className="w-4 h-4 text-primary" />
                     </div>
-                    <span className="font-serif text-lg text-accent/70 font-semibold tabular-nums">{item.n}</span>
+                    <span className="font-serif text-lg text-accent-bright font-semibold tabular-nums">{item.n}</span>
                   </div>
                   <h3 className="text-sm font-semibold text-primary mb-1.5">{item.title}</h3>
                   <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
@@ -177,7 +177,7 @@ export default function Home() {
           <div className="relative rounded-3xl border border-accent/20 bg-accent/[0.06] px-8 py-12 sm:py-14 text-center overflow-hidden">
             <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/[0.08] blur-3xl pointer-events-none" />
             <div className="relative">
-              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent mb-3 block">Ready when you are</span>
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright mb-3 block">Ready when you are</span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-3">Get full access to the complete course</h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
                 Every module, lesson, and resource — yours for life, at your own pace.
