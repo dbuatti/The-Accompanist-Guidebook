@@ -40,6 +40,14 @@ export default function AdminResourcesPage() {
       color: "bg-purple-500/10 text-purple-700 border-purple-500/20",
     },
     {
+      title: "ChatGPT — Naming & Domain Research",
+      description: "ChatGPT conversation on rebranding to 'The Audition Guidebook' and domain availability for theauditionguidebook.com.",
+      url: "https://chatgpt.com/c/6a7fa7a5-d400-83ec-a530-89e38df52346",
+      category: "AI Assistant",
+      icon: MessageSquare,
+      color: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+    },
+    {
       title: "Notion Course Development",
       description: "Master Notion workspace for planning, structuring, and drafting the Audition Guidebook.",
       url: "https://app.notion.com/p/danielebuatti/Audition-Guidebook-Course-Development-35caad21cd0981a18eb9e5a05fa3f765",

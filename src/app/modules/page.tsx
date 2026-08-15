@@ -25,7 +25,7 @@ import {
   Music,
   FileText,
   Lock,
-  Sparkles,
+  ArrowRight,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -69,7 +69,7 @@ export default function ModulesPage() {
     }
   }, [session]);
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { fetchData(); }, [session?.user?.id]);
 
   useEffect(() => {
     if (!initialModuleSet.current && !isPending) {
@@ -156,8 +156,48 @@ export default function ModulesPage() {
 
   const handleLogout = async () => { await authClient.signOut(); router.push("/"); };
 
-  if (isLoading) {
+  if (isLoading || (isPending && !session)) {
     return <div className="h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  }
+
+  if (!isAdmin && !isPaid) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center px-6 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
+        <div className="relative max-w-md w-full text-center space-y-6">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/10">
+            <Lock className="w-7 h-7" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary">Full course access</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              The complete curriculum unlocks with full course access — every module, lesson, and resource, yours to work through at your own pace.
+            </p>
+          </div>
+          <div className="flex flex-col items-center gap-3 pt-2">
+            {paymentLink ? (
+              <a
+                href={paymentLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
+              >
+                Get Full Access
+                <ArrowRight className="w-4 h-4" />
+              </a>
+            ) : (
+              <Link href="/auth/sign-in" className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5">
+                Sign in to view your course
+              </Link>
+            )}
+            <p className="text-xs text-muted-foreground/70">
+              Already own it?{" "}
+              <Link href="/auth/sign-in" className="text-primary hover:underline">Sign in</Link>
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const currentModule = findModule(content, selectedModuleId);
@@ -224,24 +264,6 @@ export default function ModulesPage() {
           )}
         </div>
       ))}
-
-      {session && !isAdmin && !isPaid && paymentLink && (
-        <div className="rounded-xl border border-primary/15 bg-gradient-to-br from-primary/[0.05] to-transparent p-4">
-          <div className="flex items-center gap-2 mb-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span className="text-xs font-bold text-primary">Unlock the Full Course</span>
-          </div>
-          <p className="text-[11px] text-muted-foreground mb-3">Get access to every module, lesson, and resource.</p>
-          <a
-            href={paymentLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 w-full bg-primary text-primary-foreground text-xs font-medium py-2 rounded-lg hover:bg-primary/90 transition-colors"
-          >
-            Get Full Access
-          </a>
-        </div>
-      )}
     </div>
   );
 
@@ -325,7 +347,7 @@ export default function ModulesPage() {
 
         <div ref={scrollRef} className="flex-1 overflow-y-auto">
           {!selectedModuleId ? (
-            <CurriculumView content={content} onSelectModule={setSelectedModuleId} isPaid={isPaid} isAdmin={isAdmin} paymentLink={paymentLink} />
+            <CurriculumView content={content} onSelectModule={setSelectedModuleId} />
           ) : !currentModule ? (
             <div className="h-full flex flex-col items-center justify-center text-muted-foreground p-12">
               <BookOpen className="w-20 h-20 mb-6 opacity-15" />
@@ -584,7 +606,7 @@ function parseNotesToBlocks(notes: string) {
   return blocks;
 }
 
-function CurriculumView({ content, onSelectModule, isPaid, isAdmin, paymentLink }: { content: any[]; onSelectModule: (id: string) => void; isPaid: boolean; isAdmin: boolean; paymentLink: string | undefined }) {
+function CurriculumView({ content, onSelectModule }: { content: any[]; onSelectModule: (id: string) => void }) {
   const totalModules = content.reduce((sum: number, lvl: any) => sum + lvl.modules.length, 0);
   const totalLessons = content.reduce((sum: number, lvl: any) => sum + lvl.modules.reduce((s: number, mod: any) => s + mod.lessons.length, 0), 0);
 
@@ -621,27 +643,6 @@ function CurriculumView({ content, onSelectModule, isPaid, isAdmin, paymentLink 
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-14 space-y-12 sm:space-y-14">
-        {!isPaid && !isAdmin && (
-          <div className="rounded-2xl border border-primary/15 bg-gradient-to-br from-primary/[0.06] to-transparent p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 border border-primary/10">
-              <Lock className="w-4 h-4 text-primary" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-primary">You're viewing the free preview</h3>
-              <p className="text-xs text-muted-foreground mt-0.5">Level 1 is open to everyone. Unlock Levels 2 &amp; 3 for the full course.</p>
-            </div>
-            {paymentLink && (
-              <a
-                href={paymentLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 bg-primary text-primary-foreground text-xs font-medium px-4 py-2.5 rounded-lg hover:bg-primary/90 transition-colors shrink-0"
-              >
-                <Sparkles className="w-3.5 h-3.5" /> Unlock Full Course
-              </a>
-            )}
-          </div>
-        )}
         {content.map((level: any, li: number) => {
           return (
           <section key={level.id}>
