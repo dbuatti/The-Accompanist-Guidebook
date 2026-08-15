@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Loader2,
   Lock,
@@ -21,7 +22,7 @@ import {
   getCourseContent,
   getProgress,
   getPaidStatus,
-  markAsPaid,
+  verifyAndApplyPurchase,
   ensureUserExists,
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
@@ -46,15 +47,22 @@ export default function WelcomePage() {
 
   const fetchData = async () => {
     try {
-      const [welcomeData, progress, paid, courseData] = await Promise.all([
-        getWelcomeContent(),
-        session?.user?.id ? getProgress() : Promise.resolve([] as any[]),
-        session?.user?.id ? getPaidStatus() : Promise.resolve({ isPaid: false }),
-        getCourseContent(),
-      ]);
+      let paid = false;
+      if (session?.user?.id) {
+        const [progress, p] = await Promise.all([getProgress(), getPaidStatus()]);
+        setProgressData(progress);
+        setIsPaid(p.isPaid);
+        paid = p.isPaid;
+        if (!paid) {
+          const v = await verifyAndApplyPurchase();
+          if (v.isPaid) {
+            setIsPaid(true);
+            paid = true;
+          }
+        }
+      }
+      const [welcomeData, courseData] = await Promise.all([getWelcomeContent(), getCourseContent()]);
       setWelcome(welcomeData);
-      setProgressData(progress);
-      setIsPaid(paid.isPaid);
       setContent(courseData);
     } catch {
       showError("Failed to load your welcome page");
@@ -77,17 +85,17 @@ export default function WelcomePage() {
     }
 
     const applyPurchase = async () => {
-      try {
-        await markAsPaid();
-        document.cookie = "pending_paid=1; path=/; max-age=0";
-        params.delete("paid");
-        window.history.replaceState({}, "", window.location.pathname + params.toString());
+      document.cookie = "pending_paid=1; path=/; max-age=0";
+      params.delete("paid");
+      window.history.replaceState({}, "", window.location.pathname + params.toString());
+      const result = await verifyAndApplyPurchase();
+      if (result.isPaid) {
         setIsPaid(true);
         showSuccess("Course unlocked — welcome aboard!");
-        fetchData();
-      } catch {
-        showError("Couldn't confirm your purchase yet — please try again.");
+      } else {
+        showError("We couldn't verify your payment yet — it usually appears within a minute. Try again shortly.");
       }
+      fetchData();
     };
     applyPurchase();
   }, [session, isPending]);
@@ -206,9 +214,13 @@ export default function WelcomePage() {
               <p className="text-sm text-muted-foreground/50 italic">A note from Daniele is on its way.</p>
             )}
             <div className="mt-12 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/15 shrink-0">
-                <Music className="w-5 h-5" />
-              </div>
+              <Image
+                src="/headshot.jpeg"
+                alt="Daniele Buatti"
+                width={48}
+                height={48}
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/15 shrink-0"
+              />
               <div>
                 <p className="text-sm font-serif font-bold text-primary">Daniele Buatti</p>
                 <p className="text-xs text-muted-foreground">Pianist · Vocal Coach · Music Director</p>

@@ -3,13 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, Clock, Quote } from "lucide-react";
+import Image from "next/image";
+import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, Quote } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
+import PromoCountdown from "@/components/PromoCountdown";
 
 const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
-
-// Promo pricing window. Adjust this date whenever launch pricing should end.
-const PROMO_ENDS_AT = new Date("2026-10-15T23:59:59+10:00");
 
 export default function Home() {
   const router = useRouter();
@@ -178,15 +177,17 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-[300px_1fr] gap-10 items-start mt-10">
-              {/* Photo placeholder */}
+              {/* Headshot */}
               <div className="mx-auto w-full max-w-[300px]">
                 <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-gradient-to-br from-primary to-[#356DA8]">
                   <div className="absolute inset-0 sheet-music-texture opacity-10" />
                   <div className="absolute -bottom-10 -right-10 w-48 h-48 rounded-full bg-accent/20 blur-3xl" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-                    <span className="font-serif font-bold text-6xl tracking-tight text-primary-foreground/90">DB</span>
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-primary-foreground/60">Photo coming soon</span>
-                  </div>
+                  <Image
+                    src="/headshot.jpeg"
+                    alt="Daniele Buatti"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <div className="text-center mt-4">
                   <p className="text-sm font-serif font-bold text-primary">Daniele Buatti</p>
@@ -287,47 +288,6 @@ export default function Home() {
           </div>
         </footer>
       </main>
-    </div>
-  );
-}
-
-function PromoCountdown() {
-  const [now, setNow] = useState(Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  const diff = PROMO_ENDS_AT.getTime() - now;
-  if (diff <= 0) return null;
-
-  const parts = [
-    { v: Math.floor(diff / 86400000), l: "days" },
-    { v: Math.floor((diff % 86400000) / 3600000), l: "hrs" },
-    { v: Math.floor((diff % 3600000) / 60000), l: "min" },
-    { v: Math.floor((diff % 60000) / 1000), l: "sec" },
-  ];
-
-  return (
-    <div className="flex flex-col items-center gap-3">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright flex items-center gap-1.5">
-        <Clock className="w-3 h-3" />
-        Launch pricing ends in
-      </span>
-      <div className="flex items-center gap-2">
-        {parts.map((p, i) => (
-          <div key={p.l} className="flex items-center gap-2">
-            {i > 0 && <span className="text-primary/30 font-bold">:</span>}
-            <div className="flex flex-col items-center">
-              <span className="w-14 py-2 rounded-lg bg-primary/[0.06] border border-primary/10 text-primary font-serif font-bold text-lg tabular-nums text-center">
-                {String(p.v).padStart(2, "0")}
-              </span>
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 mt-1">{p.l}</span>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }

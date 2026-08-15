@@ -24,7 +24,10 @@ export default async function AuthPage({
             <Music size={32} />
           </div>
           <h1 className="text-3xl font-serif font-bold text-primary">The Audition Guidebook</h1>
-          <p className="text-muted-foreground italic">Sign in to track your progress</p>
+          <p className="text-muted-foreground italic">Sign in to access your course.</p>
+          <p className="text-xs text-muted-foreground/70 leading-relaxed">
+            Just purchased? Sign in with the same email you used at checkout and your access unlocks automatically.
+          </p>
         </div>
 
         <div className="bg-card p-8 rounded-2xl shadow-xl shadow-primary/[0.03] border border-border/60">

@@ -19,7 +19,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: `${window.location.origin}/modules`,
+        callbackURL: `${window.location.origin}/welcome?`,
       });
     } catch (error: any) {
       console.error("Google Sign-In Error:", error);
@@ -59,7 +59,7 @@ export default function AuthContainer({ path }: AuthContainerProps) {
       </div>
 
       <div className="neon-auth-custom-view">
-        <AuthView path={path} redirectTo="/modules" />
+        <AuthView path={path} redirectTo="/welcome?" />
       </div>
     </div>
   );

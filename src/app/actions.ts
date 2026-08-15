@@ -1,11 +1,12 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { users, progress, levels, modules, lessons, resources, welcomeContent } from "@/lib/schema";
+import { users, progress, levels, modules, lessons, resources, welcomeContent, purchases } from "@/lib/schema";
 import { lessonContent } from "./actions/lessonContent";
 import { eq, and, asc, desc } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { GoogleGenAI } from "@google/genai";
+import Stripe from "stripe";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
@@ -58,15 +59,53 @@ export async function getPaidStatus() {
   }
 }
 
-export async function markAsPaid() {
+export async function verifyAndApplyPurchase() {
   try {
     const user = await requireUser();
-    await db.update(users).set({ isPaid: true }).where(eq(users.id, user.id));
-    revalidatePath("/modules");
-    return { success: true };
+    if (!user.email) return { isPaid: false };
+
+    const [dbUser] = await db.select().from(users).where(eq(users.id, user.id));
+    if (dbUser?.isPaid) return { isPaid: true };
+
+    const email = user.email.toLowerCase();
+
+    // 1. Apply any webhook-confirmed purchase recorded for this email.
+    const [pending] = await db.select()
+      .from(purchases)
+      .where(eq(purchases.email, email))
+      .orderBy(desc(purchases.createdAt))
+      .limit(1);
+    if (pending && !pending.appliedToUserId) {
+      await db.update(users)
+        .set({ isPaid: true, stripeCustomerId: pending.customerId, stripePaymentId: pending.paymentIntentId })
+        .where(eq(users.id, user.id));
+      await db.update(purchases).set({ appliedToUserId: user.id }).where(eq(purchases.id, pending.id));
+      return { isPaid: true };
+    }
+
+    // 2. Fallback: verify directly with Stripe (covers missed webhooks).
+    if (process.env.STRIPE_SECRET_KEY) {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const sessions = await stripe.checkout.sessions.list({ customer_email: email, limit: 10 } as any);
+      const paid = sessions.data.find((s) => s.payment_status === "paid" && s.status === "complete");
+      if (paid) {
+        const customerId = typeof paid.customer === "string" ? paid.customer : paid.customer?.id;
+        const pi = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id;
+        const paymentId = pi || paid.id;
+        await db.update(users)
+          .set({ isPaid: true, stripeCustomerId: customerId, stripePaymentId: paymentId })
+          .where(eq(users.id, user.id));
+        await db.insert(purchases)
+          .values({ email, customerId, paymentIntentId: paymentId, amountTotal: paid.amount_total ?? null, appliedToUserId: user.id })
+          .onConflictDoNothing();
+        return { isPaid: true };
+      }
+    }
+
+    return { isPaid: false };
   } catch (error: any) {
-    console.error("Error marking user as paid (FULL ERROR):", error.message);
-    throw new Error("Failed to mark as paid: " + error.message);
+    console.error("Error verifying purchase (FULL ERROR):", error.message);
+    return { isPaid: false };
   }
 }
 

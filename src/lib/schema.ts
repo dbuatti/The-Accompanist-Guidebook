@@ -6,8 +6,22 @@ export const users = pgTable('users', {
   name: varchar('name', { length: 255 }),
   role: varchar('role', { length: 20 }).default('user').notNull(),
   isPaid: boolean('is_paid').default(false).notNull(),
+  stripeCustomerId: text('stripe_customer_id'),
+  stripePaymentId: text('stripe_payment_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const purchases = pgTable('purchases', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: text('email').notNull(),
+  customerId: text('customer_id'),
+  paymentIntentId: text('payment_intent_id').notNull(),
+  amountTotal: integer('amount_total'),
+  appliedToUserId: uuid('applied_to_user_id').references(() => users.id, { onDelete: 'set null' }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+}, (t) => ({
+  unq: unique().on(t.email, t.paymentIntentId),
+}));
 
 export const progress = pgTable('progress', {
   id: uuid('id').defaultRandom().primaryKey(),
