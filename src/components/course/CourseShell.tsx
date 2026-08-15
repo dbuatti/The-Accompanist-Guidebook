@@ -144,7 +144,7 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   const currentModule = activeModuleId ? content.flatMap((l: any) => l.modules || []).find((m: any) => m.id === activeModuleId) : null;
 
   return (
-    <div className="h-screen bg-background flex overflow-hidden">
+    <div className="h-dvh bg-background flex overflow-hidden">
       {/* Sidebar */}
       <aside className="hidden lg:flex w-80 border-r border-border/30 flex-col shrink-0 bg-gradient-to-b from-card/40 to-card/10">
         <div className="p-6 border-b border-border/30">
@@ -206,11 +206,11 @@ export default function CourseShell({ children }: { children: React.ReactNode })
         <header className="lg:hidden h-14 border-b border-border/30 flex items-center justify-between px-4 shrink-0">
           <Sheet>
             <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="w-5 h-5" /></Button></SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0">
-              <div className="p-6 border-b border-border/30">
+            <SheetContent side="left" className="w-80 p-0 flex flex-col gap-0 overflow-hidden">
+              <div className="p-6 border-b border-border/30 shrink-0">
                 <Link href="/" className="text-base font-serif font-bold text-primary hover:text-primary/80 transition-colors">The Audition Guidebook</Link>
               </div>
-              <div className="p-4">{nav}</div>
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4">{nav}</div>
             </SheetContent>
           </Sheet>
           <span className="text-sm font-serif font-semibold text-primary truncate max-w-[180px]">
