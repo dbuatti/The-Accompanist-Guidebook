@@ -27,7 +27,7 @@ export default function Home() {
   if (session) return null;
 
   const primaryHref = paymentLink || "/modules";
-  const primaryLabel = paymentLink ? "Get Full Access" : "See Inside";
+  const primaryLabel = "Get Full Access";
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
@@ -102,75 +102,80 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Feature highlights */}
-        <div className="mt-20 w-full max-w-4xl mx-auto px-6">
-          <div className="flex items-center gap-3 justify-center mb-10">
-            <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/60" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">What you&apos;ll master</span>
-            <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/60" />
-          </div>
-          <div className="grid sm:grid-cols-3 gap-5">
-            {[
-              { icon: Scissors, n: "01", title: "Cut & Prepare", desc: "Mark professional cuts that any accompanist can sight-read cold." },
-              { icon: Mic, n: "02", title: "Audition Ready", desc: "Walk into any room with a confident handover, clear tempo, and presence." },
-              { icon: Piano, n: "03", title: "Collaboration", desc: "Work seamlessly with singers, directors, and music teams." },
-            ].map((item) => (
-              <div key={item.title} className="group p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/20 hover:shadow-md hover:shadow-primary/[0.04] hover:-translate-y-0.5 transition-all duration-200">
-                <div className="flex items-start justify-between mb-5">
-                  <div className="w-10 h-10 rounded-lg bg-primary/8 flex items-center justify-center border border-primary/10 transition-colors group-hover:bg-primary/10">
-                    <item.icon className="w-4 h-4 text-primary" />
+        {/* What you'll master — soft mint band */}
+        <section className="w-full mt-16 sm:mt-20 bg-secondary/60 py-16 sm:py-20">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="flex items-center gap-3 justify-center mb-10">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/60" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">What you&apos;ll master</span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/60" />
+            </div>
+            <div className="grid sm:grid-cols-3 gap-5">
+              {[
+                { icon: Scissors, n: "01", title: "Cut & Prepare", desc: "Mark professional cuts that any accompanist can sight-read cold." },
+                { icon: Mic, n: "02", title: "Audition Ready", desc: "Walk into any room with a confident handover, clear tempo, and presence." },
+                { icon: Piano, n: "03", title: "Collaboration", desc: "Work seamlessly with singers, directors, and music teams." },
+              ].map((item) => (
+                <div key={item.title} className="group p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/20 hover:shadow-md hover:shadow-primary/[0.04] hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="flex items-start justify-between mb-5">
+                    <div className="w-10 h-10 rounded-lg bg-primary/8 flex items-center justify-center border border-primary/10 transition-colors group-hover:bg-primary/10">
+                      <item.icon className="w-4 h-4 text-primary" />
+                    </div>
+                    <span className="font-serif text-lg text-accent/70 font-semibold tabular-nums">{item.n}</span>
                   </div>
-                  <span className="font-serif text-lg text-accent/70 font-semibold tabular-nums">{item.n}</span>
+                  <h3 className="text-sm font-semibold text-primary mb-1.5">{item.title}</h3>
+                  <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-sm font-semibold text-primary mb-1.5">{item.title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
-        {/* The journey */}
-        <div className="mt-24 w-full max-w-4xl mx-auto px-6">
-          <div className="flex items-center gap-3 justify-center mb-4">
-            <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/60" />
-            <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">The journey</span>
-            <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/60" />
-          </div>
-          <h2 className="text-center text-3xl sm:text-4xl font-serif font-bold text-primary mb-3">A structured path, built for the room</h2>
-          <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-12 leading-relaxed">
-            The course moves in three levels, each one strengthening the skills that read as professional in an audition setting.
-          </p>
-          <div className="grid md:grid-cols-3 gap-5">
-            {[
-              { n: "01", name: "Foundations", desc: "Build reliable score-prep habits and annotation systems you can trust under pressure." },
-              { n: "02", name: "Preparation", desc: "Develop confidence with tempo, cuts, and a handover that lands with singers and directors." },
-              { n: "03", name: "Collaboration", desc: "Work with full presence alongside singers, directors, and music teams." },
-            ].map((item) => (
-              <div key={item.n} className="relative p-6 rounded-2xl border border-border/60 bg-gradient-to-b from-card/60 to-transparent">
-                <div className="flex items-center gap-2 mb-4">
-                  <Layers className="w-3.5 h-3.5 text-primary/60" />
-                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary/60">Level {item.n}</span>
+        {/* The journey — deep pine band */}
+        <section className="w-full bg-primary relative overflow-hidden py-20 sm:py-24">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-accent/[0.06] blur-3xl pointer-events-none" />
+          <div className="relative max-w-4xl mx-auto px-6">
+            <div className="flex items-center gap-3 justify-center mb-4">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent/70" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent">The journey</span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent/70" />
+            </div>
+            <h2 className="text-center text-3xl sm:text-4xl font-serif font-bold text-primary-foreground mb-3">A structured path, built for the room</h2>
+            <p className="text-center text-sm text-primary-foreground/70 max-w-xl mx-auto mb-12 leading-relaxed">
+              The course moves in three levels, each one strengthening the skills that read as professional in an audition setting.
+            </p>
+            <div className="grid md:grid-cols-3 gap-5">
+              {[
+                { n: "01", name: "Foundations", desc: "Build reliable score-prep habits and annotation systems you can trust under pressure." },
+                { n: "02", name: "Preparation", desc: "Develop confidence with tempo, cuts, and a handover that lands with singers and directors." },
+                { n: "03", name: "Collaboration", desc: "Work with full presence alongside singers, directors, and music teams." },
+              ].map((item) => (
+                <div key={item.n} className="group p-6 rounded-2xl border border-white/10 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.07] hover:-translate-y-0.5 transition-all duration-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <Layers className="w-3.5 h-3.5 text-accent/80" />
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent/80">Level {item.n}</span>
+                  </div>
+                  <h3 className="text-base font-serif font-semibold text-primary-foreground mb-1.5">{item.name}</h3>
+                  <p className="text-xs text-primary-foreground/70 leading-relaxed">{item.desc}</p>
                 </div>
-                <h3 className="text-base font-serif font-semibold text-primary mb-1.5">{item.name}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Pull quote */}
-        <div className="mt-24 w-full max-w-2xl mx-auto px-6">
+        <div className="w-full max-w-2xl mx-auto px-6 py-24">
           <blockquote className="relative border-l-[3px] border-accent/60 pl-6 sm:pl-8 py-2">
             <p className="font-serif italic text-xl sm:text-2xl text-primary/90 leading-relaxed">
-              &ldquo;A professional accompanist walks into every room prepared — score ready, tempo set, and the singer confident.&rdquo;
+              &ldquo;Every great audition is made before the singer walks into the room — in the score, the tempo, and the handover, ready to the last bar.&rdquo;
             </p>
           </blockquote>
         </div>
 
-        {/* CTA band */}
-        <div className="w-full max-w-4xl mx-auto px-6 mt-24">
-          <div className="relative rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/[0.05] to-transparent px-8 py-12 sm:py-14 text-center overflow-hidden">
-            <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-accent/[0.06] blur-3xl pointer-events-none" />
+        {/* CTA band — brass tint */}
+        <div className="w-full max-w-4xl mx-auto px-6 pb-24">
+          <div className="relative rounded-3xl border border-accent/20 bg-accent/[0.06] px-8 py-12 sm:py-14 text-center overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-primary/[0.08] blur-3xl pointer-events-none" />
             <div className="relative">
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent mb-3 block">Ready when you are</span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-3">Get full access to the complete course</h2>
@@ -189,7 +194,7 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <footer className="w-full mt-20 pb-10">
+        <footer className="w-full pb-10">
           <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Music className="w-4 h-4 text-primary/40" />
