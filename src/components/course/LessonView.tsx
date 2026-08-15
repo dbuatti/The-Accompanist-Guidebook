@@ -53,7 +53,7 @@ export default function LessonView({ moduleId, lessonId }: { moduleId: string; l
             <button
               onClick={() => toggleComplete(lesson.id)}
               className={`mt-4 inline-flex items-center gap-2 text-xs transition-colors ${
-                completed ? "text-green-600" : "text-muted-foreground/50 hover:text-primary"
+                completed ? "text-accent-foreground/80" : "text-muted-foreground/50 hover:text-primary"
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />

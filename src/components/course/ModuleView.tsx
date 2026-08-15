@@ -75,10 +75,10 @@ export default function ModuleView({ moduleId }: { moduleId: string }) {
               className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-border/20 bg-card/40 hover:bg-card/60 hover:border-primary/15 transition-all duration-200"
             >
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border ${
-                isLessonCompleted(lesson.id) ? "bg-green-50 border-green-200" : "bg-primary/8 border-primary/10"
+                isLessonCompleted(lesson.id) ? "bg-accent/20 border-accent/30" : "bg-primary/8 border-primary/10"
               }`}>
                 {isLessonCompleted(lesson.id) ? (
-                  <CheckCircle2 className="w-5 h-5 text-green-600" />
+                  <CheckCircle2 className="w-5 h-5 text-accent-foreground/80" />
                 ) : (
                   <span className="text-xs sm:text-sm font-bold text-primary/70">{i + 1}</span>
                 )}

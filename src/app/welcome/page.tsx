@@ -6,7 +6,6 @@ import Link from "next/link";
 import Image from "next/image";
 import {
   Loader2,
-  Lock,
   ArrowRight,
   Music,
   LogOut,
@@ -17,6 +16,7 @@ import {
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
 import { MarkdownBody } from "@/components/MarkdownBody";
+import PaywallGate from "@/components/course/PaywallGate";
 import {
   getWelcomeContent,
   getCourseContent,
@@ -36,7 +36,6 @@ export default function WelcomePage() {
   const [isPaid, setIsPaid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
   const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
 
   useEffect(() => {
@@ -113,48 +112,22 @@ export default function WelcomePage() {
   }
 
   if (!isAdmin && !isPaid) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center px-6 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
-        <div className="relative max-w-md w-full text-center space-y-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/10">
-            <Lock className="w-7 h-7" />
-          </div>
-          <div className="space-y-2">
-            <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary">Full course access</h1>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              The complete curriculum unlocks with full course access — every module, lesson, and resource, yours to work through at your own pace.
-            </p>
-          </div>
-          <div className="flex flex-col items-center gap-3 pt-2">
-            {paymentLink ? (
-              <a
-                href={paymentLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
-              >
-                Get Full Access
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            ) : (
-              <Link href="/auth/sign-in" className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5">
-                Sign in to view your course
-              </Link>
-            )}
-            <p className="text-xs text-muted-foreground/70">
-              Already own it?{" "}
-              <Link href="/auth/sign-in" className="text-primary hover:underline">Sign in</Link>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
+    return <PaywallGate hasSession={!!session?.user} />;
   }
 
   const totalLessons = content.reduce((sum: number, l: any) => sum + (l.modules?.reduce((s: number, m: any) => s + (m.lessons?.length || 0), 0) || 0), 0);
   const completedLessons = progressData.filter((p) => p.completedAt).length;
   const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+
+  const firstLesson = (() => {
+    for (const level of content) {
+      for (const mod of level.modules || []) {
+        const lesson = mod.lessons?.[0];
+        if (lesson) return { href: `/modules/${mod.id}/${lesson.id}`, title: lesson.title };
+      }
+    }
+    return null;
+  })();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
@@ -238,7 +211,7 @@ export default function WelcomePage() {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
               <Link
-                href="/modules"
+                href={firstLesson?.href || "/modules"}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
               >
                 <BookOpen className="w-4 h-4" />

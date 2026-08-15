@@ -29,7 +29,7 @@ export default function CurriculumView({ content }: { content: any[] }) {
               Level 1: Foundations
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-400/50" />
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-400/50" />
               Level 2: Preparation
             </span>
             <span className="flex items-center gap-1.5">
@@ -45,13 +45,13 @@ export default function CurriculumView({ content }: { content: any[] }) {
           return (
           <section key={level.id}>
             <div className="flex items-center gap-4 mb-8">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${li === 0 ? "bg-primary/10" : li === 1 ? "bg-amber-400/10" : "bg-blue-400/10"}`}>
-                <span className={`text-xs font-bold ${li === 0 ? "text-primary" : li === 1 ? "text-amber-600" : "text-blue-600"}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${li === 0 ? "bg-primary/10" : li === 1 ? "bg-indigo-400/10" : "bg-blue-400/10"}`}>
+                <span className={`text-xs font-bold ${li === 0 ? "text-primary" : li === 1 ? "text-indigo-600" : "text-blue-600"}`}>
                   {li + 1}
                 </span>
               </div>
               <div>
-                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${li === 0 ? "text-primary/50" : li === 1 ? "text-amber-500/50" : "text-blue-500/50"}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${li === 0 ? "text-primary/50" : li === 1 ? "text-indigo-500/50" : "text-blue-500/50"}`}>
                   Level {li + 1}
                 </span>
                 <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{level.title}</h2>
@@ -70,8 +70,8 @@ export default function CurriculumView({ content }: { content: any[] }) {
                       href={`/modules/${mod.id}`}
                       className="flex items-center gap-4 w-full text-left p-5"
                     >
-                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${li === 0 ? "bg-primary/[0.06] border-primary/10" : li === 1 ? "bg-amber-400/[0.06] border-amber-400/10" : "bg-blue-400/[0.06] border-blue-400/10"}`}>
-                        <span className={`text-sm font-bold ${li === 0 ? "text-primary/60" : li === 1 ? "text-amber-600/60" : "text-blue-600/60"}`}>
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${li === 0 ? "bg-primary/[0.06] border-primary/10" : li === 1 ? "bg-indigo-400/[0.06] border-indigo-400/10" : "bg-blue-400/[0.06] border-blue-400/10"}`}>
+                        <span className={`text-sm font-bold ${li === 0 ? "text-primary/60" : li === 1 ? "text-indigo-600/60" : "text-blue-600/60"}`}>
                           {String(modNum).padStart(2, "0")}
                         </span>
                       </div>
@@ -99,7 +99,7 @@ export default function CurriculumView({ content }: { content: any[] }) {
                             href={`/modules/${mod.id}/${lesson.id}`}
                             className="flex items-center gap-3 w-full text-left py-2.5 px-2 hover:bg-accent/10 rounded-lg transition-colors group/lesson"
                           >
-                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${li === 0 ? "bg-primary/[0.04] text-primary/40" : li === 1 ? "bg-amber-400/[0.04] text-amber-600/40" : "bg-blue-400/[0.04] text-blue-600/40"}`}>
+                            <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${li === 0 ? "bg-primary/[0.04] text-primary/40" : li === 1 ? "bg-indigo-400/[0.04] text-indigo-600/40" : "bg-blue-400/[0.04] text-blue-600/40"}`}>
                               {i + 1}
                             </span>
                             <span className="text-sm text-foreground/60 group-hover/lesson:text-primary transition-colors truncate">

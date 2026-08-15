@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   Loader2,
   ChevronRight,
@@ -25,6 +26,7 @@ import { formatModuleTitle } from "@/lib/utils";
 
 export default function CourseShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const [sheetOpen, setSheetOpen] = useState(false);
   const {
     session,
     isPending,
@@ -47,7 +49,7 @@ export default function CourseShell({ children }: { children: React.ReactNode })
   const activeLessonId = segments[2] || null;
 
   if (isLoading || (isPending && !session)) {
-    return <div className="h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+    return <div className="h-dvh flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
   }
 
   if (!isAdmin && !isPaid) {
@@ -204,13 +206,18 @@ export default function CourseShell({ children }: { children: React.ReactNode })
       {/* Main */}
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="lg:hidden h-14 border-b border-border/30 flex items-center justify-between px-4 shrink-0">
-          <Sheet>
+          <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
             <SheetTrigger asChild><Button variant="ghost" size="icon" aria-label="Open navigation menu"><Menu className="w-5 h-5" /></Button></SheetTrigger>
             <SheetContent side="left" className="w-80 p-0 flex flex-col gap-0 overflow-hidden">
               <div className="p-6 border-b border-border/30 shrink-0">
                 <Link href="/" className="text-base font-serif font-bold text-primary hover:text-primary/80 transition-colors">The Audition Guidebook</Link>
               </div>
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4">{nav}</div>
+              <div
+                className="flex-1 min-h-0 overflow-y-auto overscroll-contain p-4"
+                onClick={(e) => { if ((e.target as HTMLElement).closest("a")) setSheetOpen(false); }}
+              >
+                {nav}
+              </div>
             </SheetContent>
           </Sheet>
           <span className="text-sm font-serif font-semibold text-primary truncate max-w-[180px]">
