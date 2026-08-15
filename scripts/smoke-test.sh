@@ -130,6 +130,26 @@ fi
 
 # ---------------------------------------------------------------------------
 echo
+echo "7) SEO metadata (sitemap + OG image) served"
+# ---------------------------------------------------------------------------
+code=$(http_code "/sitemap.xml")
+[ "$code" = "200" ] && ok "GET /sitemap.xml -> 200" || bad "GET /sitemap.xml -> $code"
+
+og_type=$(curl -s -o /dev/null -w "%{content_type}" --max-time 20 "${BASE}/opengraph-image")
+case "$og_type" in
+  image/*) ok "GET /opengraph-image -> image ($og_type)" ;;
+  *)       bad "GET /opengraph-image -> content-type '$og_type' (expected image/*)" ;;
+esac
+
+home_og=$(curl -sL --max-time 20 "${BASE}/")
+if echo "$home_og" | grep -q 'property="og:title"'; then
+  ok "Home HTML emits OpenGraph meta tags"
+else
+  bad "No OpenGraph meta tags in home HTML"
+fi
+
+# ---------------------------------------------------------------------------
+echo
 echo "----------------------------------------"
 if [ "$fail" = "0" ]; then
   printf "${GREEN}All %d checks passed.${RESET}\n" "$pass"
