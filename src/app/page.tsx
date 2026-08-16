@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, Quote } from "lucide-react";
+import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import PromoCountdown from "@/components/PromoCountdown";
 
@@ -79,7 +79,7 @@ export default function Home() {
               <span className="block text-foreground">to final callback.</span>
             </h1>
             <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              A video course for musical theatre performers — choosing your songs, cutting and preparing your music, delivering tempo, and collaborating with the pianist and panel like a pro.
+              A video course for musical theatre performers. Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro.
             </p>
           </div>
 
@@ -117,7 +117,7 @@ export default function Home() {
             <div className="grid sm:grid-cols-3 gap-5">
               {[
                 { icon: Scissors, n: "01", title: "Cut & Prepare", desc: "Choose and cut your songs so any pianist can sight-read them on the spot." },
-                { icon: Mic, n: "02", title: "Audition Ready", desc: "Walk into any room calm and prepared — clear tempo, smooth handover, real presence." },
+                { icon: Mic, n: "02", title: "Audition Ready", desc: "Walk into any room calm and prepared, with clear tempo, a smooth handover, and real presence." },
                 { icon: Piano, n: "03", title: "Collaboration", desc: "Work with the pianist and panel as a true collaborator, from hello to last note." },
               ].map((item) => (
                 <div key={item.title} className="group p-6 rounded-2xl bg-card border border-border/60 hover:border-primary/20 hover:shadow-md hover:shadow-primary/[0.04] hover:-translate-y-0.5 transition-all duration-200">
@@ -201,14 +201,14 @@ export default function Home() {
                   Your auditions, from the accompanist&apos;s bench
                 </h2>
                 <p className="text-sm sm:text-base text-muted-foreground mt-4 leading-relaxed">
-                  I&apos;m Daniele Buatti — a pianist, music director, vocal coach, and embodiment practitioner from Melbourne. I&apos;ve spent fifteen years at the piano in audition rooms: reading cuts, setting tempos, and watching hundreds of performers walk in — and out. This course is built so you walk in feeling prepared, calm, and entirely in control.
+                  I&apos;m Daniele Buatti, a pianist, music director, vocal coach, and embodiment practitioner from Melbourne. I&apos;ve spent fifteen years at the piano in audition rooms: reading cuts, setting tempos, and watching hundreds of performers walk in and out. This course is built so you walk in feeling prepared, calm, and entirely in control.
                 </p>
                 <ul className="mt-6 space-y-3">
                   {[
-                    "15+ years across musical theatre — as an audition pianist, music director, and vocal coach.",
-                    "Vocal coach — helping singers find technique, interpretation, and presence for auditions and shows.",
-                    "Embodiment practitioner — trained in kinesiology, helping performers stay calm, present, and grounded under pressure.",
-                    "Educator at heart — making the practical side of performing clear, simple, and doable.",
+                    "15+ years across musical theatre as an audition pianist, music director, and vocal coach.",
+                    "Vocal coach: helping singers find technique, interpretation, and presence for auditions and shows.",
+                    "Embodiment practitioner: trained in kinesiology, helping performers stay calm, present, and grounded under pressure.",
+                    "Educator at heart: making the practical side of performing clear, simple, and doable.",
                   ].map((item) => (
                     <li key={item} className="flex items-start gap-3 text-sm text-foreground/80 leading-relaxed">
                       <CheckCircle2 className="w-4 h-4 text-accent-bright shrink-0 mt-0.5" />
@@ -223,31 +223,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-
-            {/* Testimonials */}
-            <div className="grid sm:grid-cols-2 gap-5 mt-12">
-              {[
-                {
-                  quote: "Daniele's guidance transformed my audition experience. I walked in confident and prepared, knowing exactly what to expect.",
-                  name: "Performer",
-                  role: "Musical Theatre",
-                },
-                {
-                  quote: "Working with Daniele helped me feel grounded and present in the room. The preparation made all the difference.",
-                  name: "Student",
-                  role: "Voice & Performance",
-                },
-              ].map((t) => (
-                <div key={t.name} className="p-6 rounded-2xl bg-card border border-border/40 hover:border-primary/15 transition-all">
-                  <Quote className="w-5 h-5 text-accent-bright/60 mb-3" />
-                  <p className="text-sm text-foreground/80 leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-                  <p className="text-xs mt-4">
-                    <span className="font-semibold text-primary">{t.name}</span>
-                    <span className="text-muted-foreground"> · {t.role}</span>
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
 
@@ -259,7 +234,7 @@ export default function Home() {
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright mb-3 block">Ready when you are</span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-3">Get full access to the complete course</h2>
               <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
-                Every module, lesson, and resource — yours for life, at your own pace. Launch pricing ends soon.
+                Every module, lesson, and resource, yours for life, at your own pace. Launch pricing ends soon.
               </p>
               <Link
                 href={primaryHref}

@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export const runtime = "nodejs";
-export const alt = "The Audition Guidebook — a video course for musical theatre performers";
+export const alt = "The Audition Guidebook: a video course for musical theatre performers";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -70,7 +70,7 @@ export default async function Image() {
               Walk into your audition prepared, calm, and in control.
             </div>
             <div style={{ display: "flex", fontSize: 26, color: MAUVE, marginTop: 24, maxWidth: 600, lineHeight: 1.4 }}>
-              A video course for musical theatre performers — choosing songs, cutting and preparing music, setting tempo, and collaborating with the pianist and panel.
+              A video course for musical theatre performers. Choose songs, cut and prepare music, set tempo, and collaborate with the pianist and panel.
             </div>
           </div>
           {headshotDataUrl && (

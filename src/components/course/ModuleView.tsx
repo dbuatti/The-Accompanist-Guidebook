@@ -6,9 +6,9 @@ import VideoPlayer from "@/components/VideoPlayer";
 import { formatModuleTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 
-export default function ModuleView({ moduleId }: { moduleId: string }) {
+export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
   const { getModule, isLessonCompleted, session } = useCourse();
-  const module = getModule(moduleId);
+  const module = getModule(moduleSlug);
 
   if (!module) {
     return (
@@ -71,7 +71,7 @@ export default function ModuleView({ moduleId }: { moduleId: string }) {
           {lessons.map((lesson: any, i: number) => (
             <Link
               key={lesson.id}
-              href={`/modules/${module.id}/${lesson.id}`}
+              href={`/modules/${module.slug}/${lesson.slug}`}
               className="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl border border-border/20 bg-card/40 hover:bg-card/60 hover:border-primary/15 transition-all duration-200"
             >
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 border ${

@@ -44,6 +44,7 @@ export const modules = pgTable('modules', {
   id: uuid('id').defaultRandom().primaryKey(),
   levelId: uuid('level_id').references(() => levels.id, { onDelete: 'set null' }),
   title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
   wrapUpVideoUrl: text('wrapUpVideoUrl').default(''),
   isPublished: boolean('is_published').default(true).notNull(),
   displayOrder: integer('display_order').default(0).notNull(),
@@ -54,6 +55,7 @@ export const lessons = pgTable('lessons', {
   id: uuid('id').defaultRandom().primaryKey(),
   moduleId: uuid('module_id').references(() => modules.id, { onDelete: 'cascade' }).notNull(),
   title: text('title').notNull(),
+  slug: text('slug').notNull(),
   videoUrl: text('video_url').notNull(),
   duration: text('duration').notNull(),
   notes: text('notes'),
@@ -65,7 +67,9 @@ export const lessons = pgTable('lessons', {
   hasVideo: boolean('has_video').default(true).notNull(),
   videoStatus: varchar('video_status', { length: 50 }).default('not_started').notNull(),
   filmingDate: timestamp('filming_date'),
-});
+}, (t) => ({
+  moduleSlugUnq: unique().on(t.moduleId, t.slug),
+}));
 
 export const welcomeContent = pgTable('welcome_content', {
   id: text('id').primaryKey().default('welcome'),

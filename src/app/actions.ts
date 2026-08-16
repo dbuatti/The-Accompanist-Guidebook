@@ -10,8 +10,31 @@ import Stripe from "stripe";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
+import { slugify } from "@/lib/utils";
 
 // Gemini client is lazily instantiated inside generateLessonNotes to avoid an eager env read at module load.
+
+// --- Slug helpers ---
+function dedupeSlug(base: string, taken: Set<string>): string {
+  let candidate = base;
+  let n = 2;
+  while (taken.has(candidate)) {
+    candidate = `${base}-${n}`;
+    n++;
+  }
+  taken.add(candidate);
+  return candidate;
+}
+
+async function uniqueModuleSlug(title: string): Promise<string> {
+  const existing = await db.select({ slug: modules.slug }).from(modules);
+  return dedupeSlug(slugify(title), new Set(existing.map((m) => m.slug)));
+}
+
+async function uniqueLessonSlug(moduleId: string, title: string): Promise<string> {
+  const existing = await db.select({ slug: lessons.slug }).from(lessons).where(eq(lessons.moduleId, moduleId));
+  return dedupeSlug(slugify(title), new Set(existing.map((l) => l.slug)));
+}
 
 // --- User Management Actions ---
 export async function ensureUserExists() {
@@ -379,7 +402,8 @@ export async function deleteLevel(levelId: string) {
 export async function createModule(title: string, levelId?: string) {
   await requireAdmin();
   try {
-    const result = await db.insert(modules).values({ title, levelId: levelId || null }).returning();
+    const slug = await uniqueModuleSlug(title);
+    const result = await db.insert(modules).values({ title, slug, levelId: levelId || null }).returning();
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     return result[0];
@@ -467,9 +491,11 @@ export async function updateLesson(
 export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
   await requireAdmin();
   try {
+    const slug = await uniqueLessonSlug(moduleId, data.title);
     const result = await db.insert(lessons).values({
       ...data,
       moduleId,
+      slug,
       hasVideo: data.hasVideo ?? true,
       videoStatus: data.videoStatus ?? 'not_started',
       filmingDate: data.filmingDate ?? null,
@@ -614,14 +640,17 @@ export async function scaffoldAuditionGuidebook() {
 
     // Helper to create module and lessons
     const addModuleWithLessons = async (levelId: string, title: string, displayOrder: number, lessonsData: any[]) => {
-      const modRes = await db.insert(modules).values({ title, levelId, displayOrder }).returning();
+      const modSlug = await uniqueModuleSlug(title);
+      const modRes = await db.insert(modules).values({ title, slug: modSlug, levelId, displayOrder }).returning();
       const modId = modRes[0].id;
 
+      const takenLessonSlugs = new Set<string>();
       for (let i = 0; i < lessonsData.length; i++) {
         const les = lessonsData[i];
         await db.insert(lessons).values({
           moduleId: modId,
           title: les.title,
+          slug: dedupeSlug(slugify(les.title), takenLessonSlugs),
           videoUrl: les.videoUrl || "",
           duration: les.duration || "05:00",
           notes: les.notes || "",
@@ -916,6 +945,7 @@ export async function syncLessonContent() {
       const moduleLessons = allLessons.filter(l => l.moduleId === dbModule.id);
       const maxOrder = moduleLessons.reduce((max, l) => Math.max(max, l.displayOrder), 0);
       let nextOrder = maxOrder + 1;
+      const takenLessonSlugs = new Set(moduleLessons.map((l) => l.slug));
 
       for (const lessonUpdate of modUpdate.lessons) {
         let dbLesson = allLessons.find(l => l.moduleId === dbModule.id && l.title === lessonUpdate.title);
@@ -925,6 +955,7 @@ export async function syncLessonContent() {
           const [inserted] = await db.insert(lessons).values({
             moduleId: dbModule.id,
             title: lessonUpdate.title,
+            slug: dedupeSlug(slugify(lessonUpdate.title), takenLessonSlugs),
             videoUrl: "",
             duration: "05:00",
             notes: lessonUpdate.notes,
@@ -980,6 +1011,7 @@ export async function restructureCourse() {
     } else {
       const [inserted] = await db.insert(modules).values({
         title: "Choosing Your Audition Repertoire",
+        slug: await uniqueModuleSlug("Choosing Your Audition Repertoire"),
         levelId: lvl1.id,
         displayOrder: 1,
         isPublished: false,
@@ -1017,10 +1049,12 @@ export async function restructureCourse() {
     ];
 
     if (isNewModule) {
+      const takenLessonSlugs = new Set<string>();
       for (let i = 0; i < newLessons.length; i++) {
         await db.insert(lessons).values({
           moduleId: newMod.id,
           title: newLessons[i].title,
+          slug: dedupeSlug(slugify(newLessons[i].title), takenLessonSlugs),
           videoUrl: "",
           duration: "00:00",
           notes: newLessons[i].notes,

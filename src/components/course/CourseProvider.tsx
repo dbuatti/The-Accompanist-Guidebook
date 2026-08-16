@@ -36,9 +36,9 @@ interface CourseContextValue {
   toggleComplete: (id: string) => Promise<void>;
   publishAll: () => Promise<void>;
   logout: () => Promise<void>;
-  getModule: (id: string) => any | null;
-  getLesson: (moduleId: string, lessonId: string) => any | null;
-  getAdjacentLesson: (moduleId: string, lessonId: string) => { prev?: AdjacentLesson; next?: AdjacentLesson };
+  getModule: (moduleSlug: string) => any | null;
+  getLesson: (moduleSlug: string, lessonSlug: string) => any | null;
+  getAdjacentLesson: (moduleSlug: string, lessonSlug: string) => { prev?: AdjacentLesson; next?: AdjacentLesson };
 }
 
 const CourseContext = createContext<CourseContextValue | null>(null);
@@ -95,8 +95,15 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
-    if (session?.user?.id) fetchData();
-  }, [session?.user?.id]);
+    if (isPending) return;
+    if (!session?.user?.id) {
+      // Anonymous visitor: no session means unpaid by definition, so there's
+      // nothing to fetch — resolve loading so CourseShell can show the paywall.
+      setIsLoading(false);
+      return;
+    }
+    fetchData();
+  }, [isPending, session?.user?.id]);
 
   // Handle return from Stripe: ?paid=1 (or a pending_paid cookie set for
   // anonymous buyers who had to sign in before the flag could be applied).
@@ -120,9 +127,9 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       const result = await verifyAndApplyPurchase();
       if (result.isPaid) {
         setIsPaid(true);
-        showSuccess("Course unlocked — welcome aboard!");
+        showSuccess("Course unlocked, welcome aboard!");
       } else {
-        showError("We couldn't verify your payment yet — it usually appears within a minute. Try again shortly.");
+        showError("We couldn't verify your payment yet. It usually appears within a minute, try again shortly.");
       }
       fetchData();
     };
@@ -160,32 +167,32 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     router.push("/");
   }, [router]);
 
-  const getModule = useCallback((moduleId: string) => {
-    if (!moduleId) return null;
-    for (const level of content) for (const mod of level.modules || []) if (mod.id === moduleId) return mod;
+  const getModule = useCallback((moduleSlug: string) => {
+    if (!moduleSlug) return null;
+    for (const level of content) for (const mod of level.modules || []) if (mod.slug === moduleSlug) return mod;
     return null;
   }, [content]);
 
   const getLesson = useCallback(
-    (moduleId: string, lessonId: string) => {
-      const mod = getModule(moduleId);
-      return mod?.lessons?.find((l: any) => l.id === lessonId) || null;
+    (moduleSlug: string, lessonSlug: string) => {
+      const mod = getModule(moduleSlug);
+      return mod?.lessons?.find((l: any) => l.slug === lessonSlug) || null;
     },
     [getModule]
   );
 
   const getAdjacentLesson = useCallback(
-    (moduleId: string, lessonId: string) => {
+    (moduleSlug: string, lessonSlug: string) => {
       const flat: AdjacentLesson[] = [];
       for (const level of content) {
         for (const mod of level.modules || []) {
           const moduleTitle = formatModuleTitle(mod);
           for (const lesson of mod.lessons || []) {
-            flat.push({ href: `/modules/${mod.id}/${lesson.id}`, title: lesson.title, moduleTitle });
+            flat.push({ href: `/modules/${mod.slug}/${lesson.slug}`, title: lesson.title, moduleTitle });
           }
         }
       }
-      const idx = flat.findIndex((e) => e.href === `/modules/${moduleId}/${lessonId}`);
+      const idx = flat.findIndex((e) => e.href === `/modules/${moduleSlug}/${lessonSlug}`);
       if (idx === -1) return { prev: undefined, next: undefined };
       return { prev: idx > 0 ? flat[idx - 1] : undefined, next: idx < flat.length - 1 ? flat[idx + 1] : undefined };
     },

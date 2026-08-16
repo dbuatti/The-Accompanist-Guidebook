@@ -6,11 +6,11 @@ import VideoPlayer from "@/components/VideoPlayer";
 import { MarkdownBody } from "@/components/MarkdownBody";
 import { useCourse } from "./CourseProvider";
 
-export default function LessonView({ moduleId, lessonId }: { moduleId: string; lessonId: string }) {
+export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: string; lessonSlug: string }) {
   const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session } = useCourse();
-  const module = getModule(moduleId);
-  const lesson = getLesson(moduleId, lessonId);
-  const { prev, next } = getAdjacentLesson(moduleId, lessonId);
+  const module = getModule(moduleSlug);
+  const lesson = getLesson(moduleSlug, lessonSlug);
+  const { prev, next } = getAdjacentLesson(moduleSlug, lessonSlug);
 
   if (!module || !lesson) {
     return (
@@ -35,7 +35,7 @@ export default function LessonView({ moduleId, lessonId }: { moduleId: string; l
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
         <div className="relative max-w-4xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-6 sm:pb-8">
           <Link
-            href={`/modules/${module.id}`}
+            href={`/modules/${module.slug}`}
             className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mb-4"
           >
             <ChevronLeft className="w-3.5 h-3.5" />

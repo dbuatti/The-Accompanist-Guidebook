@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     default: "The Audition Guidebook",
     template: "%s | The Audition Guidebook",
   },
-  description: "A video course for musical theatre performers — choose and prepare your songs, set your tempo, and collaborate with the audition pianist and panel with confidence. Taught from the accompanist's bench.",
+  description: "A video course for musical theatre performers. Choose and prepare your songs, set your tempo, and collaborate with the audition pianist and panel with confidence. Taught from the accompanist's bench.",
   keywords: ["musical theatre", "audition", "vocal", "singer", "accompanist", "pianist", "music director", "online course"],
   openGraph: {
     type: "website",
@@ -24,12 +24,12 @@ export const metadata: Metadata = {
     url: "https://theauditionguidebook.vercel.app",
     siteName: "The Audition Guidebook",
     title: "The Audition Guidebook",
-    description: "A video course for musical theatre performers — prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
+    description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
   },
   twitter: {
     card: "summary_large_image",
     title: "The Audition Guidebook",
-    description: "A video course for musical theatre performers — prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
+    description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
   },
 };
 

@@ -41,12 +41,12 @@ export default function CourseShell({ children }: { children: React.ReactNode })
     logout,
   } = useCourse();
 
-  // Active route: /modules            -> curriculum
-  //              /modules/:moduleId   -> module
-  //              /modules/:moduleId/:lessonId -> lesson
-  const segments = pathname.split("/").filter(Boolean); // ["modules", id?, lessonId?]
-  const activeModuleId = segments[1] || null;
-  const activeLessonId = segments[2] || null;
+  // Active route: /modules              -> curriculum
+  //              /modules/:moduleSlug   -> module
+  //              /modules/:moduleSlug/:lessonSlug -> lesson
+  const segments = pathname.split("/").filter(Boolean); // ["modules", slug?, slug?]
+  const activeModuleSlug = segments[1] || null;
+  const activeLessonSlug = segments[2] || null;
 
   if (isLoading || (isPending && !session)) {
     return <div className="h-dvh flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
@@ -84,12 +84,12 @@ export default function CourseShell({ children }: { children: React.ReactNode })
       <Link
         href="/modules"
         className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
-          !activeModuleId
+          !activeModuleSlug
             ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
             : "hover:bg-accent/20 text-foreground/70 border border-transparent hover:border-border/40"
         }`}
       >
-        <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${!activeModuleId ? "text-primary-foreground/80" : "text-muted-foreground/50"}`} />
+        <FileText className={`w-4 h-4 shrink-0 mt-0.5 ${!activeModuleSlug ? "text-primary-foreground/80" : "text-muted-foreground/50"}`} />
         <div className="min-w-0 flex-1">
           <span className="text-sm font-medium leading-snug block">All Modules</span>
         </div>
@@ -107,14 +107,14 @@ export default function CourseShell({ children }: { children: React.ReactNode })
           {expandedLevels[level.id] && (
             <div className="mt-2 space-y-1">
               {level.modules.map((mod: any) => {
-                const isActive = activeModuleId === mod.id;
+                const isActive = activeModuleSlug === mod.slug;
                 const isHidden = mod.isPublished === false;
                 const done = mod.lessons.filter((l: any) => isLessonCompleted(l.id)).length;
                 const total = mod.lessons.length;
                 return (
                   <Link
                     key={mod.id}
-                    href={`/modules/${mod.id}`}
+                    href={`/modules/${mod.slug}`}
                     className={`flex items-start gap-3 w-full text-left px-3 py-3 rounded-xl transition-all ${
                       isActive
                         ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
@@ -143,7 +143,7 @@ export default function CourseShell({ children }: { children: React.ReactNode })
     </div>
   );
 
-  const currentModule = activeModuleId ? content.flatMap((l: any) => l.modules || []).find((m: any) => m.id === activeModuleId) : null;
+  const currentModule = activeModuleSlug ? content.flatMap((l: any) => l.modules || []).find((m: any) => m.slug === activeModuleSlug) : null;
 
   return (
     <div className="h-dvh bg-background flex overflow-hidden">
@@ -221,7 +221,7 @@ export default function CourseShell({ children }: { children: React.ReactNode })
             </SheetContent>
           </Sheet>
           <span className="text-sm font-serif font-semibold text-primary truncate max-w-[180px]">
-            {activeLessonId ? "Lesson" : activeModuleId ? currentModule?.title || "Module" : "All Modules"}
+            {activeLessonSlug ? "Lesson" : activeModuleSlug ? currentModule?.title || "Module" : "All Modules"}
           </span>
           {session ? (
             <div className="flex items-center gap-1">

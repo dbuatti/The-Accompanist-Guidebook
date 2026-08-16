@@ -90,9 +90,9 @@ export default function WelcomePage() {
       const result = await verifyAndApplyPurchase();
       if (result.isPaid) {
         setIsPaid(true);
-        showSuccess("Course unlocked — welcome aboard!");
+        showSuccess("Course unlocked, welcome aboard!");
       } else {
-        showError("We couldn't verify your payment yet — it usually appears within a minute. Try again shortly.");
+        showError("We couldn't verify your payment yet. It usually appears within a minute, try again shortly.");
       }
       fetchData();
     };
@@ -173,7 +173,7 @@ export default function WelcomePage() {
             {welcome?.title || "A letter from Daniele"}
           </h1>
           <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto mt-4 leading-relaxed">
-            Hi, I&apos;m Daniele — a pianist, music director, vocal coach, and educator. Take a minute to read this before your first lesson.
+            Hi, I&apos;m Daniele, a pianist, music director, vocal coach, and educator. Take a minute to read this before your first lesson.
           </p>
         </div>
 
@@ -239,7 +239,7 @@ export default function WelcomePage() {
 
             <p className="text-xs text-muted-foreground/60 mt-5 flex items-center justify-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5" />
-              Save your progress as you go — it syncs automatically.
+              Save your progress as you go. It syncs automatically.
             </p>
           </div>
         </div>

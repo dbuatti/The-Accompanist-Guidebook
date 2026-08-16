@@ -75,7 +75,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                 Full course access
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground leading-relaxed">
-                The complete curriculum unlocks the moment you purchase — every module, lesson, and resource, yours to work through at your own pace.
+                The complete curriculum unlocks the moment you purchase. Every module, lesson, and resource is yours to work through at your own pace.
               </p>
 
               <div className="space-y-4 pt-1">
@@ -106,12 +106,12 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                     The Audition Guidebook
                   </h2>
                   <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                    Full lifetime access to the complete course — every module, lesson, and resource.
+                    Full lifetime access to the complete course: every module, lesson, and resource.
                   </p>
 
                   <div className="space-y-3 mb-7">
                     {[
-                      "Complete curriculum — all modules & lessons",
+                      "Complete curriculum: all modules and lessons",
                       "Downloadable practice resources",
                       "Progress tracking across the course",
                       "Lifetime access + future updates",
@@ -143,7 +143,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                 Already own it?{" "}
                 <Link href="/auth/sign-in" className="text-primary hover:underline">Sign in</Link>
                 {hasSession && (
-                  <span> — or try refreshing if you just purchased.</span>
+                  <span> Or try refreshing if you just purchased.</span>
                 )}
               </p>
             </div>
