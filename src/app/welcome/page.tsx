@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   BookOpen,
   Feather,
+  PartyPopper,
 } from "lucide-react";
 import { authClient } from "@/lib/auth/client";
 import { showSuccess, showError } from "@/utils/toast";
@@ -26,6 +27,7 @@ import {
   ensureUserExists,
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
+import { formatModuleTitle } from "@/lib/utils";
 
 export default function WelcomePage() {
   const router = useRouter();
@@ -115,19 +117,26 @@ export default function WelcomePage() {
     return <PaywallGate hasSession={!!session?.user} />;
   }
 
-  const totalLessons = content.reduce((sum: number, l: any) => sum + (l.modules?.reduce((s: number, m: any) => s + (m.lessons?.length || 0), 0) || 0), 0);
-  const completedLessons = progressData.filter((p) => p.completedAt).length;
-  const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const isLessonCompleted = (lessonId: string) => progressData.some((p) => p.lessonId === lessonId && p.completedAt);
 
-  const firstLesson = (() => {
+  const flatLessons = (() => {
+    const flat: { id: string; href: string; title: string; moduleTitle: string }[] = [];
     for (const level of content) {
       for (const mod of level.modules || []) {
-        const lesson = mod.lessons?.[0];
-        if (lesson) return { href: `/modules/${mod.id}/${lesson.id}`, title: lesson.title };
+        for (const lesson of mod.lessons || []) {
+          flat.push({ id: lesson.id, href: `/modules/${mod.slug}/${lesson.slug}`, title: lesson.title, moduleTitle: formatModuleTitle(mod) });
+        }
       }
     }
-    return null;
+    return flat;
   })();
+
+  const totalLessons = flatLessons.length;
+  const completedLessons = flatLessons.filter((l) => isLessonCompleted(l.id)).length;
+  const pct = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const nextLesson = flatLessons.find((l) => !isLessonCompleted(l.id)) || null;
+  const isReturning = completedLessons > 0;
+  const isCourseComplete = totalLessons > 0 && completedLessons === totalLessons;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
@@ -205,25 +214,51 @@ export default function WelcomePage() {
         {/* Next step */}
         <div className="max-w-3xl mx-auto px-6 pb-20">
           <div className="rounded-3xl border border-accent/25 bg-accent/[0.07] px-8 py-10 text-center">
-            <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary">Ready to begin?</h2>
-            <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2 leading-relaxed">
-              Head into the course and start with Module 1. You can go at your own pace and pick up exactly where you left off.
-            </p>
+            {isCourseComplete ? (
+              <>
+                <div className="w-12 h-12 rounded-2xl bg-accent-bright/10 flex items-center justify-center mx-auto mb-4">
+                  <PartyPopper className="w-5 h-5 text-accent-bright" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary">You&apos;ve completed the course</h2>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2 leading-relaxed">
+                  Every lesson, done. Come back any time to revisit a module or brush up before your next audition.
+                </p>
+              </>
+            ) : isReturning ? (
+              <>
+                <span className="text-[11px] font-semibold uppercase tracking-[0.15em] text-accent-bright">Welcome back</span>
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary mt-2">
+                  Continue: {nextLesson?.title}
+                </h2>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2 leading-relaxed">
+                  {nextLesson?.moduleTitle}. Pick up right where you left off.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary">Ready to begin?</h2>
+                <p className="text-sm text-muted-foreground max-w-md mx-auto mt-2 leading-relaxed">
+                  Head into the course and start with Module 1. You can go at your own pace and pick up exactly where you left off.
+                </p>
+              </>
+            )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
               <Link
-                href={firstLesson?.href || "/modules"}
+                href={nextLesson?.href || "/modules"}
                 className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
               >
                 <BookOpen className="w-4 h-4" />
-                Start the course
+                {isCourseComplete ? "Browse the modules" : isReturning ? "Continue learning" : "Start the course"}
                 <ArrowRight className="w-4 h-4" />
               </Link>
-              <Link
-                href="/modules"
-                className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-8 py-3.5 rounded-xl font-medium text-sm transition-all"
-              >
-                Browse the modules
-              </Link>
+              {!isCourseComplete && (
+                <Link
+                  href="/modules"
+                  className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-8 py-3.5 rounded-xl font-medium text-sm transition-all"
+                >
+                  Browse the modules
+                </Link>
+              )}
             </div>
 
             {totalLessons > 0 && (

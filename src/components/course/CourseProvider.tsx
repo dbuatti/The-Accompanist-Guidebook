@@ -30,8 +30,6 @@ interface CourseContextValue {
   progressData: any[];
   isPaid: boolean;
   isAdmin: boolean;
-  expandedLevels: Record<string, boolean>;
-  toggleLevel: (id: string) => void;
   isLessonCompleted: (id: string) => boolean;
   toggleComplete: (id: string) => Promise<void>;
   publishAll: () => Promise<void>;
@@ -54,7 +52,6 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
   const { data: session, isPending } = authClient.useSession();
   const [content, setContent] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [expandedLevels, setExpandedLevels] = useState<Record<string, boolean>>({});
   const [progressData, setProgressData] = useState<any[]>([]);
   const [isPaid, setIsPaid] = useState(false);
 
@@ -82,11 +79,6 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       }
       const data = await getCourseContent();
       setContent(data);
-      if (data.length > 0) {
-        const allExpanded: Record<string, boolean> = {};
-        for (const level of data) allExpanded[level.id] = true;
-        setExpandedLevels(allExpanded);
-      }
     } catch {
       showError("Failed to load content");
     } finally {
@@ -199,8 +191,6 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     [content]
   );
 
-  const toggleLevel = useCallback((id: string) => setExpandedLevels((p) => ({ ...p, [id]: !p[id] })), []);
-
   return (
     <CourseContext.Provider
       value={{
@@ -211,8 +201,6 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
         progressData,
         isPaid,
         isAdmin,
-        expandedLevels,
-        toggleLevel,
         isLessonCompleted,
         toggleComplete,
         publishAll,

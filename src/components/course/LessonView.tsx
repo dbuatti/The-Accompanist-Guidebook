@@ -34,18 +34,10 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
         <div className="relative max-w-4xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-6 sm:pb-8">
-          <Link
-            href={`/modules/${module.slug}`}
-            className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-primary transition-colors mb-4"
-          >
-            <ChevronLeft className="w-3.5 h-3.5" />
-            {module.title}
-          </Link>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-[10px] sm:text-[11px] text-muted-foreground">
               Lesson {lessonIndex + 1} of {lessons.length}
             </span>
-            {lesson.duration && <span className="text-[10px] sm:text-[11px] text-muted-foreground/50">· {lesson.duration}</span>}
           </div>
           <h1 className="text-xl sm:text-3xl font-serif font-bold text-primary leading-tight">{lesson.title}</h1>
 

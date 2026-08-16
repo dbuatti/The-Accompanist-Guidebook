@@ -226,6 +226,25 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Trust strip */}
+        <section className="w-full border-y border-border/40 bg-card/40 py-10">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 text-center">
+              {[
+                { n: "3", label: "Structured levels" },
+                { n: "13", label: "Modules" },
+                { n: "49", label: "Video lessons" },
+                { n: "15+", label: "Years in the room" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <p className="font-serif text-2xl sm:text-3xl font-bold text-primary tabular-nums">{stat.n}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* CTA band */}
         <div className="w-full max-w-4xl mx-auto px-6 pb-24">
           <div className="relative rounded-3xl border border-accent/20 bg-accent/[0.06] px-8 py-12 sm:py-14 text-center overflow-hidden">

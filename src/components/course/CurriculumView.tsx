@@ -1,14 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, FileText, ChevronRight } from "lucide-react";
+import { Layers, FileText, CheckCircle2, ArrowRight, EyeOff } from "lucide-react";
 import { formatModuleTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 
 const LEVEL_ACCENTS = [
-  { badgeBg: "bg-primary/10", badgeText: "text-primary", label: "text-primary/50", iconBg: "bg-primary/[0.06] border-primary/10", iconText: "text-primary/60" },
-  { badgeBg: "bg-indigo-400/10", badgeText: "text-indigo-600", label: "text-indigo-500/50", iconBg: "bg-indigo-400/[0.06] border-indigo-400/10", iconText: "text-indigo-600/60" },
-  { badgeBg: "bg-blue-400/10", badgeText: "text-blue-600", label: "text-blue-500/50", iconBg: "bg-blue-400/[0.06] border-blue-400/10", iconText: "text-blue-600/60" },
+  { badgeBg: "bg-primary/10", badgeText: "text-primary", label: "text-primary/50", numBg: "bg-primary/[0.06]", numText: "text-primary/50" },
+  { badgeBg: "bg-indigo-400/10", badgeText: "text-indigo-600", label: "text-indigo-500/50", numBg: "bg-indigo-400/[0.06]", numText: "text-indigo-600/50" },
+  { badgeBg: "bg-blue-400/10", badgeText: "text-blue-600", label: "text-blue-500/50", numBg: "bg-blue-400/[0.06]", numText: "text-blue-600/50" },
 ];
 
 export default function CurriculumView() {
@@ -17,6 +17,21 @@ export default function CurriculumView() {
 
   const totalModules = content.reduce((sum: number, lvl: any) => sum + lvl.modules.length, 0);
   const totalLessons = content.reduce((sum: number, lvl: any) => sum + lvl.modules.reduce((s: number, mod: any) => s + mod.lessons.length, 0), 0);
+
+  const continueLesson = (() => {
+    if (!isLoggedIn) return null;
+    for (const level of content) {
+      for (const mod of level.modules || []) {
+        for (const lesson of mod.lessons || []) {
+          if (!isLessonCompleted(lesson.id)) {
+            return { href: `/modules/${mod.slug}/${lesson.slug}`, title: lesson.title, moduleTitle: formatModuleTitle(mod) };
+          }
+        }
+      }
+    }
+    return null;
+  })();
+  const hasStarted = isLoggedIn && content.some((lvl: any) => lvl.modules.some((mod: any) => mod.lessons.some((l: any) => isLessonCompleted(l.id))));
 
   return (
     <div className="animate-in fade-in duration-500">
@@ -36,12 +51,28 @@ export default function CurriculumView() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-5 sm:px-10 py-10 sm:py-14 space-y-12 sm:space-y-14">
+      <div className="max-w-3xl mx-auto px-5 sm:px-10 pt-8 sm:pt-10">
+        {hasStarted && continueLesson && (
+          <Link
+            href={continueLesson.href}
+            className="group flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] hover:bg-accent/[0.1] transition-colors p-5 mb-2"
+          >
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent-bright">Continue learning</span>
+              <p className="text-base font-serif font-semibold text-primary mt-1 truncate">{continueLesson.title}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{continueLesson.moduleTitle}</p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-accent-bright shrink-0 group-hover:translate-x-0.5 transition-transform" />
+          </Link>
+        )}
+      </div>
+
+      <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-10 sm:pb-14 pt-8 sm:pt-4 space-y-12 sm:space-y-14">
         {content.map((level: any, li: number) => {
           const accent = LEVEL_ACCENTS[li % LEVEL_ACCENTS.length];
           return (
           <section key={level.id}>
-            <div className="flex items-center gap-4 mb-8">
+            <div className="flex items-center gap-4 mb-6">
               <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${accent.badgeBg}`}>
                 <span className={`text-xs font-bold ${accent.badgeText}`}>{li + 1}</span>
               </div>
@@ -54,39 +85,53 @@ export default function CurriculumView() {
               <div className="flex-1 h-px bg-gradient-to-r from-border/40 to-transparent ml-auto max-w-[120px]" />
             </div>
 
-            <div className="grid gap-4">
+            <div className="space-y-5">
               {level.modules.map((mod: any) => {
-                const done = mod.lessons.filter((l: any) => isLessonCompleted(l.id)).length;
-                const total = mod.lessons.length;
+                const isHidden = mod.isPublished === false;
                 return (
-                  <Link
-                    key={mod.id}
-                    href={`/modules/${mod.slug}`}
-                    className="group relative border border-border/20 rounded-2xl bg-card/40 hover:bg-card/60 hover:border-primary/15 hover:shadow-md hover:shadow-primary/[0.02] transition-all duration-200 flex items-center gap-4 p-5"
-                  >
-                    <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 border ${accent.iconBg}`}>
-                      <span className={`text-sm font-bold ${accent.iconText}`}>
-                        {String(mod.moduleNumber ?? "").padStart(2, "0")}
-                      </span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-serif font-semibold text-primary group-hover:text-primary/80 transition-colors">
+                  <div key={mod.id} className="border border-border/20 rounded-2xl bg-card/40 overflow-hidden">
+                    <div className="flex items-center gap-3 px-5 py-4 border-b border-border/10">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${accent.numBg}`}>
+                        <span className={`text-xs font-bold tabular-nums ${accent.numText}`}>
+                          {String(mod.moduleNumber ?? "").padStart(2, "0")}
+                        </span>
+                      </div>
+                      <h3 className={`text-base font-serif font-semibold flex-1 min-w-0 truncate ${isHidden ? "text-muted-foreground/60 italic" : "text-primary"}`}>
                         {formatModuleTitle(mod)}
                       </h3>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-muted-foreground/50 flex items-center gap-1">
-                          <FileText className="w-3 h-3" />
-                          {total} lesson{total !== 1 ? "s" : ""}
+                      {isHidden ? (
+                        <span className="flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-muted-foreground/50 shrink-0">
+                          <EyeOff className="w-3 h-3" /> Coming soon
                         </span>
-                        {isLoggedIn && total > 0 && (
-                          <span className="text-xs text-muted-foreground/50">{done}/{total} complete</span>
-                        )}
+                      ) : (
+                        <span className="text-xs text-muted-foreground/50 flex items-center gap-1 shrink-0">
+                          <FileText className="w-3 h-3" /> {mod.lessons.length}
+                        </span>
+                      )}
+                    </div>
+
+                    {!isHidden && mod.lessons.length > 0 && (
+                      <div className="py-1">
+                        {mod.lessons.map((lesson: any, i: number) => {
+                          const done = isLoggedIn && isLessonCompleted(lesson.id);
+                          return (
+                            <Link
+                              key={lesson.id}
+                              href={`/modules/${mod.slug}/${lesson.slug}`}
+                              className="group flex items-center gap-3 px-5 py-2.5 hover:bg-accent/10 transition-colors"
+                            >
+                              <span className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${done ? "bg-accent/20 text-accent-foreground" : `${accent.numBg} ${accent.numText}`}`}>
+                                {done ? <CheckCircle2 className="w-3 h-3" /> : i + 1}
+                              </span>
+                              <span className="text-sm text-foreground/70 group-hover:text-primary transition-colors truncate flex-1 min-w-0">
+                                {lesson.title}
+                              </span>
+                            </Link>
+                          );
+                        })}
                       </div>
-                    </div>
-                    <div className="w-7 h-7 rounded-full border border-border/30 flex items-center justify-center group-hover:border-primary/30 group-hover:bg-primary/5 transition-all shrink-0">
-                      <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-primary/60 transition-colors" />
-                    </div>
-                  </Link>
+                    )}
+                  </div>
                 );
               })}
             </div>
