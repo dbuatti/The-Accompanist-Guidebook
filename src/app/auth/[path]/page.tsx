@@ -1,6 +1,7 @@
 import { Music } from 'lucide-react';
 import Link from 'next/link';
 import AuthContainer from '@/components/AuthContainer';
+import { SITE_NAME } from "@/lib/constants";
 
 export default async function AuthPage({
   params,
@@ -23,7 +24,7 @@ export default async function AuthPage({
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/10">
             <Music size={32} />
           </div>
-          <h1 className="text-3xl font-serif font-bold text-primary">The Audition Guidebook</h1>
+          <h1 className="text-3xl font-serif font-bold text-primary">{SITE_NAME}</h1>
           <p className="text-muted-foreground italic">Sign in to access your course.</p>
           <p className="text-xs text-muted-foreground/70 leading-relaxed">
             Just purchased? Sign in with the same email you used at checkout and your access unlocks automatically.

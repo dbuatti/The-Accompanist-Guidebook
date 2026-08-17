@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, EyeOff, ArrowRight, CheckCircle2 } from "lucide-react";
+import { Layers, EyeOff, CheckCircle2 } from "lucide-react";
 import VideoPlayer from "@/components/VideoPlayer";
 import { formatModuleTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
+import { CTAButton } from "@/components/CTAButton";
 
 export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
   const { getModule, isLessonCompleted, session } = useCourse();
@@ -34,18 +35,18 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
   }
 
   const lessons = module.lessons || [];
-  const done = lessons.filter((l: any) => isLessonCompleted(l.id)).length;
+  const done = lessons.filter((l) => isLessonCompleted(l.id)).length;
   const pct = lessons.length > 0 ? Math.round((done / lessons.length) * 100) : 0;
   const isLoggedIn = !!session;
   const isComplete = lessons.length > 0 && done === lessons.length;
-  const nextLesson = lessons.find((l: any) => !isLessonCompleted(l.id)) || lessons[0];
+  const nextLesson = lessons.find((l) => !isLessonCompleted(l.id)) || lessons[0];
 
   return (
     <div>
       {/* Hero header */}
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
-        <div className="relative max-w-2xl mx-auto px-5 sm:px-10 pt-14 sm:pt-20 pb-10 sm:pb-14 text-center">
+        <div className="relative max-w-2xl mx-auto px-5 sm:px-10 pt-12 sm:pt-20 pb-10 sm:pb-14 text-center">
           <div className="inline-flex items-center gap-1.5 h-5 sm:h-6 px-2.5 sm:px-3 rounded-full bg-primary/10 mb-4">
             <Layers className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary" />
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-primary">Module</span>
@@ -63,14 +64,13 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
           )}
 
           {lessons.length > 0 && (
-            <Link
+            <CTAButton
               href={`/modules/${module.slug}/${nextLesson.slug}`}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-7 py-3 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 mt-7"
+              className="mt-7"
             >
               {isComplete ? <CheckCircle2 className="w-4 h-4" /> : null}
               {isComplete ? "Review Lesson 1" : done > 0 ? `Continue: ${nextLesson.title}` : "Start Lesson 1"}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            </CTAButton>
           )}
         </div>
       </div>

@@ -1,9 +1,10 @@
 import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { SITE_NAME } from "@/lib/constants";
 
 export const runtime = "nodejs";
-export const alt = "The Audition Guidebook: a video course for musical theatre performers";
+export const alt = `${SITE_NAME}: a video course for musical theatre performers`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -63,7 +64,7 @@ export default async function Image() {
                 ♪
               </div>
               <div style={{ display: "flex", fontSize: 22, color: PERIWINKLE, letterSpacing: 2, fontWeight: 700 }}>
-                THE AUDITION GUIDEBOOK
+                THE {SITE_NAME.toUpperCase()}
               </div>
             </div>
             <div style={{ display: "flex", fontSize: 64, fontFamily: "Playfair", fontWeight: 700, lineHeight: 1.1, maxWidth: 620 }}>

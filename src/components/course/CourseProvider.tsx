@@ -15,6 +15,7 @@ import {
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { formatModuleTitle } from "@/lib/utils";
+import type { CourseLevel, CourseProgress, CourseModule, CourseLesson } from "@/lib/types";
 
 interface AdjacentLesson {
   href: string;
@@ -23,19 +24,19 @@ interface AdjacentLesson {
 }
 
 interface CourseContextValue {
-  session: any;
+  session: ReturnType<typeof authClient.useSession>["data"];
   isPending: boolean;
-  content: any[];
+  content: CourseLevel[];
   isLoading: boolean;
-  progressData: any[];
+  progressData: CourseProgress[];
   isPaid: boolean;
   isAdmin: boolean;
   isLessonCompleted: (id: string) => boolean;
   toggleComplete: (id: string) => Promise<void>;
   publishAll: () => Promise<void>;
   logout: () => Promise<void>;
-  getModule: (moduleSlug: string) => any | null;
-  getLesson: (moduleSlug: string, lessonSlug: string) => any | null;
+  getModule: (moduleSlug: string) => CourseModule | null;
+  getLesson: (moduleSlug: string, lessonSlug: string) => CourseLesson | null;
   getAdjacentLesson: (moduleSlug: string, lessonSlug: string) => { prev?: AdjacentLesson; next?: AdjacentLesson };
 }
 
@@ -50,9 +51,9 @@ export function useCourse() {
 export function CourseProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
-  const [content, setContent] = useState<any[]>([]);
+  const [content, setContent] = useState<CourseLevel[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [progressData, setProgressData] = useState<any[]>([]);
+  const [progressData, setProgressData] = useState<CourseProgress[]>([]);
   const [isPaid, setIsPaid] = useState(false);
 
   const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
@@ -89,16 +90,12 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (isPending) return;
     if (!session?.user?.id) {
-      // Anonymous visitor: no session means unpaid by definition, so there's
-      // nothing to fetch — resolve loading so CourseShell can show the paywall.
       setIsLoading(false);
       return;
     }
     fetchData();
   }, [isPending, session?.user?.id]);
 
-  // Handle return from Stripe: ?paid=1 (or a pending_paid cookie set for
-  // anonymous buyers who had to sign in before the flag could be applied).
   useEffect(() => {
     if (isPending) return;
     const params = new URLSearchParams(window.location.search);
@@ -159,16 +156,16 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     router.push("/");
   }, [router]);
 
-  const getModule = useCallback((moduleSlug: string) => {
+  const getModule = useCallback((moduleSlug: string): CourseModule | null => {
     if (!moduleSlug) return null;
     for (const level of content) for (const mod of level.modules || []) if (mod.slug === moduleSlug) return mod;
     return null;
   }, [content]);
 
   const getLesson = useCallback(
-    (moduleSlug: string, lessonSlug: string) => {
+    (moduleSlug: string, lessonSlug: string): CourseLesson | null => {
       const mod = getModule(moduleSlug);
-      return mod?.lessons?.find((l: any) => l.slug === lessonSlug) || null;
+      return mod?.lessons?.find((l) => l.slug === lessonSlug) || null;
     },
     [getModule]
   );

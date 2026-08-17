@@ -1,63 +1,46 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers } from "lucide-react";
-import { authClient } from "@/lib/auth/client";
 import PromoCountdown from "@/components/PromoCountdown";
+import { SITE_NAME, primaryHref, primaryLabel } from "@/lib/constants";
+import { CTAButton } from "@/components/CTAButton";
+import SessionRedirect from "@/components/SessionRedirect";
 
-const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
+export const metadata = {
+  title: `${SITE_NAME} — A Video Course for Musical Theatre Performers`,
+  description:
+    "Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro.",
+};
 
 export default function Home() {
-  const router = useRouter();
-  const { data: session, isPending } = authClient.useSession();
-
-  useEffect(() => {
-    if (!isPending && session) {
-      router.replace("/modules");
-    }
-  }, [session, isPending, router]);
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background" />
-    );
-  }
-
-  if (session) return null;
-
-  const primaryHref = paymentLink || "/modules";
-  const primaryLabel = "Get Full Access";
-
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
+      <SessionRedirect />
       <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
       <div className="absolute -top-24 right-[-10%] w-[420px] h-[420px] rounded-full bg-accent/[0.05] blur-3xl pointer-events-none" />
 
       {/* Nav */}
       <header className="relative z-20">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
             <span className="font-serif font-bold text-primary text-lg tracking-tight">
-              The Audition Guidebook
+              {SITE_NAME}
             </span>
           </Link>
           <nav className="flex items-center gap-3">
             <Link
               href="/auth/sign-in"
-              className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-4 py-2 rounded-lg font-medium text-sm transition-colors"
+              className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-4 py-2 rounded-lg font-medium text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               Sign In
             </Link>
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:-translate-y-0.5"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               {primaryLabel}
               <ArrowRight className="w-3.5 h-3.5" />
@@ -68,7 +51,7 @@ export default function Home() {
 
       {/* Hero */}
       <main className="relative z-10 flex-1 flex flex-col items-center">
-        <div className="text-center space-y-8 max-w-3xl mx-auto px-6 pt-16 sm:pt-24">
+        <div className="text-center space-y-8 max-w-3xl mx-auto px-6 pt-12 sm:pt-20">
           <div className="space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/[0.06] border border-primary/10 text-primary text-[11px] font-semibold uppercase tracking-[0.15em]">
               <Sparkles className="w-3 h-3" />
@@ -84,16 +67,10 @@ export default function Home() {
           </div>
 
           <div className="flex flex-col items-center gap-4 pt-2">
-            <Link
-              href={primaryHref}
-              className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
-            >
-              {primaryLabel}
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
             <p className="text-xs text-muted-foreground/70">
               Already own the course?{" "}
-              <Link href="/auth/sign-in" className="text-primary hover:underline">Sign in</Link>
+              <Link href="/auth/sign-in" className="text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded">Sign in</Link>
             </p>
           </div>
 
@@ -233,7 +210,7 @@ export default function Home() {
               {[
                 { n: "3", label: "Structured levels" },
                 { n: "13", label: "Modules" },
-                { n: "49", label: "Video lessons" },
+                { n: "57", label: "Lessons" },
                 { n: "15+", label: "Years in the room" },
               ].map((stat) => (
                 <div key={stat.label}>
@@ -255,13 +232,7 @@ export default function Home() {
               <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
                 Every module, lesson, and resource, yours for life, at your own pace. Launch pricing ends soon.
               </p>
-              <Link
-                href={primaryHref}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
-              >
-                {primaryLabel}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
               <div className="mt-8">
                 <PromoCountdown />
               </div>
@@ -274,9 +245,9 @@ export default function Home() {
           <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               <Music className="w-4 h-4 text-primary/40" />
-              <span className="text-[11px] text-muted-foreground/60">The Audition Guidebook</span>
+              <span className="text-[11px] text-muted-foreground/60">{SITE_NAME}</span>
             </div>
-            <p className="text-[11px] text-muted-foreground/40 uppercase tracking-[0.2em]">
+            <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">
               Educational Resource &copy; 2026
             </p>
           </div>

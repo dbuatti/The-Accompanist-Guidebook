@@ -24,6 +24,8 @@ import {
   Minus,
   X,
 } from "lucide-react";
+import { parseMarkdownToBlocks } from "@/lib/utils";
+import { renderInlineMarkdown } from "@/lib/markdown";
 
 export type BlockType =
   | "heading"
@@ -48,26 +50,11 @@ export function parseNotesToBlocks(notes: string): DocBlock[] {
       { id: "block-init-p1", type: "paragraph", content: "" },
     ];
   }
-  const lines = notes.split("\n");
-  const blocks: DocBlock[] = [];
-  let counter = 0;
-  let listCounter = 0;
-  for (const line of lines) {
-    const trimmed = line.trim();
-    if (!trimmed) { listCounter = 0; continue; }
-    const id = `block-parsed-${counter++}`;
-    if (trimmed.startsWith("### ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("### ", "") }); }
-    else if (trimmed.startsWith("## ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("## ", "") }); }
-    else if (trimmed.startsWith("# ")) { listCounter = 0; blocks.push({ id, type: "heading", content: trimmed.replace("# ", "") }); }
-    else if (trimmed.startsWith("- ") || trimmed.startsWith("* ")) { listCounter = 0; blocks.push({ id, type: "bullet_list", content: trimmed.replace(/^[-*] /, "") }); }
-    else if (/^\d+\.\s/.test(trimmed)) { listCounter++; blocks.push({ id, type: "numbered_list", content: trimmed.replace(/^\d+\.\s/, ""), order: listCounter }); }
-    else if (trimmed.startsWith("> [!tip] ")) { listCounter = 0; blocks.push({ id, type: "callout", content: trimmed.replace("> [!tip] ", "") }); }
-    else if (trimmed.startsWith("> ")) { listCounter = 0; blocks.push({ id, type: "quote", content: trimmed.replace("> ", "") }); }
-    else if (trimmed === "---") { listCounter = 0; blocks.push({ id, type: "divider", content: "" }); }
-    else { listCounter = 0; blocks.push({ id, type: "paragraph", content: trimmed }); }
-  }
-  if (blocks.length === 0) blocks.push({ id: "block-init-p", type: "paragraph", content: notes });
-  return blocks;
+  const baseBlocks = parseMarkdownToBlocks(notes);
+  return baseBlocks.map((block, i) => ({
+    id: `block-parsed-${i}`,
+    ...block,
+  }));
 }
 
 export function blocksToNotes(blocks: DocBlock[]): string {
@@ -194,9 +181,9 @@ function BlockRow({ block, isEditing, isHovered, onEdit, onBlur, onHover, onChan
     <div className="group relative" onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
       {isHovered && (
         <div className="absolute -left-8 top-1 flex flex-col items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-          <button onClick={onMoveUp} className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground"><ChevronRight className="w-3 h-3 -rotate-90" /></button>
+          <button onClick={onMoveUp} className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" aria-label="Move block up"><ChevronRight className="w-3 h-3 -rotate-90" /></button>
           <GripVertical className="w-3 h-3 text-muted-foreground cursor-grab" />
-          <button onClick={onMoveDown} className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground"><ChevronRight className="w-3 h-3 rotate-90" /></button>
+          <button onClick={onMoveDown} className="p-0.5 rounded hover:bg-accent text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" aria-label="Move block down"><ChevronRight className="w-3 h-3 rotate-90" /></button>
         </div>
       )}
       {isHovered && <div className="absolute right-0 top-0 z-10"><BlockActions onChangeType={onChangeType} onDelete={onDelete} onMoveUp={onMoveUp} onMoveDown={onMoveDown} onAddAfter={onAddAfter} /></div>}
@@ -213,32 +200,6 @@ function BlockRow({ block, isEditing, isHovered, onEdit, onBlur, onHover, onChan
       </div>
     </div>
   );
-}
-
-function renderInlineMarkdown(text: string): React.ReactNode {
-  if (!text) return null;
-  const parts: React.ReactNode[] = [];
-  const regex = /(\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`)/g;
-  let lastIndex = 0;
-  let match: RegExpExecArray | null;
-  let key = 0;
-  while ((match = regex.exec(text)) !== null) {
-    if (match.index > lastIndex) {
-      parts.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
-    }
-    if (match[2]) {
-      parts.push(<strong key={key++}>{match[2]}</strong>);
-    } else if (match[3]) {
-      parts.push(<em key={key++}>{match[3]}</em>);
-    } else if (match[4]) {
-      parts.push(<code key={key++} className="bg-muted px-1 py-0.5 rounded text-xs font-mono">{match[4]}</code>);
-    }
-    lastIndex = match.index + match[0].length;
-  }
-  if (lastIndex < text.length) {
-    parts.push(<span key={key++}>{text.slice(lastIndex)}</span>);
-  }
-  return parts.length > 0 ? parts : text;
 }
 
 function BlockRender({ block }: { block: DocBlock }) {
@@ -273,10 +234,10 @@ function BlockActions({ onChangeType, onDelete, onMoveUp, onMoveDown, onAddAfter
 }) {
   return (
     <div className="flex items-center gap-0.5 bg-card border border-border/60 rounded-md shadow-sm p-0.5">
-      <button onClick={onMoveUp} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground" title="Move up"><ChevronRight className="w-3 h-3 -rotate-90" /></button>
-      <button onClick={onMoveDown} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground" title="Move down"><ChevronRight className="w-3 h-3 rotate-90" /></button>
+      <button onClick={onMoveUp} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" title="Move up" aria-label="Move block up"><ChevronRight className="w-3 h-3 -rotate-90" /></button>
+      <button onClick={onMoveDown} className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" title="Move down" aria-label="Move block down"><ChevronRight className="w-3 h-3 rotate-90" /></button>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild><button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground"><MoreHorizontal className="w-3 h-3" /></button></DropdownMenuTrigger>
+        <DropdownMenuTrigger asChild><button className="p-1 rounded hover:bg-accent text-muted-foreground hover:text-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" aria-label="Block actions"><MoreHorizontal className="w-3 h-3" /></button></DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40">
           <DropdownMenuItem onClick={() => onChangeType("heading")}><Type className="w-3.5 h-3.5 mr-2" /> Heading</DropdownMenuItem>
           <DropdownMenuItem onClick={() => onChangeType("paragraph")}><FileText className="w-3.5 h-3.5 mr-2" /> Paragraph</DropdownMenuItem>

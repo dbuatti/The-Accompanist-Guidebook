@@ -22,7 +22,6 @@ export default function AuthContainer({ path }: AuthContainerProps) {
         callbackURL: `${window.location.origin}/welcome?`,
       });
     } catch (error: any) {
-      console.error("Google Sign-In Error:", error);
       showError(error.message || "Failed to sign in with Google.");
       setIsGoogleLoading(false);
     }

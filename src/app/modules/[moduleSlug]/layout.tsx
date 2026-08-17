@@ -21,7 +21,7 @@ export default function ModuleReadingLayout({ children }: { children: React.Reac
 
   return (
     <div className="h-dvh flex flex-col bg-background">
-      <header className="h-14 border-b border-border/30 flex items-center justify-between px-4 sm:px-6 shrink-0">
+      <header className="h-16 border-b border-border/30 flex items-center justify-between px-4 sm:px-6 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href="/modules"

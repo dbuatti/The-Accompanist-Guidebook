@@ -38,7 +38,7 @@ export default function PromoCountdown() {
               <span className="w-14 py-2 rounded-lg bg-primary/[0.06] border border-primary/10 text-primary font-serif font-bold text-lg tabular-nums text-center">
                 {String(p.v).padStart(2, "0")}
               </span>
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground/60 mt-1">{p.l}</span>
+              <span className="text-[9px] uppercase tracking-widest text-muted-foreground/70 mt-1">{p.l}</span>
             </div>
           </div>
         ))}

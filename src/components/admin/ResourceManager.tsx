@@ -62,7 +62,7 @@ export default function ResourceManager({ lessonId, resources, onAdd, onDelete }
                 {res.title}
               </a>
               {res.description && <span className="text-xs text-muted-foreground truncate">- {res.description}</span>}
-              <button onClick={() => handleDelete(res.id)} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80 shrink-0">
+               <button onClick={() => handleDelete(res.id)} className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-destructive hover:text-destructive/80 shrink-0 focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:outline-none" aria-label="Delete resource">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>

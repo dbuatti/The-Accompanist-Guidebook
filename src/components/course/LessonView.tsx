@@ -26,7 +26,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
   const isLoggedIn = !!session;
   const completed = isLessonCompleted(lesson.id);
   const lessons = module.lessons || [];
-  const lessonIndex = lessons.findIndex((l: any) => l.id === lesson.id);
+  const lessonIndex = lessons.findIndex((l) => l.id === lesson.id);
 
   return (
     <div>
@@ -44,8 +44,8 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           {isLoggedIn && (
             <button
               onClick={() => toggleComplete(lesson.id)}
-              className={`mt-4 inline-flex items-center gap-2 text-xs transition-colors ${
-                completed ? "text-accent-foreground/80" : "text-muted-foreground/50 hover:text-primary"
+              className={`mt-4 inline-flex items-center gap-2 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded ${
+                completed                   ? "text-accent-foreground/80" : "text-muted-foreground/70 hover:text-primary"
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
         )}
 
         {/* Notes */}
-        <MarkdownBody markdown={lesson.notes} />
+        <MarkdownBody markdown={lesson.notes || ""} />
 
         {/* Resources */}
         {lesson.resources && lesson.resources.length > 0 && (
@@ -79,7 +79,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
               <Link2 className="w-3.5 h-3.5" /> Resources
             </h3>
             <div className="grid gap-3">
-              {lesson.resources.map((res: any) => (
+              {lesson.resources.map((res) => (
                 <a
                   key={res.id}
                   href={res.url}
@@ -105,9 +105,9 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all"
+              className="group flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/40 flex items-center gap-1">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70 flex items-center gap-1">
                 <ChevronLeft className="w-3 h-3" /> Previous lesson
               </span>
               <span className="text-[11px] text-muted-foreground/60 truncate">{prev.moduleTitle}</span>
@@ -119,9 +119,9 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           {next ? (
             <Link
               href={next.href}
-              className="group sm:text-right flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all"
+              className="group sm:text-right flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
-              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/40 flex items-center gap-1 sm:justify-end">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70 flex items-center gap-1 sm:justify-end">
                 Next lesson <ChevronRight className="w-3 h-3" />
               </span>
               <span className="text-[11px] text-muted-foreground/60 truncate">{next.moduleTitle}</span>
@@ -138,7 +138,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-[11px] text-muted-foreground/40 uppercase tracking-widest">End of lesson</p>
+          <p className="text-[11px] text-muted-foreground/60 uppercase tracking-widest">End of lesson</p>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Music, Feather, LogOut, Eye } from "lucide-react";
 import { useCourse } from "@/components/course/CourseProvider";
 import CurriculumView from "@/components/course/CurriculumView";
+import { SITE_NAME } from "@/lib/constants";
 
 export default function ModulesPage() {
   const { session, isAdmin, publishAll, logout } = useCourse();
@@ -17,7 +18,7 @@ export default function ModulesPage() {
               <Music className="w-5 h-5 text-primary" />
             </div>
             <span className="font-serif font-bold text-primary text-base leading-tight truncate group-hover:text-primary/80 transition-colors">
-              The Audition Guidebook
+              {SITE_NAME}
             </span>
           </Link>
           <div className="flex items-center gap-1 shrink-0">

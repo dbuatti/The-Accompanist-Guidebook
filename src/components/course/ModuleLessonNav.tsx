@@ -11,13 +11,13 @@ export default function ModuleLessonNav({ moduleSlug, currentLessonSlug }: { mod
   if (!module) return null;
 
   const lessons = module.lessons || [];
-  const done = lessons.filter((l: any) => isLessonCompleted(l.id)).length;
+  const done = lessons.filter((l) => isLessonCompleted(l.id)).length;
   const pct = lessons.length > 0 ? Math.round((done / lessons.length) * 100) : 0;
 
   return (
     <div className="flex flex-col h-full">
       <div className="p-5 border-b border-border/20 shrink-0">
-        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60">Module</p>
+        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">Module</p>
         <h2 className="text-sm font-serif font-bold text-primary mt-1 leading-snug">{formatModuleTitle(module)}</h2>
         {lessons.length > 0 && (
           <div className="mt-3 flex items-center gap-2">
@@ -29,14 +29,14 @@ export default function ModuleLessonNav({ moduleSlug, currentLessonSlug }: { mod
         )}
       </div>
       <div className="flex-1 overflow-y-auto p-2">
-        {lessons.map((lesson: any, i: number) => {
+        {lessons.map((lesson, i) => {
           const isActive = lesson.slug === currentLessonSlug;
           const completed = isLessonCompleted(lesson.id);
           return (
             <Link
               key={lesson.id}
               href={`/modules/${moduleSlug}/${lesson.slug}`}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
                 isActive ? "bg-primary text-primary-foreground" : "hover:bg-accent/15 text-foreground/75"
               }`}
             >

@@ -31,9 +31,10 @@ import {
   ChevronRight, ChevronDown, Eye, EyeOff, MoreVertical, Move,
 } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import type { CourseLevel, CourseModule, CourseLesson } from "@/lib/types";
 
 interface CurriculumTreeProps {
-  content: any[];
+  content: CourseLevel[];
   selection: { type: "module" | "lesson"; id: string } | null;
   onSelectModule: (moduleId: string) => void;
   onSelectLesson: (lessonId: string) => void;
@@ -56,7 +57,7 @@ export default function CurriculumTree({
   const toggleCollapse = (id: string) => setCollapsedNodes((prev) => ({ ...prev, [id]: !prev[id] }));
 
   const hasActiveFilter = searchQuery.trim() !== "" || statusFilter !== "all" || videoFilter !== "all";
-  const matchesFilters = (lesson: any) => {
+  const matchesFilters = (lesson: CourseLesson) => {
     const matchesSearch = !searchQuery.trim() || lesson.title.toLowerCase().includes(searchQuery.trim().toLowerCase());
     const matchesStatus = statusFilter === "all" || (statusFilter === "published" && lesson.isPublished) || (statusFilter === "draft" && !lesson.isPublished);
     const matchesVideo = videoFilter === "all" || (videoFilter === "requires_video" && lesson.hasVideo) || (videoFilter === "no_video" && !lesson.hasVideo);
@@ -81,7 +82,7 @@ export default function CurriculumTree({
     withPending("create-level", async () => { await createLevel(title); showSuccess("Level created"); }, "Failed to create level");
   };
 
-  const startEditingLevel = (level: any) => {
+  const startEditingLevel = (level: CourseLevel) => {
     setEditingLevelId(level.id);
     setEditingText(level.title);
   };
@@ -146,30 +147,30 @@ export default function CurriculumTree({
         <p className="text-xs text-muted-foreground italic py-4 text-center">No levels yet.</p>
       ) : (
         content.map((level) => {
-          const levelHasMatch = hasActiveFilter && level.modules.some((m: any) => m.lessons.some(matchesFilters));
+          const levelHasMatch = hasActiveFilter && level.modules.some((m) => m.lessons.some(matchesFilters));
           const isLevelCollapsed = levelHasMatch ? false : collapsedNodes[level.id];
           const isEditingLevel = editingLevelId === level.id;
           return (
             <div key={level.id} className="rounded-lg border border-border/50 overflow-hidden">
               <div className="flex items-center gap-1 px-2 py-1.5 bg-primary/5">
-                <button onClick={() => toggleCollapse(level.id)} className="p-0.5 rounded hover:bg-primary/10 text-primary shrink-0">
+                <button onClick={() => toggleCollapse(level.id)} className="p-0.5 rounded hover:bg-primary/10 text-primary shrink-0 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" aria-label={isLevelCollapsed ? "Expand level" : "Collapse level"}>
                   {isLevelCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
                 {isEditingLevel ? (
                   <div className="flex items-center gap-1 flex-1 min-w-0">
                     <Input value={editingText} onChange={(e) => setEditingText(e.target.value)} className="h-6 text-xs" autoFocus />
-                    <button onClick={() => handleRenameLevel(level.id)} className="p-0.5 text-green-600 hover:bg-green-500/10 rounded shrink-0"><Check className="w-3.5 h-3.5" /></button>
-                    <button onClick={() => setEditingLevelId(null)} className="p-0.5 text-destructive hover:bg-destructive/10 rounded shrink-0"><X className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => handleRenameLevel(level.id)} className="p-0.5 text-green-600 hover:bg-green-500/10 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-green-500/50 focus-visible:outline-none" aria-label="Confirm rename"><Check className="w-3.5 h-3.5" /></button>
+                    <button onClick={() => setEditingLevelId(null)} className="p-0.5 text-destructive hover:bg-destructive/10 rounded shrink-0 focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:outline-none" aria-label="Cancel rename"><X className="w-3.5 h-3.5" /></button>
                   </div>
                 ) : (
                   <span onClick={() => startEditingLevel(level)} className="flex-1 min-w-0 truncate text-xs font-bold text-primary cursor-text hover:underline">
                     {level.title}
                   </span>
                 )}
-                <button onClick={() => handleCreateModule(level.id)} className="p-0.5 rounded hover:bg-primary/10 text-primary/70 shrink-0" title="Add module">
+                <button onClick={() => handleCreateModule(level.id)} className="p-0.5 rounded hover:bg-primary/10 text-primary/70 shrink-0 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" title="Add module" aria-label="Add module">
                   <Plus className="w-3.5 h-3.5" />
                 </button>
-                <button onClick={() => handleDeleteLevel(level.id)} className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0" title="Delete level">
+                <button onClick={() => handleDeleteLevel(level.id)} className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive shrink-0 focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:outline-none" title="Delete level" aria-label="Delete level">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -179,7 +180,7 @@ export default function CurriculumTree({
                   {level.modules.length === 0 ? (
                     <p className="text-[11px] text-muted-foreground italic pl-6 py-1">No modules yet.</p>
                   ) : (
-                    level.modules.map((module: any) => {
+                    level.modules.map((module: CourseModule) => {
                       const visibleLessons = hasActiveFilter ? module.lessons.filter(matchesFilters) : module.lessons;
                       const moduleHasMatch = hasActiveFilter && visibleLessons.length > 0;
                       const isModuleCollapsed = moduleHasMatch ? false : collapsedNodes[module.id];
@@ -194,7 +195,8 @@ export default function CurriculumTree({
                           >
                             <button
                               onClick={(e) => { e.stopPropagation(); toggleCollapse(module.id); }}
-                              className={`p-0.5 rounded shrink-0 ${isModuleSelected ? "hover:bg-primary-foreground/10" : "hover:bg-accent"}`}
+                              className={`p-0.5 rounded shrink-0 ${isModuleSelected ? "hover:bg-primary-foreground/10" : "hover:bg-accent"} focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
+                              aria-label={isModuleCollapsed ? "Expand module" : "Collapse module"}
                             >
                               {isModuleCollapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                             </button>
@@ -202,14 +204,15 @@ export default function CurriculumTree({
                             <span className="flex-1 min-w-0 truncate text-xs font-medium">{formatModuleTitle(module)}</span>
                             <button
                               onClick={(e) => handleTogglePublish(e, module.id)}
-                              className={`shrink-0 p-0.5 rounded ${isModuleSelected ? "text-primary-foreground/80 hover:bg-primary-foreground/10" : module.isPublished ? "text-green-600 hover:bg-green-500/10" : "text-muted-foreground/50 hover:bg-accent"}`}
+                              className={`shrink-0 p-0.5 rounded ${isModuleSelected ? "text-primary-foreground/80 hover:bg-primary-foreground/10" : module.isPublished ? "text-green-600 hover:bg-green-500/10" : "text-muted-foreground/50 hover:bg-accent"} focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`}
                               title={module.isPublished ? "Click to hide" : "Click to publish"}
+                              aria-label={module.isPublished ? "Hide module" : "Publish module"}
                             >
                               {module.isPublished ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                             </button>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                <button className={`shrink-0 p-0.5 rounded ${isModuleSelected ? "hover:bg-primary-foreground/10" : "hover:bg-accent"}`}>
+                                <button className={`shrink-0 p-0.5 rounded ${isModuleSelected ? "hover:bg-primary-foreground/10" : "hover:bg-accent"} focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none`} aria-label="Module options">
                                   <MoreVertical className="w-3.5 h-3.5" />
                                 </button>
                               </DropdownMenuTrigger>
@@ -245,7 +248,7 @@ export default function CurriculumTree({
                                   {module.lessons.length === 0 ? "No lessons yet." : "No lessons match the current filters."}
                                 </p>
                               ) : (
-                                visibleLessons.map((lesson: any) => {
+                                  visibleLessons.map((lesson: CourseLesson) => {
                                   const isLessonSelected = selection?.type === "lesson" && selection.id === lesson.id;
                                   return (
                                     <div
@@ -261,13 +264,13 @@ export default function CurriculumTree({
                                         {lesson.isPublished ? "Live" : "Draft"}
                                       </Badge>
                                       <div className="hidden group-hover:flex items-center shrink-0">
-                                        <button onClick={(e) => handleReorderLesson(e, lesson.id, "up")} className="p-0.5 rounded hover:bg-accent text-muted-foreground" title="Move up">
-                                          <ChevronRight className="w-3 h-3 -rotate-90" />
-                                        </button>
-                                        <button onClick={(e) => handleReorderLesson(e, lesson.id, "down")} className="p-0.5 rounded hover:bg-accent text-muted-foreground" title="Move down">
-                                          <ChevronRight className="w-3 h-3 rotate-90" />
-                                        </button>
-                                        <button onClick={(e) => handleDeleteLesson(e, lesson.id)} className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive" title="Delete lesson">
+                                         <button onClick={(e) => handleReorderLesson(e, lesson.id, "up")} className="p-0.5 rounded hover:bg-accent text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" title="Move up" aria-label="Move lesson up">
+                                           <ChevronRight className="w-3 h-3 -rotate-90" />
+                                         </button>
+                                         <button onClick={(e) => handleReorderLesson(e, lesson.id, "down")} className="p-0.5 rounded hover:bg-accent text-muted-foreground focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none" title="Move down" aria-label="Move lesson down">
+                                           <ChevronRight className="w-3 h-3 rotate-90" />
+                                         </button>
+                                         <button onClick={(e) => handleDeleteLesson(e, lesson.id)} className="p-0.5 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive focus-visible:ring-2 focus-visible:ring-destructive/50 focus-visible:outline-none" title="Delete lesson" aria-label="Delete lesson">
                                           <Trash2 className="w-3 h-3" />
                                         </button>
                                       </div>

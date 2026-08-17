@@ -28,13 +28,16 @@ import {
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { formatModuleTitle } from "@/lib/utils";
+import { SITE_NAME } from "@/lib/constants";
+import { CTAButton, SecondaryButton } from "@/components/CTAButton";
+import type { CourseLevel, CourseProgress } from "@/lib/types";
 
 export default function WelcomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [welcome, setWelcome] = useState<{ title: string; content: string } | null>(null);
-  const [content, setContent] = useState<any[]>([]);
-  const [progressData, setProgressData] = useState<any[]>([]);
+  const [content, setContent] = useState<CourseLevel[]>([]);
+  const [progressData, setProgressData] = useState<CourseProgress[]>([]);
   const [isPaid, setIsPaid] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -145,13 +148,13 @@ export default function WelcomePage() {
 
       {/* Nav */}
       <header className="relative z-20">
-        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/modules" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
             <span className="font-serif font-bold text-primary text-lg tracking-tight">
-              The Audition Guidebook
+              {SITE_NAME}
             </span>
           </Link>
           <nav className="flex items-center gap-3">
@@ -173,7 +176,7 @@ export default function WelcomePage() {
 
       <main className="relative z-10 flex-1">
         {/* Hero */}
-        <div className="max-w-3xl mx-auto px-6 pt-12 sm:pt-16 pb-4 text-center">
+        <div className="max-w-3xl mx-auto px-6 pt-12 sm:pt-20 pb-4 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/[0.06] border border-primary/10 text-primary text-[11px] font-semibold uppercase tracking-[0.15em]">
             <Feather className="w-3 h-3" />
             Before you begin
@@ -243,21 +246,12 @@ export default function WelcomePage() {
               </>
             )}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
-              <Link
-                href={nextLesson?.href || "/modules"}
-                className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
-              >
+              <CTAButton href={nextLesson?.href || "/modules"}>
                 <BookOpen className="w-4 h-4" />
                 {isCourseComplete ? "Browse the modules" : isReturning ? "Continue learning" : "Start the course"}
-                <ArrowRight className="w-4 h-4" />
-              </Link>
+              </CTAButton>
               {!isCourseComplete && (
-                <Link
-                  href="/modules"
-                  className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-8 py-3.5 rounded-xl font-medium text-sm transition-all"
-                >
-                  Browse the modules
-                </Link>
+                <SecondaryButton href="/modules">Browse the modules</SecondaryButton>
               )}
             </div>
 

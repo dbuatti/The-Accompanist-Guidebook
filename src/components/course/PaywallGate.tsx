@@ -13,8 +13,8 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-
-const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
+import { SITE_NAME, paymentLink } from "@/lib/constants";
+import { CTAButton } from "@/components/CTAButton";
 
 export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
   const primaryHref = paymentLink || "/auth/sign-in";
@@ -34,13 +34,13 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
 
       {/* Nav */}
       <header className="relative z-20">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
             <span className="font-serif font-bold text-primary text-lg tracking-tight">
-              The Audition Guidebook
+              {SITE_NAME}
             </span>
           </Link>
           <nav className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                     Launch offer
                   </div>
                   <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary mt-3 mb-1">
-                    The Audition Guidebook
+                    {SITE_NAME}
                   </h2>
                   <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                     Full lifetime access to the complete course: every module, lesson, and resource.
@@ -127,7 +127,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                     href={primaryHref}
                     target={paymentLink ? "_blank" : undefined}
                     rel={paymentLink ? "noopener noreferrer" : undefined}
-                    className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
                   >
                     {primaryLabel}
                     <ArrowRight className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
           <div className="max-w-5xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
               <Music className="w-4 h-4 text-primary/40" />
-              <span className="text-[11px] text-muted-foreground/60">The Audition Guidebook</span>
+              <span className="text-[11px] text-muted-foreground/70">{SITE_NAME}</span>
             </Link>
             <Link
               href="/"
@@ -164,7 +164,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
               <ArrowLeft className="w-3 h-3" />
               Back to home
             </Link>
-            <p className="text-[11px] text-muted-foreground/40 uppercase tracking-[0.2em]">
+            <p className="text-[11px] text-muted-foreground/60 uppercase tracking-[0.2em]">
               Educational Resource &copy; 2026
             </p>
           </div>

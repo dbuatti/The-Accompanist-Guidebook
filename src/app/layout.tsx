@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Providers from "./providers";
 import { NeonAuthUIProvider } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
+import { SITE_NAME } from "@/lib/constants";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -13,8 +14,8 @@ const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif"
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app"),
   title: {
-    default: "The Audition Guidebook",
-    template: "%s | The Audition Guidebook",
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME}`,
   },
   description: "A video course for musical theatre performers. Choose and prepare your songs, set your tempo, and collaborate with the audition pianist and panel with confidence. Taught from the accompanist's bench.",
   keywords: ["musical theatre", "audition", "vocal", "singer", "accompanist", "pianist", "music director", "online course"],
@@ -22,13 +23,13 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_AU",
     url: "https://theauditionguidebook.vercel.app",
-    siteName: "The Audition Guidebook",
-    title: "The Audition Guidebook",
+    siteName: SITE_NAME,
+    title: SITE_NAME,
     description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Audition Guidebook",
+    title: SITE_NAME,
     description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
   },
 };
@@ -39,10 +40,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
-      <body className="font-sans antialiased" suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <body className="font-sans antialiased">
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
-        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/welcome?" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
+        <NeonAuthUIProvider authClient={authClient as any} redirectTo="/welcome?" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
           <Providers>
             <TooltipProvider>
               {children}
