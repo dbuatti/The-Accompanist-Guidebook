@@ -5,14 +5,16 @@ import PromoCountdown from "@/components/PromoCountdown";
 import { SITE_NAME, primaryHref, primaryLabel } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
+import { getPublicCourseStats } from "@/app/actions";
 
 export const metadata = {
-  title: `${SITE_NAME} — A Video Course for Musical Theatre Performers`,
+  title: `${SITE_NAME}: A Video Course for Musical Theatre Performers`,
   description:
     "Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro.",
 };
 
-export default function Home() {
+export default async function Home() {
+  const stats = await getPublicCourseStats();
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       <SessionRedirect />
@@ -208,9 +210,9 @@ export default function Home() {
           <div className="max-w-4xl mx-auto px-6">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-4 text-center">
               {[
-                { n: "3", label: "Structured levels" },
-                { n: "13", label: "Modules" },
-                { n: "57", label: "Lessons" },
+                { n: String(stats.levelCount), label: "Structured levels" },
+                { n: String(stats.moduleCount), label: "Modules" },
+                { n: String(stats.lessonCount), label: "Lessons" },
                 { n: "15+", label: "Years in the room" },
               ].map((stat) => (
                 <div key={stat.label}>

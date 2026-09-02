@@ -7,12 +7,18 @@ import { Clock } from "lucide-react";
 export const PROMO_ENDS_AT = new Date("2026-10-15T23:59:59+10:00");
 
 export default function PromoCountdown() {
-  const [now, setNow] = useState(Date.now());
+  // Starts null so the server render and the initial client render match
+  // exactly (both "not mounted yet") — filling in the real clock value only
+  // after mount avoids a hydration mismatch between server and client time.
+  const [now, setNow] = useState<number | null>(null);
 
   useEffect(() => {
+    setNow(Date.now());
     const id = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(id);
   }, []);
+
+  if (now === null) return null;
 
   const diff = PROMO_ENDS_AT.getTime() - now;
   if (diff <= 0) return null;

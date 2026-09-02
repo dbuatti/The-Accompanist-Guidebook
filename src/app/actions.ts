@@ -291,6 +291,21 @@ export async function toggleLessonProgress(lessonId: string) {
   }
 }
 
+// --- Public marketing stats (no auth — aggregate counts only, no titles/content) ---
+export async function getPublicCourseStats() {
+  try {
+    const [levelRows, moduleRows, lessonRows] = await Promise.all([
+      db.select().from(levels),
+      db.select().from(modules).where(eq(modules.isPublished, true)),
+      db.select().from(lessons).where(eq(lessons.isPublished, true)),
+    ]);
+    return { levelCount: levelRows.length, moduleCount: moduleRows.length, lessonCount: lessonRows.length };
+  } catch (error: any) {
+    console.error("Error fetching public course stats (FULL ERROR):", error.message);
+    return { levelCount: 3, moduleCount: 13, lessonCount: 49 };
+  }
+}
+
 // --- Content Management Actions ---
 export async function getCourseContent() {
   try {
