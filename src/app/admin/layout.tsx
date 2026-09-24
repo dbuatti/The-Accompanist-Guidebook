@@ -3,6 +3,14 @@ import { getCurrentUser } from "@/lib/auth";
 import { isAdmin } from "@/lib/admin";
 import AdminNav from "@/components/AdminNav";
 
+export const metadata = {
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+  },
+};
+
 export default async function AdminLayout({
   children,
 }: {

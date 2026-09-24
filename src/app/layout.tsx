@@ -11,8 +11,10 @@ import { SITE_NAME } from "@/lib/constants";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app"),
+  metadataBase: new URL(APP_URL),
   title: {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
@@ -22,7 +24,8 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_AU",
-    url: "https://theauditionguidebook.vercel.app",
+    alternateLocale: "en_US",
+    url: APP_URL,
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
@@ -32,6 +35,10 @@ export const metadata: Metadata = {
     title: SITE_NAME,
     description: "A video course for musical theatre performers. Prepare your music, set your tempo, and walk into your audition feeling calm and in control.",
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -40,7 +47,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+    <html lang="en-AU" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
         {/* Cast authClient to any to bypass internal SDK type mismatches */}
         <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/welcome?" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>

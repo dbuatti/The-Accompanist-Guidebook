@@ -17,7 +17,7 @@ export function CTAButton({ href, children, target, rel, className = "" }: CTABu
       href={href}
       target={target}
       rel={rel}
-      className={`inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${className}`}
+      className={`btn-sheen group inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-8 py-3.5 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 hover:shadow-xl hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${className}`}
     >
       {children}
       <ArrowRight className="w-4 h-4" />

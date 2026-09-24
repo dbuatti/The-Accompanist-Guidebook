@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Users, BookOpen, ArrowLeft, Compass, Target, Sparkles, Feather } from "lucide-react";
+import { Users, BookOpen, ArrowLeft, Compass, Target, Sparkles, Feather, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const adminNavItems = [
   { title: "Curriculum", href: "/admin", icon: BookOpen },
   { title: "Users", href: "/admin/users", icon: Users },
+  { title: "Leads", href: "/admin/leads", icon: Mail },
   { title: "Welcome", href: "/admin/welcome", icon: Feather },
   { title: "Workspace", href: "/admin/resources", icon: Sparkles },
   { title: "Blueprint", href: "/admin/blueprint", icon: Compass },

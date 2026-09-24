@@ -87,3 +87,10 @@ export const resources = pgTable('resources', {
   displayOrder: integer('display_order').default(0).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
+
+export const waitlist = pgTable('waitlist', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  email: varchar('email', { length: 255 }).notNull().unique(),
+  source: varchar('source', { length: 50 }).default('landing').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});

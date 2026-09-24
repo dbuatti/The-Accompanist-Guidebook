@@ -55,7 +55,78 @@
 }
 
 .sheet-music-texture {
-  background-image: radial-gradient(#d1d1d1 0.5px, transparent 0.5px);
-  background-size: 20px 20px;
-  opacity: 0.1;
+  background-image: radial-gradient(hsl(var(--foreground) / 0.55) 0.5px, transparent 0.5px);
+  background-size: 22px 22px;
+  opacity: 0.06;
+}
+
+/* Premium primary button: soft top-light + a moving sheen on hover. */
+.btn-sheen {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-sheen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0) 55%);
+  pointer-events: none;
+}
+.btn-sheen::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -160%;
+  width: 55%;
+  height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.32), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+.btn-sheen:hover::after {
+  left: 160%;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn-sheen::after {
+    transition: none;
+  }
+}
+
+/* Scroll-reveal motion. `.reveal-visible` is added by the Reveal component. */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Refined selection colour on brand tones. */
+::selection {
+  background: hsl(var(--primary) / 0.14);
+  color: hsl(var(--primary));
 }

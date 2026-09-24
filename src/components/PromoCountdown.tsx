@@ -36,15 +36,15 @@ export default function PromoCountdown() {
         <Clock className="w-3 h-3" />
         Launch pricing ends in
       </span>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1.5 sm:gap-2">
         {parts.map((p, i) => (
-          <div key={p.l} className="flex items-center gap-2">
-            {i > 0 && <span className="text-primary/30 font-bold">:</span>}
+          <div key={p.l} className="flex items-center gap-1.5 sm:gap-2">
+            {i > 0 && <span className="text-primary/25 font-serif font-bold text-lg">:</span>}
             <div className="flex flex-col items-center">
-              <span className="w-14 py-2 rounded-lg bg-primary/[0.06] border border-primary/10 text-primary font-serif font-bold text-lg tabular-nums text-center">
+              <span className="w-14 py-2.5 rounded-xl bg-gradient-to-b from-card to-primary/[0.06] border border-primary/10 text-primary font-serif font-bold text-lg tabular-nums text-center shadow-sm shadow-primary/[0.05]">
                 {String(p.v).padStart(2, "0")}
               </span>
-              <span className="text-[9px] uppercase tracking-widest text-muted-foreground/70 mt-1">{p.l}</span>
+              <span className="text-[9px] uppercase tracking-widest text-muted-foreground/70 mt-1.5">{p.l}</span>
             </div>
           </div>
         ))}
