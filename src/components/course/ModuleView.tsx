@@ -72,6 +72,11 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
               {isComplete ? "Review Lesson 1" : done > 0 ? `Continue: ${nextLesson.title}` : "Start Lesson 1"}
             </CTAButton>
           )}
+          {isLoggedIn && isComplete && (
+            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent-foreground px-3 py-1.5 text-[11px] font-semibold">
+              <CheckCircle2 className="w-3.5 h-3.5" /> Module complete — nice work
+            </span>
+          )}
         </div>
       </div>
 

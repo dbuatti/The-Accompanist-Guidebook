@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, FileText, CheckCircle2, ArrowRight, EyeOff } from "lucide-react";
+import { Layers, FileText, CheckCircle2, ArrowRight, EyeOff, PartyPopper } from "lucide-react";
 import { formatModuleTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 import type { CourseLevel, CourseModule, CourseLesson } from "@/lib/types";
@@ -53,10 +53,10 @@ export default function CurriculumView() {
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-10 pt-8 sm:pt-10">
-        {hasStarted && continueLesson && (
+        {hasStarted && continueLesson ? (
           <Link
             href={continueLesson.href}
-              className="group flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] hover:bg-accent/[0.1] transition-colors p-5 mb-2 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+            className="group flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] hover:bg-accent/[0.1] transition-colors p-5 mb-2 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
           >
             <div className="flex-1 min-w-0">
               <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent-bright">Continue learning</span>
@@ -65,7 +65,25 @@ export default function CurriculumView() {
             </div>
             <ArrowRight className="w-4 h-4 text-accent-bright shrink-0 group-hover:translate-x-0.5 transition-transform" />
           </Link>
-        )}
+        ) : hasStarted && totalLessons > 0 ? (
+          <div className="flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] p-5 mb-2">
+            <div className="w-10 h-10 rounded-xl bg-accent-bright/10 flex items-center justify-center shrink-0">
+              <PartyPopper className="w-5 h-5 text-accent-bright" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-base font-serif font-semibold text-primary">You&apos;ve completed the course</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Every lesson, done. Come back anytime to revisit a module or brush up before your next audition.
+              </p>
+            </div>
+            <Link
+              href="/welcome"
+              className="hidden sm:inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline shrink-0 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-sm"
+            >
+              Welcome page <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        ) : null}
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-10 sm:pb-14 pt-8 sm:pt-4 space-y-12 sm:space-y-14">

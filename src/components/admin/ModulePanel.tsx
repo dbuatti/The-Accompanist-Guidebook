@@ -26,10 +26,12 @@ export default function ModulePanel({ module, onRefetch, onAddLesson }: ModulePa
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      await Promise.all([
-        title !== module.title ? updateModule(module.id, title) : Promise.resolve(),
-        wrapUpVideoUrl !== (module.wrapUpVideoUrl || "") ? updateModuleWrapUpVideo(module.id, wrapUpVideoUrl) : Promise.resolve(),
-      ]);
+      if (title !== module.title) {
+        await updateModule(module.id, title);
+      }
+      if (wrapUpVideoUrl !== (module.wrapUpVideoUrl || "")) {
+        await updateModuleWrapUpVideo(module.id, wrapUpVideoUrl);
+      }
       showSuccess("Module saved");
       await onRefetch();
     } catch {
@@ -70,14 +72,19 @@ export default function ModulePanel({ module, onRefetch, onAddLesson }: ModulePa
 
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-muted-foreground">Module Title</label>
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} className="h-9 text-sm" />
+          <Input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter") handleSave(); }}
+            className="h-9 text-sm"
+          />
         </div>
 
         <div className="space-y-1.5">
           <label className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
             <Video className="w-3.5 h-3.5" /> Wrap-Up Video URL
           </label>
-          <p className="text-[11px] text-muted-foreground">Optional video shown at the end of this module for logged-out viewers.</p>
+          <p className="text-[11px] text-muted-foreground">Optional video shown at the end of this module, after the last lesson.</p>
           <Input
             value={wrapUpVideoUrl}
             onChange={(e) => setWrapUpVideoUrl(e.target.value)}

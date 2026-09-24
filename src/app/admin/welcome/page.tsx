@@ -5,7 +5,7 @@ import { getWelcomeContent, updateWelcomeContent } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Save, Eye, Feather } from "lucide-react";
+import { Loader2, Save, Feather } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { authClient } from "@/lib/auth/client";
 import { Badge } from "@/components/ui/badge";
@@ -17,7 +17,6 @@ export default function AdminWelcomePage() {
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (isAuthPending) return;
@@ -55,7 +54,7 @@ export default function AdminWelcomePage() {
 
   if (isLoading || isAuthPending) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-[60vh] flex items-center justify-center">
         <Loader2 className="animate-spin text-primary" />
       </div>
     );
@@ -87,17 +86,7 @@ export default function AdminWelcomePage() {
               />
             </div>
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-medium text-foreground">Content</label>
-                <button
-                  type="button"
-                  onClick={() => setShowPreview((p) => !p)}
-                  className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
-                >
-                  <Eye className="w-3.5 h-3.5" />
-                  {showPreview ? "Hide preview" : "Preview"}
-                </button>
-              </div>
+              <label className="text-sm font-medium text-foreground mb-1.5 block">Content</label>
               <textarea
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
@@ -118,14 +107,12 @@ export default function AdminWelcomePage() {
           </CardContent>
         </Card>
 
-        {showPreview && (
-          <Card className="bg-card/50 border-border/50">
-            <CardContent className="p-5">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-4">Preview</p>
-              <MarkdownBody markdown={content || "_Nothing to preview yet._"} />
-            </CardContent>
-          </Card>
-        )}
+        <Card className="bg-card/50 border-border/50">
+          <CardContent className="p-5">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-4">Live preview</p>
+            <MarkdownBody markdown={content || "_Nothing to preview yet._"} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

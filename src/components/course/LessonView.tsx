@@ -5,6 +5,7 @@ import { CheckCircle2, Link2, ExternalLink, ChevronLeft, ChevronRight, BookOpen 
 import VideoPlayer from "@/components/VideoPlayer";
 import { MarkdownBody } from "@/components/MarkdownBody";
 import { useCourse } from "./CourseProvider";
+import { formatModuleTitle } from "@/lib/utils";
 
 export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: string; lessonSlug: string }) {
   const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session } = useCourse();
@@ -27,6 +28,8 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
   const completed = isLessonCompleted(lesson.id);
   const lessons = module.lessons || [];
   const lessonIndex = lessons.findIndex((l) => l.id === lesson.id);
+  const moduleDone = lessons.filter((l) => isLessonCompleted(l.id)).length;
+  const modulePct = lessons.length > 0 ? Math.round((moduleDone / lessons.length) * 100) : 0;
 
   return (
     <div>
@@ -34,22 +37,44 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
         <div className="relative max-w-4xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-6 sm:pb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] sm:text-[11px] text-muted-foreground">
+          <div className="flex items-center gap-1.5 mb-3 text-[11px] text-muted-foreground">
+            <Link
+              href={`/modules/${module.slug}`}
+              className="hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-sm"
+            >
+              {formatModuleTitle(module)}
+            </Link>
+            <span className="text-muted-foreground/40">·</span>
+            <span>
               Lesson {lessonIndex + 1} of {lessons.length}
             </span>
           </div>
           <h1 className="text-xl sm:text-3xl font-serif font-bold text-primary leading-tight">{lesson.title}</h1>
 
+          {isLoggedIn && lessons.length > 0 && (
+            <div className="mt-5 flex items-center gap-2.5 max-w-sm">
+              <div className="flex-1 h-1.5 rounded-full bg-primary/10 overflow-hidden">
+                <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${modulePct}%` }} />
+              </div>
+              <span className="text-[11px] font-medium text-muted-foreground shrink-0 tabular-nums">
+                {moduleDone}/{lessons.length} in module
+              </span>
+            </div>
+          )}
+
           {isLoggedIn && (
             <button
               onClick={() => toggleComplete(lesson.id)}
-              className={`mt-4 inline-flex items-center gap-2 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded ${
-                completed                   ? "text-accent-foreground/80" : "text-muted-foreground/70 hover:text-primary"
+              aria-pressed={completed}
+              title={completed ? "Mark this lesson as not complete" : "Mark this lesson as complete"}
+              className={`mt-5 inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
+                completed
+                  ? "bg-accent/20 border-accent/30 text-accent-foreground hover:bg-accent/30"
+                  : "bg-card/70 border-border text-foreground/75 hover:border-primary/30 hover:text-primary"
               }`}
             >
-              <CheckCircle2 className="w-4 h-4" />
-              {completed ? "Completed" : "Mark complete"}
+              <CheckCircle2 className={`w-4 h-4 ${completed ? "text-accent-bright" : "text-muted-foreground/60"}`} />
+              {completed ? "Completed" : "Mark lesson complete"}
             </button>
           )}
         </div>
@@ -62,7 +87,9 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           <div className="mb-10 rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
             <VideoPlayer
               url={lesson.videoUrl}
-              onComplete={() => toggleComplete(lesson.id)}
+              onComplete={() => {
+                if (!completed) toggleComplete(lesson.id);
+              }}
               initialTime={0}
               onProgress={() => {}}
             />
@@ -100,8 +127,21 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           </div>
         )}
 
+        {/* Complete */}
+        {isLoggedIn && !completed && (
+          <div className="mt-12 flex justify-center">
+            <button
+              onClick={() => toggleComplete(lesson.id)}
+              className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              Mark lesson complete
+            </button>
+          </div>
+        )}
+
         {/* Prev / Next */}
-        <div className="mt-16 grid sm:grid-cols-2 gap-4">
+        <div className="mt-8 grid sm:grid-cols-2 gap-4">
           {prev ? (
             <Link
               href={prev.href}

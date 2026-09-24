@@ -41,8 +41,8 @@ export default function SearchFilterBar({
       </div>
       <div className="flex flex-wrap gap-2 w-full sm:w-auto">
         <Select value={statusFilter} onValueChange={onStatusFilterChange}>
-          <SelectTrigger className="w-32 h-9 text-xs bg-background/50">
-            <SelectValue placeholder="Status" />
+          <SelectTrigger className="w-36 h-9 text-xs bg-background/50" aria-label="Filter by status">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
@@ -52,13 +52,13 @@ export default function SearchFilterBar({
         </Select>
 
         <Select value={videoFilter} onValueChange={onVideoFilterChange}>
-          <SelectTrigger className="w-36 h-9 text-xs bg-background/50">
-            <SelectValue placeholder="Video Requirement" />
+          <SelectTrigger className="w-40 h-9 text-xs bg-background/50" aria-label="Filter by video requirement">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Lessons</SelectItem>
-            <SelectItem value="requires_video">Requires Video</SelectItem>
-            <SelectItem value="no_video">No Video</SelectItem>
+            <SelectItem value="requires_video">Video planned</SelectItem>
+            <SelectItem value="no_video">No video</SelectItem>
           </SelectContent>
         </Select>
       </div>
