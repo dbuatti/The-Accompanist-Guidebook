@@ -11,6 +11,7 @@ import Stripe from "stripe";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/utils";
+import type { CourseLevelPreview } from "@/lib/types";
 
 // Gemini client is lazily instantiated inside generateLessonNotes to avoid an eager env read at module load.
 
@@ -303,6 +304,44 @@ export async function getPublicCourseStats() {
   } catch (error: any) {
     console.error("Error fetching public course stats (FULL ERROR):", error.message);
     return { levelCount: 3, moduleCount: 13, lessonCount: 49 };
+  }
+}
+
+// --- Public curriculum preview (no auth — published modules + lesson titles for the sales page) ---
+export async function getPublicCurriculumPreview(): Promise<CourseLevelPreview[]> {
+  try {
+    const [levelRows, moduleRows, lessonRows] = await Promise.all([
+      db.select().from(levels).orderBy(asc(levels.displayOrder)),
+      db.select().from(modules).where(eq(modules.isPublished, true)).orderBy(asc(modules.displayOrder)),
+      db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder)),
+    ]);
+    return levelRows
+      .map((lvl) => ({
+        id: lvl.id,
+        title: lvl.title,
+        displayOrder: lvl.displayOrder,
+        modules: moduleRows
+          .filter((mod) => mod.levelId === lvl.id)
+          .map((mod) => ({
+            id: mod.id,
+            title: mod.title,
+            slug: mod.slug,
+            displayOrder: mod.displayOrder,
+            lessons: lessonRows
+              .filter((lesson) => lesson.moduleId === mod.id)
+              .map((lesson) => ({
+                id: lesson.id,
+                title: lesson.title,
+                slug: lesson.slug,
+                videoUrl: lesson.videoUrl,
+                displayOrder: lesson.displayOrder,
+              })),
+          })),
+      }))
+      .filter((lvl) => lvl.modules.length > 0);
+  } catch (error: any) {
+    console.error("Error fetching public curriculum preview (FULL ERROR):", error.message);
+    return [];
   }
 }
 

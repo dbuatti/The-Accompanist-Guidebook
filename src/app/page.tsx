@@ -1,26 +1,58 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers } from "lucide-react";
+import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, ChevronDown, X } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, primaryHref, primaryLabel } from "@/lib/constants";
+import CurriculumPreview from "@/components/CurriculumPreview";
+import { SITE_NAME, primaryHref, primaryLabel, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
 import { getPublicCourseStats } from "@/app/actions";
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+
 export const metadata = {
-  title: `${SITE_NAME}: A Video Course for Musical Theatre Performers`,
+  title: `${SITE_NAME}: A Video Course for Musical Theatre Singers`,
   description:
-    "Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro.",
+    "Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro. One payment, lifetime access.",
 };
 
 export default async function Home() {
   const stats = await getPublicCourseStats();
+
+  const courseSchema = {
+    "@context": "https://schema.org",
+    "@type": "Course",
+    name: SITE_NAME,
+    description:
+      "A video course for musical theatre performers: choose and cut your songs, set your tempo, and collaborate with the audition pianist and panel with confidence.",
+    url: `${APP_URL}/`,
+    provider: { "@type": "Organization", name: SITE_NAME, sameAs: APP_URL },
+    hasCourseInstance: {
+      "@type": "CourseInstance",
+      courseMode: "online",
+      courseWorkload: "PT10H",
+      inLanguage: "en-AU",
+    },
+    offers: {
+      "@type": "Offer",
+      price: "147",
+      priceCurrency: "AUD",
+      availability: "https://schema.org/InStock",
+      url: primaryHref,
+    },
+  };
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       <SessionRedirect />
       <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
       <div className="absolute -top-24 right-[-10%] w-[420px] h-[420px] rounded-full bg-accent/[0.05] blur-3xl pointer-events-none" />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
+      />
 
       {/* Nav */}
       <header className="relative z-20">
@@ -71,6 +103,10 @@ export default async function Home() {
           <div className="flex flex-col items-center gap-4 pt-2">
             <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
             <p className="text-xs text-muted-foreground/70">
+              {COURSE_PRICE_DISPLAY} · one-time payment ·{" "}
+              <ShieldCheck className="inline w-3 h-3 -mt-0.5" /> {GUARANTEE_DAYS}-day money-back guarantee
+            </p>
+            <p className="text-xs text-muted-foreground/70">
               Already own the course?{" "}
               <Link href="/auth/sign-in" className="text-primary hover:underline focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded">Sign in</Link>
             </p>
@@ -114,6 +150,9 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* What's inside — live published curriculum */}
+        <CurriculumPreview />
+
         {/* The journey — navy band */}
         <section className="w-full bg-primary relative overflow-hidden py-20 sm:py-24">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-accent/[0.06] blur-3xl pointer-events-none" />
@@ -142,6 +181,56 @@ export default async function Home() {
                   <p className="text-xs text-primary-foreground/70 leading-relaxed">{item.desc}</p>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Is this for you — honest fit */}
+        <section className="w-full py-20 sm:py-24">
+          <div className="max-w-4xl mx-auto px-6">
+            <div className="flex items-center gap-3 justify-center mb-4">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent-bright/60" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">An honest fit</span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent-bright/60" />
+            </div>
+            <h2 className="text-center text-3xl sm:text-4xl font-serif font-bold text-primary mb-3">Is this for you?</h2>
+            <p className="text-center text-sm text-muted-foreground max-w-xl mx-auto mb-12 leading-relaxed">
+              This course is built around one specific transformation: walking into the audition room prepared, calm, and in control. Here&apos;s who it&apos;s for — and who it isn&apos;t.
+            </p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="rounded-2xl border border-primary/15 bg-primary/[0.03] p-6 sm:p-7">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary/70 mb-5">This is for you if…</p>
+                <ul className="space-y-3.5">
+                  {[
+                    "An audition is coming up and you want your songs and cuts ready before the door opens.",
+                    "Callbacks keep stopping you — you want to walk in able to read the room and stay in control.",
+                    "You want your music handed over so any pianist can sight-read it cold.",
+                    "You want to feel calm and prepared, not fast and nervous.",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-3 text-sm text-foreground/80 leading-relaxed">
+                      <CheckCircle2 className="w-4 h-4 text-accent-bright shrink-0 mt-0.5" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="rounded-2xl border border-border/60 bg-muted/30 p-6 sm:p-7">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70 mb-5">Honestly, not if…</p>
+                <ul className="space-y-3.5">
+                  {[
+                    "You're looking for hands-on vocal technique coaching — that's a coach's room, not this bench.",
+                    "You want live, in-person rehearsals with a pianist — this course is self-paced video.",
+                    "You're not ready to put in the preparation work — the whole course is built on it.",
+                  ].map((line) => (
+                    <li key={line} className="flex items-start gap-3 text-sm text-foreground/60 leading-relaxed">
+                      <X className="w-4 h-4 text-muted-foreground/50 shrink-0 mt-0.5" />
+                      {line}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
@@ -205,6 +294,74 @@ export default async function Home() {
           </div>
         </section>
 
+        {/* Guarantee — risk reversal */}
+        <section className="w-full bg-primary relative overflow-hidden py-20 sm:py-24">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] rounded-full bg-accent/[0.06] blur-3xl pointer-events-none" />
+          <div className="relative max-w-3xl mx-auto px-6 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-accent/15 flex items-center justify-center mx-auto mb-6 ring-1 ring-accent/25">
+              <ShieldCheck className="w-7 h-7 text-accent" />
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-primary-foreground mb-4">
+              A {GUARANTEE_DAYS}-day money-back guarantee
+            </h2>
+            <p className="text-sm sm:text-base text-primary-foreground/75 max-w-xl mx-auto leading-relaxed">
+              Start the course and put it to work on your next audition. If it isn&apos;t exactly what you hoped — if your music doesn&apos;t feel prepared and you don&apos;t walk in more in control — email within {GUARANTEE_DAYS} days for a full refund. No questions, no forms, no hard feelings.
+            </p>
+            <p className="text-xs text-primary-foreground/60 mt-6 max-w-md mx-auto leading-relaxed">
+              The only thing you can lose is a few days. Everything you can gain is every audition you&apos;ll walk into from now on.
+            </p>
+          </div>
+        </section>
+
+        {/* FAQ — objections */}
+        <section className="w-full py-20 sm:py-24">
+          <div className="max-w-3xl mx-auto px-6">
+            <div className="flex items-center gap-3 justify-center mb-4">
+              <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent-bright/60" />
+              <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">Questions, answered</span>
+              <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent-bright/60" />
+            </div>
+            <h2 className="text-center text-3xl sm:text-4xl font-serif font-bold text-primary mb-10">Everything you&apos;re wondering</h2>
+
+            <div className="space-y-3">
+              {[
+                {
+                  q: "Do I need to read music or play the piano?",
+                  a: "No. You need to know your songs and prepare your sung material — the course shows you exactly how to prepare cuts, timing and the handover so any pianist can sight-read them. Familiarity with your sheet music helps, and you'll pick up precisely what to look for.",
+                },
+                {
+                  q: "When do I get access?",
+                  a: "Instantly. The moment your payment is confirmed, the full course unlocks in your account — every module, lesson and resource, yours for life.",
+                },
+                {
+                  q: "How long does it take? I'm busy.",
+                  a: "Lessons are short, focused videos with written notes, and you work at your own pace. Finish a module in an afternoon, or stretch it across a week of audition-season evenings.",
+                },
+                {
+                  q: "I'm a beginner — is this for me?",
+                  a: "Yes. The course is built in three levels — Foundations, Preparation, Collaboration — so you progress from picking your songs right through to owning the room. Working performers get just as much from it: the preparation skills last for every audition after this one.",
+                },
+                {
+                  q: "Does this replace my vocal coach?",
+                  a: "No — it complements coaching. This course covers the audition-room skills a coach rarely gets time for: cutting music, sight-readability, tempo, the handover, and how the room actually works from the pianist's bench.",
+                },
+                {
+                  q: "What if it isn't for me?",
+                  a: `There's a ${GUARANTEE_DAYS}-day money-back guarantee. Start the course, and if it isn't exactly what you hoped, email us within ${GUARANTEE_DAYS} days for a full refund.`,
+                },
+              ].map((faq) => (
+                <details key={faq.q} className="group rounded-2xl border border-border/60 bg-card/50 open:border-primary/20 open:bg-card/70 transition-colors">
+                  <summary className="flex items-center justify-between gap-4 px-5 py-4 cursor-pointer list-none text-sm font-semibold text-primary [&::-webkit-details-marker]:hidden focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-2xl">
+                    {faq.q}
+                    <ChevronDown className="w-4 h-4 text-muted-foreground group-open:rotate-180 transition-transform shrink-0" />
+                  </summary>
+                  <p className="px-5 pb-5 text-sm text-muted-foreground leading-relaxed">{faq.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Trust strip */}
         <section className="w-full border-y border-border/40 bg-card/40 py-10">
           <div className="max-w-4xl mx-auto px-6">
@@ -231,10 +388,25 @@ export default async function Home() {
             <div className="relative">
               <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright mb-3 block">Ready when you are</span>
               <h2 className="text-2xl sm:text-3xl font-serif font-bold text-primary mb-3">Get full access to the complete course</h2>
-              <p className="text-sm text-muted-foreground max-w-md mx-auto mb-8">
-                Every module, lesson, and resource, yours for life, at your own pace. Launch pricing ends soon.
+              <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
+                Every module, lesson, and resource, yours for life, at your own pace.
               </p>
+
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <span className="text-4xl sm:text-5xl font-serif font-bold text-primary tabular-nums tracking-tight">
+                  {COURSE_PRICE_DISPLAY}
+                </span>
+                <span className="text-left text-[11px] leading-tight text-muted-foreground">
+                  <span className="block font-semibold text-foreground/70">One-time payment</span>
+                  <span>Full lifetime access</span>
+                </span>
+              </div>
+
               <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
+              <p className="text-xs text-foreground/70 mt-3 flex items-center justify-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-accent-bright" />
+                {GUARANTEE_DAYS}-day money-back guarantee
+              </p>
               <div className="mt-8">
                 <PromoCountdown />
               </div>

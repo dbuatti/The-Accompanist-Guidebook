@@ -13,7 +13,7 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, paymentLink } from "@/lib/constants";
+import { SITE_NAME, paymentLink, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 
 export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
@@ -105,9 +105,19 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                   <h2 className="text-xl sm:text-2xl font-serif font-bold text-primary mt-3 mb-1">
                     {SITE_NAME}
                   </h2>
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  <p className="text-sm text-muted-foreground mb-2 leading-relaxed">
                     Full lifetime access to the complete course: every module, lesson, and resource.
                   </p>
+
+                  <div className="flex items-center gap-3 mb-6">
+                    <span className="text-3xl font-serif font-bold text-primary tabular-nums tracking-tight">
+                      {COURSE_PRICE_DISPLAY}
+                    </span>
+                    <span className="text-left text-[11px] leading-tight text-muted-foreground">
+                      <span className="block font-semibold text-foreground/70">One-time payment</span>
+                      <span>Saves compared to coaching</span>
+                    </span>
+                  </div>
 
                   <div className="space-y-3 mb-7">
                     {[
@@ -132,6 +142,11 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                     {primaryLabel}
                     <ArrowRight className="w-4 h-4" />
                   </a>
+
+                  <p className="text-xs text-foreground/60 mt-2.5 flex items-center justify-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-accent-bright" />
+                    {GUARANTEE_DAYS}-day money-back guarantee
+                  </p>
 
                   <div className="mt-7 border-t border-border/40 pt-6">
                     <PromoCountdown />

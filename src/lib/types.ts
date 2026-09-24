@@ -55,3 +55,27 @@ export interface CourseProgress {
   lastPosition: number;
   completedAt: Date | null;
 }
+
+// Public-facing preview of the published curriculum (used on the sales page).
+export interface CourseLessonPreview {
+  id: string;
+  title: string;
+  slug: string;
+  videoUrl: string;
+  displayOrder: number;
+}
+
+export interface CourseModulePreview {
+  id: string;
+  title: string;
+  slug: string;
+  displayOrder: number;
+  lessons: CourseLessonPreview[];
+}
+
+export interface CourseLevelPreview {
+  id: string;
+  title: string;
+  displayOrder: number;
+  modules: CourseModulePreview[];
+}
