@@ -51,7 +51,7 @@ export default function WaitlistForm({ source = "landing" }: { source?: string }
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
+        className="btn-sheen inline-flex items-center justify-center gap-2 bg-primary text-primary-foreground px-6 py-3 rounded-xl font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:-translate-y-0.5 disabled:opacity-60 disabled:hover:translate-y-0"
       >
         {loading ? "Joining…" : "Get the tips"}
         {!loading && <ArrowRight className="w-4 h-4" />}

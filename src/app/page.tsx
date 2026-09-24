@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, ChevronDown, X } from "lucide-react";
+import { Music, Scissors, Mic, Piano, ArrowRight, CheckCircle2, Sparkles, Layers, ShieldCheck, ChevronDown, X, Lock } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
 import CurriculumPreview from "@/components/CurriculumPreview";
 import Reveal from "@/components/Reveal";
 import WaitlistForm from "@/components/WaitlistForm";
+import MobileStickyCTA from "@/components/MobileStickyCTA";
 import { SITE_NAME, primaryHref, primaryLabel, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
@@ -113,6 +114,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
       <SessionRedirect />
+      <MobileStickyCTA />
       <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
       <div className="absolute -top-24 right-[-10%] w-[420px] h-[420px] rounded-full bg-accent/[0.05] blur-3xl pointer-events-none" />
@@ -454,7 +456,7 @@ export default async function Home() {
         </section>
 
         {/* Email capture — own your audience */}
-        <section className="w-full bg-periwinkle/40 py-16 sm:py-20">
+        <section className="w-full bg-gradient-to-b from-periwinkle/35 via-periwinkle/25 to-transparent py-16 sm:py-20">
           <div className="max-w-3xl mx-auto px-6 text-center">
             <Reveal>
               <div className="flex items-center gap-3 justify-center mb-4">
@@ -525,6 +527,10 @@ export default async function Home() {
                   <ShieldCheck className="w-3.5 h-3.5 text-accent-bright" />
                   {GUARANTEE_DAYS}-day money-back guarantee
                 </p>
+                <p className="text-[11px] text-muted-foreground/60 mt-2 flex items-center justify-center gap-1.5">
+                  <Lock className="w-3 h-3" />
+                  Secure checkout via Stripe · instant access
+                </p>
                 <div className="mt-8">
                   <PromoCountdown />
                 </div>
@@ -554,6 +560,7 @@ export default async function Home() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 mb-3">Course</p>
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/modules" className="text-foreground/70 hover:text-primary transition-colors">Browse the curriculum</Link></li>
+                  <li><Link href="/guides" className="text-foreground/70 hover:text-primary transition-colors">Free audition guides</Link></li>
                   <li><Link href="/auth/sign-in" className="text-foreground/70 hover:text-primary transition-colors">Sign in to your course</Link></li>
                   <li><Link href={primaryHref} className="text-foreground/70 hover:text-primary transition-colors">{primaryLabel}</Link></li>
                 </ul>
