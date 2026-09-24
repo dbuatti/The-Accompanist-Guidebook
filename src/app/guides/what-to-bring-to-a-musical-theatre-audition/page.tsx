@@ -36,6 +36,7 @@ export default function GuidePage() {
       />
       <GuideLayout
         eyebrow="Audition kit"
+        source="guide:what-to-bring-to-a-musical-theatre-audition"
         title="What to bring to a musical theatre audition"
         intro="Your music is the first thing anyone sees. From an accompanist's perspective, here's the kit that makes you read as professional before you've sung a note — and the mistakes that quietly cost you."
         sections={[

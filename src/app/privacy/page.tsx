@@ -20,13 +20,13 @@ const sections = [
     h: "How we use it",
     p: [
       "Your data is used to give you access to the course you purchased, to keep you signed in, to send the email tips you subscribed to, and to understand how the course is used so we can improve it.",
-      "We never sell your data. We only share it with the providers required to make the product work (our database host, our payment provider, and our email sending service).",
+      "We never sell your data. We only share it with the providers required to make the product work: our database host (Neon), our payment provider (Stripe), and our email service (Kit, formerly ConvertKit), which stores the email addresses of people who join our list and sends the emails they've opted into.",
     ],
   },
   {
     h: "Email communications",
     p: [
-      "You will only receive marketing emails if you joined the list or opted in. Every email we send includes a one-click unsubscribe link, and you can request removal at any time by contacting us.",
+      "You will only receive marketing emails if you joined the list or opted in. Emails are sent through Kit (formerly ConvertKit), our email service provider. Every email we send includes a one-click unsubscribe link managed by Kit, and you can request removal at any time by contacting us.",
     ],
   },
   {

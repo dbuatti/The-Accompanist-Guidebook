@@ -17,6 +17,7 @@ interface GuideLayoutProps {
   eyebrow: string;
   title: string;
   intro: string;
+  source?: string;
   sections?: GuideSection[];
   steps?: GuideStep[];
   checklist?: { heading: string; items: string[] }[];
@@ -30,6 +31,7 @@ export default function GuideLayout({
   eyebrow,
   title,
   intro,
+  source,
   sections = [],
   steps = [],
   checklist = [],
@@ -181,7 +183,7 @@ export default function GuideLayout({
             <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
               One short, practical audition-prep tip per week. No spam, unsubscribe anytime.
             </p>
-            <WaitlistForm source={`guide:${eyebrow}`} />
+            <WaitlistForm source={source ?? `guide:${eyebrow}`} />
           </div>
         </article>
       </main>

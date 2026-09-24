@@ -36,6 +36,7 @@ export default function GuidePage() {
       />
       <GuideLayout
         eyebrow="Audition repertoire"
+        source="guide:how-many-songs-for-a-musical-theatre-audition"
         title="How many songs should you prepare for a musical theatre audition?"
         intro="The short answer: about six — and they matter more for how well you own them than how many you can list. Here's what a useful audition 'book' actually looks like, from the accompanist's bench."
         sections={[

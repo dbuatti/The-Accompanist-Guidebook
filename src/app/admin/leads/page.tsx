@@ -1,10 +1,11 @@
 import { desc } from "drizzle-orm";
-import { Mail } from "lucide-react";
+import { Mail, CheckCircle2, AlertTriangle } from "lucide-react";
 import { db } from "@/lib/db";
 import { waitlist } from "@/lib/schema";
 import CopyEmailsButton from "@/components/admin/CopyEmailsButton";
 
 export default async function AdminLeadsPage() {
+  const kitConfigured = !!process.env.KIT_API_KEY;
   let leads: { email: string; source: string; createdAt: Date }[] = [];
   try {
     leads = await db
@@ -27,6 +28,17 @@ export default async function AdminLeadsPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          {kitConfigured ? (
+            <span className="inline-flex items-center gap-1.5 rounded-xl border border-accent/30 bg-accent/[0.08] px-3 py-2 text-xs font-medium text-accent-foreground">
+              <CheckCircle2 className="w-3.5 h-3.5 text-accent-bright" />
+              Auto-synced to Kit
+            </span>
+          ) : (
+            <span className="inline-flex items-center gap-1.5 rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-medium text-amber-700">
+              <AlertTriangle className="w-3.5 h-3.5" />
+              Kit not connected
+            </span>
+          )}
           {leads.length > 0 && <CopyEmailsButton emails={emails} />}
           <div className="flex items-center gap-2 rounded-xl border border-border/60 bg-card/60 px-4 py-2.5">
             <Mail className="w-4 h-4 text-primary" />

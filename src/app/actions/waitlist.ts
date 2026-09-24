@@ -4,6 +4,7 @@ import { sql } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { waitlist } from "@/lib/schema";
+import { subscribeToKit } from "@/lib/kit";
 
 const emailSchema = z.string().trim().toLowerCase().email();
 const sourceSchema = z.string().trim().max(50).default("landing");
@@ -27,9 +28,13 @@ export async function joinWaitlist(input: { email: string; source?: string }): P
       )
     `);
     await db.insert(waitlist).values({ email: email.data, source: source.data }).onConflictDoNothing();
-    return { ok: true };
   } catch (error) {
     console.error("Error saving waitlist entry:", error);
     return { ok: false, reason: "Something went wrong on our end — please try again in a moment." };
   }
+
+  // Keep Kit in sync so automations can run. Never blocks the signup itself.
+  await subscribeToKit({ email: email.data, source: source.data });
+
+  return { ok: true };
 }

@@ -42,6 +42,7 @@ export default function GuidePage() {
       />
       <GuideLayout
         eyebrow="Cutting your music"
+        source="guide:how-to-cut-sheet-music-for-an-audition"
         title="How to cut sheet music for an audition"
         intro="A cut is a shortened excerpt of your song — the most effective section that best shows your voice and storytelling. Here's how to make one that any pianist can sight-read confidently, and how to mark it so there's zero ambiguity in the room."
         sections={[

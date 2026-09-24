@@ -42,6 +42,7 @@ export default function GuidePage() {
       />
       <GuideLayout
         eyebrow="The handover"
+        source="guide:how-to-hand-over-your-music-to-the-audition-pianist"
         title="How to hand over your music to the audition pianist"
         intro="The thirty seconds between 'Hi, how are you?' and your first note can set the entire room's energy. Here's the exact protocol from someone who reads performers' cuts cold, every single day."
         sections={[

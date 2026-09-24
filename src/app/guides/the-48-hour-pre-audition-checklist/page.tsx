@@ -36,6 +36,7 @@ export default function GuidePage() {
       />
       <GuideLayout
         eyebrow="Print & keep"
+        source="guide:the-48-hour-pre-audition-checklist"
         title="The 48-hour pre-audition checklist"
         intro="Preparation is the antidote to nerves. If everything below is handled before you arrive, the only thing left in the room is you, your song, and the pianist. Print this page and tick as you go."
         sections={[
