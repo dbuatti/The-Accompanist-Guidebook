@@ -9,6 +9,18 @@ export const COPYRIGHT_LINE = `© ${new Date().getFullYear()} ${OWNER_NAME} · M
 export const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
 export const primaryHref = paymentLink || "/modules";
+
+// For a signed-in learner, pre-fill their email at checkout and tag the
+// payment with their account id, so the purchase unlocks the right account
+// even if they type a different email into Stripe.
+export function checkoutUrlFor(user?: { id?: string | null; email?: string | null } | null): string {
+  if (!paymentLink) return "/auth/sign-in";
+  if (!user?.id) return paymentLink;
+  const url = new URL(paymentLink);
+  url.searchParams.set("client_reference_id", user.id);
+  if (user.email) url.searchParams.set("prefilled_email", user.email);
+  return url.toString();
+}
 export const primaryLabel = "Get Full Access";
 
 // --- Sales offer ---

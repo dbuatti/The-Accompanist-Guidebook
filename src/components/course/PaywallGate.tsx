@@ -13,13 +13,15 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, paymentLink, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, paymentLink, GUARANTEE_DAYS, checkoutUrlFor } from "@/lib/constants";
+import { authClient } from "@/lib/auth/client";
 import { CTAButton } from "@/components/CTAButton";
 import { usePricing } from "@/hooks/use-pricing";
 
 export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
   const { display } = usePricing();
-  const primaryHref = paymentLink || "/auth/sign-in";
+  const { data: session } = authClient.useSession();
+  const primaryHref = checkoutUrlFor(session?.user);
   const primaryLabel = paymentLink ? "Get Full Access" : "Sign in to view your course";
 
   const included = [

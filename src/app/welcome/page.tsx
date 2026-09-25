@@ -67,7 +67,9 @@ export default function WelcomePage() {
       if (session?.user?.id) {
         const [progress, p] = await Promise.all([getProgress(), getPaidStatus()]);
         setProgressData(progress);
-        setIsPaid(p.isPaid);
+        // Only ever upgrade: a slower, stale read must not re-lock the course
+        // right after the purchase-unlock flow has granted access.
+        setIsPaid((prev) => prev || p.isPaid);
         paid = p.isPaid;
         if (!paid) {
           const v = await verifyAndApplyPurchase(readPendingSession());
@@ -109,7 +111,10 @@ export default function WelcomePage() {
       document.cookie = "pending_session=; path=/; max-age=0";
       params.delete("paid");
       params.delete("session_id");
-      window.history.replaceState({}, "", window.location.pathname + params.toString());
+      // Keep the "?" — without it any leftover param was glued onto the path
+      // (e.g. "/welcomeneon_auth_session_verifier=..."), which 404'd.
+      const qs = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
       const result = await verifyAndApplyPurchase(sessionIdFromUrl || readPendingSession());
       if (result.isPaid) {
         setIsPaid(true);
@@ -123,10 +128,15 @@ export default function WelcomePage() {
   }, [session, isPending]);
 
   useEffect(() => {
+    if (isPending) return;
     if (session?.user?.id) {
       fetchData();
+    } else {
+      // Signed out: stop the spinner and show the paywall/sign-in prompt
+      // instead of loading forever.
+      setIsLoading(false);
     }
-  }, [session?.user?.id]);
+  }, [isPending, session?.user?.id]);
 
   const handleLogout = async () => { await authClient.signOut(); router.push("/"); };
 

@@ -62,8 +62,16 @@ export async function POST(req: Request) {
       .limit(1);
     const isNew = !existing;
 
-    // If the account already exists, grant access immediately.
-    const [user] = await db.select().from(users).where(eq(users.email, email));
+    // Match the account: the id we tagged the checkout with (signed-in buyers)
+    // wins over the email typed into Stripe.
+    let user: typeof users.$inferSelect | undefined;
+    const ref = session.client_reference_id;
+    if (ref && /^[0-9a-f-]{36}$/i.test(ref)) {
+      [user] = await db.select().from(users).where(eq(users.id, ref));
+    }
+    if (!user) {
+      [user] = await db.select().from(users).where(eq(users.email, email));
+    }
     if (user) {
       await db.update(users)
         .set({ isPaid: true, stripeCustomerId: customerId, stripePaymentId: paymentId })

@@ -16,7 +16,7 @@ export default async function AuthPage({
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[500px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md p-4">
-        <Link href="/" className="absolute top-6 left-6 text-xs text-muted-foreground hover:text-primary transition-colors">
+        <Link href="/" className="inline-block mb-4 sm:mb-0 sm:absolute sm:top-6 sm:left-6 text-xs text-muted-foreground hover:text-primary transition-colors">
           &larr; Back home
         </Link>
 
@@ -36,15 +36,12 @@ export default async function AuthPage({
         </div>
 
         <p className="text-center text-sm text-muted-foreground mt-6">
-          or{" "}
-          <Link href="/modules" className="text-primary hover:underline font-medium">
-            browse modules without signing in
+          Not a member yet?{" "}
+          <Link href="/#curriculum" className="text-primary hover:underline font-medium">
+            See what&apos;s inside the course
           </Link>
         </p>
 
-        <p className="text-center text-xs text-muted-foreground/50 uppercase tracking-widest mt-4">
-          Educational Resource
-        </p>
       </div>
     </div>
   );

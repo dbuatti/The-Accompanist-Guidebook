@@ -78,7 +78,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       if (session?.user?.id) {
         const [progress, p] = await Promise.all([getProgress(), getPaidStatus()]);
         setProgressData(progress);
-        setIsPaid(p.isPaid);
+        setIsPaid((prev) => prev || p.isPaid);
         paid = p.isPaid;
       }
       if (session?.user?.id && !paid) {
@@ -128,7 +128,10 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       document.cookie = "pending_session=; path=/; max-age=0";
       params.delete("paid");
       params.delete("session_id");
-      window.history.replaceState({}, "", window.location.pathname + params.toString());
+      // Keep the "?" — without it any leftover param was glued onto the path
+      // (e.g. "/welcomeneon_auth_session_verifier=..."), which 404'd.
+      const qs = params.toString();
+      window.history.replaceState({}, "", window.location.pathname + (qs ? `?${qs}` : ""));
       const result = await verifyAndApplyPurchase(sessionIdFromUrl || readPendingSession());
       if (result.isPaid) {
         setIsPaid(true);
