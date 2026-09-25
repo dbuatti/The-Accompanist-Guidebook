@@ -280,6 +280,15 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
   }
 }
 
+// Grant or remove course access by hand — for comps (teachers, reviewers,
+// testimonial givers) and for sorting out a purchase that didn't unlock.
+export async function setUserAccess(userId: string, isPaid: boolean) {
+  await requireAdmin();
+  await db.update(users).set({ isPaid }).where(eq(users.id, userId));
+  revalidatePath("/admin/users");
+  return { isPaid };
+}
+
 export async function deleteUser(userId: string) {
   await requireAdmin();
   try {

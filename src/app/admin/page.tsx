@@ -92,7 +92,8 @@ export default function AdminPage() {
           else draftLessons++;
           if (lesson.hasVideo) {
             totalVideos++;
-            if (lesson.videoStatus === "uploaded") uploadedVideos++;
+            // A lesson with a video URL is done, whatever its manual status says.
+            if (lesson.videoUrl || lesson.videoStatus === "uploaded") uploadedVideos++;
           }
         });
       });

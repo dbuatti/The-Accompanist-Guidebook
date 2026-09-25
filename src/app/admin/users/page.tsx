@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAllUsers, updateUser, deleteUser } from "@/app/actions";
+import { getAllUsers, setUserAccess, deleteUser } from "@/app/actions";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -71,14 +72,14 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleUpdateRole = async (userId: string, role: string) => {
+  const handleSetAccess = async (userId: string, isPaid: boolean) => {
     setIsActionPending(userId);
     try {
-      await updateUser(userId, { role });
-      setUsers(users.map((u) => (u.id === userId ? { ...u, role } : u)));
-      showSuccess("User role updated");
+      await setUserAccess(userId, isPaid);
+      setUsers(users.map((u) => (u.id === userId ? { ...u, isPaid } : u)));
+      showSuccess(isPaid ? "Course access granted" : "Course access removed");
     } catch (error) {
-      showError("Failed to update role");
+      showError("Failed to update access");
     } finally {
       setIsActionPending(null);
     }
@@ -111,7 +112,7 @@ export default function AdminUsersPage() {
     <div>
       <div className="mb-8">
         <h2 className="text-xl font-serif font-semibold text-primary">Member Management</h2>
-        <p className="text-sm text-muted-foreground">Manage access levels and view registered members.</p>
+        <p className="text-sm text-muted-foreground">See who has access. Flip the switch to give someone the course free (or remove it). Admin rights are set in code, not here.</p>
       </div>
 
       <Card className="bg-card/50 border-border/50">
@@ -120,7 +121,7 @@ export default function AdminUsersPage() {
             <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-[250px]">User</TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead>Course access</TableHead>
                 <TableHead>Joined</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
@@ -167,22 +168,22 @@ export default function AdminUsersPage() {
                       <TableCell>
                         {isProtectedAdmin ? (
                           <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <Lock className="w-3 h-3" /> Protected
+                            <Lock className="w-3 h-3" /> Owner (full access)
                           </span>
                         ) : (
-                          <Select
-                            value={user.role}
-                            onValueChange={(val) => handleUpdateRole(user.id, val)}
-                            disabled={isPending}
-                          >
-                            <SelectTrigger className="w-32 h-8 text-xs">
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="user">User</SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          <label className="inline-flex items-center gap-2 text-xs">
+                            <Switch
+                              checked={!!user.isPaid}
+                              onCheckedChange={(val) => handleSetAccess(user.id, val)}
+                              disabled={isPending}
+                              aria-label={`Course access for ${user.email}`}
+                            />
+                            {user.isPaid ? (
+                              <span className="font-medium text-primary">{user.stripePaymentId ? "Paid" : "Granted"}</span>
+                            ) : (
+                              <span className="text-muted-foreground">No access</span>
+                            )}
+                          </label>
                         )}
                       </TableCell>
                       <TableCell>
