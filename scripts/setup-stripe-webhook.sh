@@ -26,8 +26,7 @@ echo "Registering webhook endpoint: $URL"
 RESPONSE=$(curl -sS --request POST "https://api.stripe.com/v1/webhook_endpoints" \
   --user "$SECRET_KEY:" \
   --data "url=$URL" \
-  --data "enabled_events[]=checkout.session.completed" \
-  --data "api_version=2025-09-30.basil")
+  --data "enabled_events[]=checkout.session.completed")
 
 SECRET=$(printf '%s' "$RESPONSE" | grep -o '"secret": *"[^"]*"' | head -1 | sed 's/.*: *"//; s/"$//')
 
