@@ -6,9 +6,10 @@ import VideoPlayer from "@/components/VideoPlayer";
 import { MarkdownBody } from "@/components/MarkdownBody";
 import { useCourse } from "./CourseProvider";
 import { formatModuleTitle } from "@/lib/utils";
+import { saveVideoProgress } from "@/app/actions";
 
 export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: string; lessonSlug: string }) {
-  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session } = useCourse();
+  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session, progressData } = useCourse();
   const module = getModule(moduleSlug);
   const lesson = getLesson(moduleSlug, lessonSlug);
   const { prev, next } = getAdjacentLesson(moduleSlug, lessonSlug);
@@ -90,8 +91,10 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
               onComplete={() => {
                 if (!completed) toggleComplete(lesson.id);
               }}
-              initialTime={0}
-              onProgress={() => {}}
+              initialTime={progressData.find((p) => p.lessonId === lesson.id)?.lastPosition ?? 0}
+              onProgress={(seconds) => {
+                if (isLoggedIn) saveVideoProgress(lesson.id, seconds);
+              }}
             />
           </div>
         )}

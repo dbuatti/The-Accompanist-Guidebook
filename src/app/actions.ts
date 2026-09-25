@@ -294,10 +294,12 @@ export async function saveVideoProgress(lessonId: string, seconds: number) {
   try {
     const user = await requireUser();
     await db.insert(progress)
-      .values({ userId: user.id, lessonId, lastPosition: seconds })
+      // completedAt must be explicit: the column defaults to now(), which would
+      // mark a lesson complete the first time any watch position is saved.
+      .values({ userId: user.id, lessonId, lastPosition: Math.max(0, Math.floor(seconds)), completedAt: null })
       .onConflictDoUpdate({
         target: [progress.userId, progress.lessonId],
-        set: { lastPosition: seconds }
+        set: { lastPosition: Math.max(0, Math.floor(seconds)) }
       });
   } catch (error: any) {
     console.error("Error saving video progress (FULL ERROR):", error.message);
