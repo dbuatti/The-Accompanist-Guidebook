@@ -52,12 +52,19 @@ export function parseMarkdownToBlocks(notes: string): MarkdownBlock[] {
   let listCounter = 0;
   for (const line of lines) {
     const t = line.trim();
-    if (!t) { listCounter = 0; continue; }
+    // Blank lines don't end a numbered list: lessons are often written as
+    // "1. …" / blank / "1. …" (auto-number style), which rendered as 1, 1, 1.
+    if (!t) continue;
     if (t.startsWith("### ")) { listCounter = 0; blocks.push({ type: "heading", content: t.replace("### ", "") }); }
     else if (t.startsWith("## ")) { listCounter = 0; blocks.push({ type: "heading", content: t.replace("## ", "") }); }
     else if (t.startsWith("# ")) { listCounter = 0; blocks.push({ type: "heading", content: t.replace("# ", "") }); }
     else if (t.startsWith("- ") || t.startsWith("* ")) { listCounter = 0; blocks.push({ type: "bullet_list", content: t.replace(/^[-*] /, "") }); }
-    else if (/^\d+\.\s/.test(t)) { listCounter++; blocks.push({ type: "numbered_list", content: t.replace(/^\d+\.\s/, ""), order: listCounter }); }
+    else if (/^\d+\.\s/.test(t)) {
+      // Use the author's number, except a repeated "1." that continues a list.
+      const written = parseInt(t, 10);
+      listCounter = written === 1 && listCounter > 0 ? listCounter + 1 : written;
+      blocks.push({ type: "numbered_list", content: t.replace(/^\d+\.\s/, ""), order: listCounter });
+    }
     else if (t.startsWith("> [!tip] ")) { listCounter = 0; blocks.push({ type: "callout", content: t.replace("> [!tip] ", "") }); }
     else if (t.startsWith("> ")) { listCounter = 0; blocks.push({ type: "quote", content: t.replace("> ", "") }); }
     else if (t === "---") { listCounter = 0; blocks.push({ type: "divider", content: "" }); }
