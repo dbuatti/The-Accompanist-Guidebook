@@ -54,7 +54,10 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
   // complete) never tears down and rebuilds the player mid-playback.
   const onCompleteRef = useRef(onComplete);
   const onProgressRef = useRef(onProgress);
-  const initialTimeRef = useRef(initialTime);
+  // Resume point is fixed when the player mounts and passed to YouTube as the
+  // embed's start= parameter — seeking from onReady proved unreliable when the
+  // API attaches to an iframe that has already loaded.
+  const [startAt] = useState(() => (initialTime > 5 ? Math.floor(initialTime) : 0));
   useEffect(() => {
     onCompleteRef.current = onComplete;
     onProgressRef.current = onProgress;
@@ -78,9 +81,6 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
       events: {
         onStateChange: (event: any) => {
           if (event.data === window.YT.PlayerState.ENDED) onCompleteRef.current();
-        },
-        onReady: (event: any) => {
-          if (initialTimeRef.current > 5) event.target.seekTo(initialTimeRef.current, true);
         },
       },
     });
@@ -117,7 +117,7 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
         key={videoId}
         ref={iframeRef}
         id={playerDomId}
-        src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1`}
+        src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1${startAt ? `&start=${startAt}` : ""}`}
         title="Lesson video"
         className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

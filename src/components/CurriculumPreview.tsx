@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { Layers, PlayCircle, CheckCircle2 } from "lucide-react";
 import { getPublicCurriculumPreview } from "@/app/actions";
 import Reveal from "@/components/Reveal";
-import { formatModuleTitle } from "@/lib/utils";
+import { formatModuleTitle, formatLevelTitle } from "@/lib/utils";
 import type { CourseLevelPreview } from "@/lib/types";
 
 const LEVEL_ACCENTS = [
@@ -70,7 +70,7 @@ export default function CurriculumPreview() {
                         Level {li + 1}
                       </span>
                     </div>
-                    <h3 className="font-serif text-xl font-bold text-primary">{level.title}</h3>
+                    <h3 className="font-serif text-xl font-bold text-primary">{formatLevelTitle(level.title)}</h3>
                     <div className={`flex-1 h-px bg-gradient-to-r from-border/50 to-transparent ml-2`} />
                   </div>
                 </Reveal>

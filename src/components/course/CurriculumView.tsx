@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Layers, FileText, CheckCircle2, ArrowRight, EyeOff, PartyPopper } from "lucide-react";
-import { formatModuleTitle } from "@/lib/utils";
+import { formatModuleTitle, formatLevelTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 import type { CourseLevel, CourseModule, CourseLesson } from "@/lib/types";
 
@@ -99,7 +99,7 @@ export default function CurriculumView() {
                 <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${accent.label}`}>
                   Level {li + 1}
                 </span>
-                <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{level.title}</h2>
+                <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{formatLevelTitle(level.title)}</h2>
               </div>
               <div className="flex-1 h-px bg-gradient-to-r from-border/40 to-transparent ml-auto max-w-[120px]" />
             </div>

@@ -5,6 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// Level titles are stored as "Level 1: Foundations & Mindset", but the UI
+// already prints a "Level 1" label above them — drop the prefix so it doesn't
+// read "LEVEL 1 / Level 1: Foundations & Mindset".
+export function formatLevelTitle(title: string): string {
+  return title.replace(/^Level\s*\d+\s*[:\-–—]\s*/i, "");
+}
+
 export function formatModuleTitle(module: { title: string; moduleNumber?: number }): string {
   const title = module.title.replace(/^Module \d+: /, "");
   if (module.moduleNumber) {
