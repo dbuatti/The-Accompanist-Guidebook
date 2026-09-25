@@ -7,7 +7,7 @@ import CurriculumView from "@/components/course/CurriculumView";
 import { SITE_NAME } from "@/lib/constants";
 
 export default function ModulesPage() {
-  const { session, isAdmin, publishAll, logout } = useCourse();
+  const { session, isAdmin, logout } = useCourse();
 
   return (
     <div className="min-h-dvh bg-background">
@@ -29,12 +29,12 @@ export default function ModulesPage() {
               <Feather className="w-3.5 h-3.5" /> Welcome
             </Link>
             {isAdmin && (
-              <button
-                onClick={publishAll}
+              <Link
+                href="/admin"
                 className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-primary hover:bg-accent/20 transition-colors"
               >
-                <Eye className="w-3.5 h-3.5" /> Publish
-              </button>
+                <Eye className="w-3.5 h-3.5" /> Admin
+              </Link>
             )}
             {session ? (
               <button

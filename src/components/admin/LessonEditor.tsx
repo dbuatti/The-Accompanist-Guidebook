@@ -114,12 +114,13 @@ export default function LessonEditor({ lesson, moduleTitle, onRefetch, onDeleted
   };
 
   const handleGenerateWithGemini = async () => {
+    if (blocksToNotes(blocks).trim() && !confirm("Replace the notes in the editor with an AI draft? Nothing is saved until you press Save.")) return;
     setIsGenerating(true);
     try {
       const result = await generateLessonNotes(lesson.id);
       if (result.success && result.notes) {
         setBlocks(parseNotesToBlocks(result.notes));
-        showSuccess("Gemini AI has written your lesson notes");
+        showSuccess("Draft loaded — review it, then press Save to publish the changes");
       }
     } catch (error: any) {
       showError(error.message || "Failed to generate notes with Gemini AI");

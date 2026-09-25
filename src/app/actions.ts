@@ -270,6 +270,9 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
 export async function deleteUser(userId: string) {
   await requireAdmin();
   try {
+    // progress.user_id has no ON DELETE CASCADE, so remove the learner's
+    // progress first or the delete fails for anyone who has started lessons.
+    await db.delete(progress).where(eq(progress.userId, userId));
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
   } catch (error: any) {
@@ -693,15 +696,9 @@ Format the output beautifully with clear headings, bullet points, and bold text.
     const generatedNotes = response.text;
     if (!generatedNotes) throw new Error("No content generated from Gemini");
 
-    // 4. Save the generated notes back to the database
-    await db.update(lessons)
-      .set({ notes: generatedNotes })
-      .where(eq(lessons.id, lessonId));
-
-    revalidatePath("/modules");
-    revalidatePath("/admin");
-    revalidatePath("/admin/tree");
-
+    // 4. Return a draft only. The editor loads it for review and nothing
+    // reaches students until you press Save — previously this overwrote the
+    // live lesson notes (with no undo) the moment Gemini replied.
     return { success: true, notes: generatedNotes };
   } catch (error: any) {
     console.error("Error generating lesson notes with Gemini:", error);
