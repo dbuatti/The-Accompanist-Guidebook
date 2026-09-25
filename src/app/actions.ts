@@ -331,9 +331,11 @@ export async function toggleLessonProgress(lessonId: string) {
       .where(and(eq(progress.userId, user.id), eq(progress.lessonId, lessonId)));
 
     if (existing.length > 0 && existing[0].completedAt) {
+      // Un-completing deletes the row rather than setting completed_at to
+      // NULL: in production that column rejects NULL (un-ticking a lesson
+      // returned a 500), and a missing row already means "not complete".
       await db
-        .update(progress)
-        .set({ completedAt: null })
+        .delete(progress)
         .where(and(eq(progress.userId, user.id), eq(progress.lessonId, lessonId)));
       return { completed: false };
     } else {
