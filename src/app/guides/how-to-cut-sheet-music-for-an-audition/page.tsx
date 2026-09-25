@@ -1,5 +1,6 @@
 import GuideLayout from "@/components/guides/GuideLayout";
 import { SITE_NAME } from "@/lib/constants";
+import { getCoursePrice } from "@/lib/pricing";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 const PATH = "/guides/how-to-cut-sheet-music-for-an-audition";
@@ -17,7 +18,8 @@ export const metadata = {
   },
 };
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  const price = await getCoursePrice();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HowTo",
@@ -43,6 +45,7 @@ export default function GuidePage() {
       <GuideLayout
         eyebrow="Cutting your music"
         source="guide:how-to-cut-sheet-music-for-an-audition"
+        priceDisplay={price.display}
         title="How to cut sheet music for an audition"
         intro="A cut is a shortened excerpt of your song — the most effective section that best shows your voice and storytelling. Here's how to make one that any pianist can sight-read confidently, and how to mark it so there's zero ambiguity in the room."
         sections={[

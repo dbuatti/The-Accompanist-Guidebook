@@ -1,5 +1,6 @@
 import GuideLayout from "@/components/guides/GuideLayout";
 import { SITE_NAME } from "@/lib/constants";
+import { getCoursePrice } from "@/lib/pricing";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 const PATH = "/guides/how-to-hand-over-your-music-to-the-audition-pianist";
@@ -17,7 +18,8 @@ export const metadata = {
   },
 };
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  const price = await getCoursePrice();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "HowTo",
@@ -43,6 +45,7 @@ export default function GuidePage() {
       <GuideLayout
         eyebrow="The handover"
         source="guide:how-to-hand-over-your-music-to-the-audition-pianist"
+        priceDisplay={price.display}
         title="How to hand over your music to the audition pianist"
         intro="The thirty seconds between 'Hi, how are you?' and your first note can set the entire room's energy. Here's the exact protocol from someone who reads performers' cuts cold, every single day."
         sections={[

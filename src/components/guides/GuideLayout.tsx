@@ -18,6 +18,7 @@ interface GuideLayoutProps {
   title: string;
   intro: string;
   source?: string;
+  priceDisplay?: string;
   sections?: GuideSection[];
   steps?: GuideStep[];
   checklist?: { heading: string; items: string[] }[];
@@ -32,6 +33,7 @@ export default function GuideLayout({
   title,
   intro,
   source,
+  priceDisplay = COURSE_PRICE_DISPLAY,
   sections = [],
   steps = [],
   checklist = [],
@@ -172,7 +174,7 @@ export default function GuideLayout({
               </a>
               <p className="text-xs text-foreground/60 mt-3 flex items-center justify-center gap-1.5">
                 <CheckCircle2 className="w-3.5 h-3.5" />
-                {COURSE_PRICE_DISPLAY} · one-time · {GUARANTEE_DAYS}-day money-back guarantee
+                {priceDisplay} · one-time · {GUARANTEE_DAYS}-day money-back guarantee
               </p>
             </div>
           </div>

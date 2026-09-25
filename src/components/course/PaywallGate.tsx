@@ -13,10 +13,12 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, paymentLink, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, paymentLink, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
+import { usePricing } from "@/hooks/use-pricing";
 
 export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
+  const { display } = usePricing();
   const primaryHref = paymentLink || "/auth/sign-in";
   const primaryLabel = paymentLink ? "Get Full Access" : "Sign in to view your course";
 
@@ -111,7 +113,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
 
                   <div className="flex items-center gap-3 mb-6">
                     <span className="text-3xl font-serif font-bold text-primary tabular-nums tracking-tight">
-                      {COURSE_PRICE_DISPLAY}
+                      {display}
                     </span>
                     <span className="text-left text-[11px] leading-tight text-muted-foreground">
                       <span className="block font-semibold text-foreground/70">One-time payment</span>

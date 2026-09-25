@@ -6,10 +6,11 @@ import CurriculumPreview from "@/components/CurriculumPreview";
 import Reveal from "@/components/Reveal";
 import WaitlistForm from "@/components/WaitlistForm";
 import MobileStickyCTA from "@/components/MobileStickyCTA";
-import { SITE_NAME, primaryHref, primaryLabel, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, primaryHref, primaryLabel, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
 import { getPublicCourseStats } from "@/app/actions";
+import { getCoursePrice } from "@/lib/pricing";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 
@@ -62,7 +63,7 @@ export const metadata = {
 };
 
 export default async function Home() {
-  const stats = await getPublicCourseStats();
+  const [stats, price] = await Promise.all([getPublicCourseStats(), getCoursePrice()]);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -82,8 +83,8 @@ export default async function Home() {
         },
         offers: {
           "@type": "Offer",
-          price: "147",
-          priceCurrency: "AUD",
+          price: String(price.amount),
+          priceCurrency: price.currency,
           availability: "https://schema.org/InStock",
           url: primaryHref,
         },
@@ -175,7 +176,7 @@ export default async function Home() {
           <div className="flex flex-col items-center gap-4 pt-2">
             <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
             <p className="text-xs text-muted-foreground/70">
-              {COURSE_PRICE_DISPLAY} · one-time payment ·{" "}
+              {price.display} · one-time payment ·{" "}
               <ShieldCheck className="inline w-3 h-3 -mt-0.5" /> {GUARANTEE_DAYS}-day money-back guarantee
             </p>
             <p className="text-xs text-muted-foreground/70">
@@ -514,7 +515,7 @@ export default async function Home() {
 
                 <div className="flex items-center justify-center gap-3 mb-6">
                   <span className="text-4xl sm:text-5xl font-serif font-bold text-primary tabular-nums tracking-tight">
-                    {COURSE_PRICE_DISPLAY}
+                    {price.display}
                   </span>
                   <span className="text-left text-[11px] leading-tight text-muted-foreground">
                     <span className="block font-semibold text-foreground/70">One-time payment</span>

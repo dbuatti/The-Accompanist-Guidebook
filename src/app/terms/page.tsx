@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Music, ArrowLeft, ShieldCheck } from "lucide-react";
-import { SITE_NAME, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, GUARANTEE_DAYS } from "@/lib/constants";
+import { getCoursePrice } from "@/lib/pricing";
 
 export const metadata = {
   title: "Terms of Service",
@@ -8,11 +9,12 @@ export const metadata = {
   robots: { index: true, follow: true },
 };
 
-const sections = [
-  {
-    h: "What you're buying",
-    p: [
-      `${SITE_NAME} is a digital video course for musical theatre performers. A one-time payment of ${COURSE_PRICE_DISPLAY} grants you lifetime access to the course content then available, plus any future lessons and resources we add.`,
+function buildSections(priceDisplay: string) {
+  return [
+    {
+      h: "What you're buying",
+      p: [
+        `${SITE_NAME} is a digital video course for musical theatre performers. A one-time payment of ${priceDisplay} grants you lifetime access to the course content then available, plus any future lessons and resources we add.`,
       "The licence is for you, personally. You may not resell, share, or redistribute the course content or your account access to anyone else.",
     ],
   },
@@ -49,9 +51,13 @@ const sections = [
       "These terms are governed by the laws of Victoria, Australia. Any disputes will be handled in that jurisdiction.",
     ],
   },
-];
+  ];
+}
 
-export default function Terms() {
+export default async function Terms() {
+  const price = await getCoursePrice();
+  const sections = buildSections(price.display);
+
   return (
     <div className="min-h-screen bg-background">
       <header className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">

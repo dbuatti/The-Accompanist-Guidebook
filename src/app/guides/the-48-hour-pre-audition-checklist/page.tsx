@@ -1,5 +1,6 @@
 import GuideLayout from "@/components/guides/GuideLayout";
 import { SITE_NAME } from "@/lib/constants";
+import { getCoursePrice } from "@/lib/pricing";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 const PATH = "/guides/the-48-hour-pre-audition-checklist";
@@ -17,7 +18,8 @@ export const metadata = {
   },
 };
 
-export default function GuidePage() {
+export default async function GuidePage() {
+  const price = await getCoursePrice();
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -37,6 +39,7 @@ export default function GuidePage() {
       <GuideLayout
         eyebrow="Print & keep"
         source="guide:the-48-hour-pre-audition-checklist"
+        priceDisplay={price.display}
         title="The 48-hour pre-audition checklist"
         intro="Preparation is the antidote to nerves. If everything below is handled before you arrive, the only thing left in the room is you, your song, and the pianist. Print this page and tick as you go."
         sections={[
