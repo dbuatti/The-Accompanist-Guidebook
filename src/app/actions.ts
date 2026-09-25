@@ -87,27 +87,34 @@ async function applyPurchaseToUser(
   userId: string,
   email: string,
   purchase: { customerId: string | null; paymentIntentId: string; amountTotal: number | null }
-) {
-  // If the webhook already recorded this payment, claim it for this user —
-  // even when the cardholder email differs from the sign-in email.
+): Promise<boolean> {
+  // One purchase = one account. If this payment has already been claimed by a
+  // different user, refuse — otherwise a single checkout session id (or a
+  // forwarded receipt link) could unlock the course for any number of people.
   const existing = await db
     .select()
     .from(purchases)
     .where(eq(purchases.paymentIntentId, purchase.paymentIntentId))
     .limit(1);
-  if (existing.length > 0) {
-    await db.update(users)
-      .set({ isPaid: true, stripeCustomerId: purchase.customerId, stripePaymentId: purchase.paymentIntentId })
-      .where(eq(users.id, userId));
-    await db.update(purchases).set({ appliedToUserId: userId }).where(eq(purchases.id, existing[0].id));
-    return;
+  if (existing.length > 0 && existing[0].appliedToUserId && existing[0].appliedToUserId !== userId) {
+    console.warn("Purchase already claimed by another account:", purchase.paymentIntentId);
+    return false;
   }
+
   await db.update(users)
     .set({ isPaid: true, stripeCustomerId: purchase.customerId, stripePaymentId: purchase.paymentIntentId })
     .where(eq(users.id, userId));
-  await db.insert(purchases)
-    .values({ email, customerId: purchase.customerId, paymentIntentId: purchase.paymentIntentId, amountTotal: purchase.amountTotal, appliedToUserId: userId })
-    .onConflictDoNothing();
+
+  if (existing.length > 0) {
+    // The webhook already recorded this payment — claim it for this user, even
+    // when the cardholder email differs from the sign-in email.
+    await db.update(purchases).set({ appliedToUserId: userId }).where(eq(purchases.id, existing[0].id));
+  } else {
+    await db.insert(purchases)
+      .values({ email, customerId: purchase.customerId, paymentIntentId: purchase.paymentIntentId, amountTotal: purchase.amountTotal, appliedToUserId: userId })
+      .onConflictDoNothing();
+  }
+  return true;
 }
 
 export async function verifyAndApplyPurchase(sessionId?: string | null) {
@@ -128,8 +135,9 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
       if (session.payment_status === "paid" && session.status === "complete") {
         const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
         const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? sessionId;
-        await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: session.amount_total ?? null });
-        return { isPaid: true };
+        if (await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: session.amount_total ?? null })) {
+          return { isPaid: true };
+        }
       }
     }
 
@@ -140,8 +148,9 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
       .orderBy(desc(purchases.createdAt))
       .limit(1);
     if (pending && !pending.appliedToUserId) {
-      await applyPurchaseToUser(user.id, email, { customerId: pending.customerId, paymentIntentId: pending.paymentIntentId, amountTotal: pending.amountTotal });
-      return { isPaid: true };
+      if (await applyPurchaseToUser(user.id, email, { customerId: pending.customerId, paymentIntentId: pending.paymentIntentId, amountTotal: pending.amountTotal })) {
+        return { isPaid: true };
+      }
     }
 
     // Fallback: verify directly with Stripe by email (covers missed webhooks).
@@ -152,8 +161,9 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
       if (paid) {
         const customerId = typeof paid.customer === "string" ? paid.customer : paid.customer?.id ?? null;
         const paymentIntentId = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id ?? paid.id;
-        await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: paid.amount_total ?? null });
-        return { isPaid: true };
+        if (await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: paid.amount_total ?? null })) {
+          return { isPaid: true };
+        }
       }
     }
 
@@ -364,7 +374,7 @@ export async function getPublicCurriculumPreview(): Promise<CourseLevelPreview[]
                 id: lesson.id,
                 title: lesson.title,
                 slug: lesson.slug,
-                videoUrl: lesson.videoUrl,
+                hasVideo: !!lesson.videoUrl,
                 displayOrder: lesson.displayOrder,
               })),
           })),

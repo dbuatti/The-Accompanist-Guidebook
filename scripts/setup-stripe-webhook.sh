@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # ---------------------------------------------------------------------------
-# Register the Stripe webhook endpoint for checkout.session.completed.
+# Register the Stripe webhook endpoint (purchases, delayed payments, refunds, disputes).
+# If an endpoint already exists, add the extra events to it in the Stripe
+# dashboard (Developers → Webhooks → your endpoint → Update details) instead.
 #
 # This registers the endpoint on Stripe and prints the signing secret (whsec_…)
 # that you must paste into .env.local (STRIPE_WEBHOOK_SECRET) and Vercel.
@@ -26,7 +28,10 @@ echo "Registering webhook endpoint: $URL"
 RESPONSE=$(curl -sS --request POST "https://api.stripe.com/v1/webhook_endpoints" \
   --user "$SECRET_KEY:" \
   --data "url=$URL" \
-  --data "enabled_events[]=checkout.session.completed")
+  --data "enabled_events[]=checkout.session.completed" \
+  --data "enabled_events[]=checkout.session.async_payment_succeeded" \
+  --data "enabled_events[]=charge.refunded" \
+  --data "enabled_events[]=charge.dispute.closed")
 
 SECRET=$(printf '%s' "$RESPONSE" | grep -o '"secret": *"[^"]*"' | head -1 | sed 's/.*: *"//; s/"$//')
 

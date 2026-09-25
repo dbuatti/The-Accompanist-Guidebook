@@ -61,7 +61,9 @@ export interface CourseLessonPreview {
   id: string;
   title: string;
   slug: string;
-  videoUrl: string;
+  // True when the lesson has a recorded video. Never expose the URL itself:
+  // this preview is public, and the video links are the paid product.
+  hasVideo: boolean;
   displayOrder: number;
 }
 
