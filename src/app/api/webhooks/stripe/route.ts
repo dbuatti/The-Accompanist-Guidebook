@@ -118,6 +118,9 @@ export async function POST(req: Request) {
     const pi = typeof obj.payment_intent === "string" ? obj.payment_intent : obj.payment_intent?.id;
     if (pi) {
       await db.update(users).set({ isPaid: false }).where(eq(users.stripePaymentId, pi));
+      // Drop the purchase record too, so an unclaimed refunded payment can't
+      // be applied to an account later.
+      await db.delete(purchases).where(eq(purchases.paymentIntentId, pi));
       console.log("Access revoked for refunded/disputed payment:", pi);
     }
     return NextResponse.json({ received: true, revoked: !!pi });

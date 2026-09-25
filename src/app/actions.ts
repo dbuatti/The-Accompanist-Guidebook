@@ -117,6 +117,15 @@ async function applyPurchaseToUser(
   return true;
 }
 
+// A Checkout Session keeps payment_status "paid" even after a refund, so check
+// the underlying charge before granting access from Stripe directly.
+async function isRefunded(stripe: Stripe, paymentIntentId: string | null | undefined): Promise<boolean> {
+  if (!paymentIntentId || !paymentIntentId.startsWith("pi_")) return false;
+  const pi = await stripe.paymentIntents.retrieve(paymentIntentId, { expand: ["latest_charge"] });
+  const charge = pi.latest_charge;
+  return typeof charge === "object" && !!charge && (charge.refunded || !!charge.disputed);
+}
+
 export async function verifyAndApplyPurchase(sessionId?: string | null) {
   try {
     const user = await requireUser();
@@ -133,6 +142,8 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status === "paid" && session.status === "complete") {
+        const piId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id;
+        if (await isRefunded(stripe, piId)) return { isPaid: false };
         const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
         const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? sessionId;
         if (await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: session.amount_total ?? null })) {
@@ -159,6 +170,8 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
       const sessions = await stripe.checkout.sessions.list({ customer_email: email, limit: 10 } as any);
       const paid = sessions.data.find((s) => s.payment_status === "paid" && s.status === "complete");
       if (paid) {
+        const piId = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id;
+        if (await isRefunded(stripe, piId)) return { isPaid: false };
         const customerId = typeof paid.customer === "string" ? paid.customer : paid.customer?.id ?? null;
         const paymentIntentId = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id ?? paid.id;
         if (await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: paid.amount_total ?? null })) {
