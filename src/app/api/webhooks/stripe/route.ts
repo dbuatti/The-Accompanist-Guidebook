@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { users, purchases } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { sendPurchaseConfirmation } from "@/lib/email";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -44,24 +45,39 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true });
     }
 
+    // Dedupe: if we've already recorded this payment, it's a webhook retry.
+    const [existing] = await db
+      .select()
+      .from(purchases)
+      .where(eq(purchases.paymentIntentId, paymentId))
+      .limit(1);
+    const isNew = !existing;
+
     // If the account already exists, grant access immediately.
     const [user] = await db.select().from(users).where(eq(users.email, email));
     if (user) {
       await db.update(users)
         .set({ isPaid: true, stripeCustomerId: customerId, stripePaymentId: paymentId })
         .where(eq(users.id, user.id));
-      await db.insert(purchases)
-        .values({ email, customerId, paymentIntentId: paymentId, amountTotal: session.amount_total ?? null })
-        .onConflictDoNothing();
-      revalidatePath("/modules");
-      revalidatePath("/welcome");
-      return NextResponse.json({ received: true, applied: true });
     }
 
-    // Otherwise record the purchase so it can be applied the moment they sign up.
+    // Record the purchase so it can be applied the moment they sign up.
     await db.insert(purchases)
       .values({ email, customerId, paymentIntentId: paymentId, amountTotal: session.amount_total ?? null })
       .onConflictDoNothing();
+
+    if (isNew) {
+      await sendPurchaseConfirmation({
+        email,
+        amountMinor: session.amount_total,
+        currency: session.currency,
+        paymentId,
+      });
+    }
+
+    revalidatePath("/modules");
+    revalidatePath("/welcome");
+    return NextResponse.json({ received: true, applied: !!user });
   }
 
   return NextResponse.json({ received: true });
