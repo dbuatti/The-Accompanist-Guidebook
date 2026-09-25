@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+import { PROMO_ENDS_AT, REGULAR_PRICE_AMOUNT, COURSE_PRICE_CURRENCY } from "@/lib/constants";
 
-// Promo pricing window. Adjust this date whenever launch pricing should end.
-export const PROMO_ENDS_AT = new Date("2026-10-15T23:59:59+10:00");
 
 export default function PromoCountdown() {
   // Starts null so the server render and the initial client render match
@@ -49,6 +48,10 @@ export default function PromoCountdown() {
           </div>
         ))}
       </div>
+      <p className="text-[11px] text-muted-foreground">
+        Then {`$${REGULAR_PRICE_AMOUNT} ${COURSE_PRICE_CURRENCY}`} from{" "}
+        {new Date(PROMO_ENDS_AT.getTime() + 1000).toLocaleDateString("en-AU", { day: "numeric", month: "long", timeZone: "Australia/Melbourne" })}
+      </p>
     </div>
   );
 }

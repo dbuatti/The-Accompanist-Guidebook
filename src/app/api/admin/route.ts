@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { syncLessonContent, restructureCourse, fixCourseStructure, scaffoldAuditionGuidebook, stripModuleNumberPrefixes } from "@/app/actions";
+import { syncLessonContent, restructureCourse, fixCourseStructure, scaffoldAuditionGuidebook, stripModuleNumberPrefixes, mergeDuplicateLessons } from "@/app/actions";
 import { auth } from "@/lib/auth/server";
 import { isAdmin } from "@/lib/admin";
 
@@ -31,6 +31,9 @@ export async function POST(request: NextRequest) {
         break;
       case "scaffold":
         result = await scaffoldAuditionGuidebook();
+        break;
+      case "mergeDuplicates":
+        result = await mergeDuplicateLessons();
         break;
       case "stripPrefixes":
         result = await stripModuleNumberPrefixes();

@@ -5,6 +5,8 @@ import { Layers, PlayCircle, CheckCircle2 } from "lucide-react";
 import { getPublicCurriculumPreview } from "@/app/actions";
 import Reveal from "@/components/Reveal";
 import { formatModuleTitle, formatLevelTitle } from "@/lib/utils";
+import Link from "next/link";
+import { isFreePreview, previewHref } from "@/lib/constants";
 import type { CourseLevelPreview } from "@/lib/types";
 
 const LEVEL_ACCENTS = [
@@ -96,7 +98,19 @@ export default function CurriculumPreview() {
                             {mod.lessons.map((lesson) => (
                               <li key={lesson.id} className="flex items-start gap-2 text-xs text-foreground/70 leading-relaxed">
                                 <CheckCircle2 className={`w-3 h-3 shrink-0 mt-0.5 ${accent.chipText}`} />
-                                <span className="truncate">{lesson.title}</span>
+                                {isFreePreview(mod.slug, lesson.slug) ? (
+                                  <Link
+                                    href={previewHref({ moduleSlug: mod.slug, lessonSlug: lesson.slug })}
+                                    className="truncate text-primary font-medium hover:underline"
+                                  >
+                                    {lesson.title}{" "}
+                                    <span className="ml-1 rounded-full bg-accent/20 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary">
+                                      Free
+                                    </span>
+                                  </Link>
+                                ) : (
+                                  <span className="truncate">{lesson.title}</span>
+                                )}
                               </li>
                             ))}
                           </ul>

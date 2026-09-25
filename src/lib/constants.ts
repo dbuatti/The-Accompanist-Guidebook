@@ -28,4 +28,25 @@ export const primaryLabel = "Get Full Access";
 export const COURSE_PRICE_AMOUNT = 147; // recommended launch price (see admin/strategy C2)
 export const COURSE_PRICE_CURRENCY = "AUD";
 export const COURSE_PRICE_DISPLAY = `$${COURSE_PRICE_AMOUNT} ${COURSE_PRICE_CURRENCY}`;
+
+// Launch pricing window. The countdown states what the price becomes, so the
+// urgency is real (Australian Consumer Law). On the day after it ends, change
+// the Stripe Payment Link price to REGULAR_PRICE_AMOUNT — the site picks it up
+// automatically within ~5 minutes and the countdown disappears.
+export const PROMO_ENDS_AT = new Date("2026-11-16T23:59:59+11:00"); // Melbourne, AEDT
+export const REGULAR_PRICE_AMOUNT = 197;
+
+// Lessons anyone can watch without buying (public /preview pages).
+export const FREE_PREVIEWS = [
+  { moduleSlug: "how-to-cut-your-music", lessonSlug: "the-correct-bracket-notation" },
+  { moduleSlug: "what-your-sheet-music-should-look-like", lessonSlug: "what-is-a-lead-sheet-and-why-it-s-not-acceptable" },
+] as const;
+
+export function isFreePreview(moduleSlug: string, lessonSlug: string): boolean {
+  return FREE_PREVIEWS.some((p) => p.moduleSlug === moduleSlug && p.lessonSlug === lessonSlug);
+}
+
+export function previewHref(p: { moduleSlug: string; lessonSlug: string }): string {
+  return `/preview/${p.moduleSlug}/${p.lessonSlug}`;
+}
 export const GUARANTEE_DAYS = 14;

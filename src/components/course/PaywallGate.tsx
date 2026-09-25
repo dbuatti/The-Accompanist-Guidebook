@@ -13,7 +13,7 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, paymentLink, GUARANTEE_DAYS, checkoutUrlFor } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, paymentLink, GUARANTEE_DAYS, checkoutUrlFor, FREE_PREVIEWS, previewHref } from "@/lib/constants";
 import { authClient } from "@/lib/auth/client";
 import { CTAButton } from "@/components/CTAButton";
 import { usePricing } from "@/hooks/use-pricing";
@@ -150,6 +150,11 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                   <p className="text-xs text-foreground/60 mt-2.5 flex items-center justify-center gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-accent-bright" />
                     {GUARANTEE_DAYS}-day money-back guarantee
+                  </p>
+                  <p className="text-xs text-center mt-3">
+                    <Link href={previewHref(FREE_PREVIEWS[0])} className="text-primary hover:underline">
+                      Watch a free lesson first
+                    </Link>
                   </p>
 
                   <div className="mt-7 border-t border-border/40 pt-6">

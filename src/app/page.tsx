@@ -6,7 +6,7 @@ import CurriculumPreview from "@/components/CurriculumPreview";
 import Reveal from "@/components/Reveal";
 import WaitlistForm from "@/components/WaitlistForm";
 import MobileStickyCTA from "@/components/MobileStickyCTA";
-import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, primaryHref, primaryLabel, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, primaryHref, primaryLabel, GUARANTEE_DAYS, FREE_PREVIEWS, previewHref } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
 import { getPublicCourseStats } from "@/app/actions";
@@ -179,6 +179,12 @@ export default async function Home() {
 
           <div className="flex flex-col items-center gap-4 pt-2">
             <CTAButton href={primaryHref}>{primaryLabel}</CTAButton>
+            <Link
+              href={previewHref(FREE_PREVIEWS[0])}
+              className="text-sm text-primary hover:underline underline-offset-4 inline-flex items-center gap-1.5"
+            >
+              Not sure yet? Watch a free lesson <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
             <p className="text-xs text-muted-foreground/70">
               {price.display} · one-time payment ·{" "}
               <ShieldCheck className="inline w-3 h-3 -mt-0.5" /> {GUARANTEE_DAYS}-day money-back guarantee

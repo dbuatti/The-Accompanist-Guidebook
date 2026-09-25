@@ -1395,3 +1395,115 @@ export async function stripModuleNumberPrefixes() {
     throw new Error("Failed to strip prefixes: " + error.message);
   }
 }
+// --- One-off content tidy (25 Sep 2026 launch plan, merges M1–M4) ---
+// Idempotent: each step checks the source lesson still exists, so running it
+// twice is harmless. Run via POST /api/admin { "action": "mergeDuplicates" }.
+export async function mergeDuplicateLessons() {
+  await requireAdmin();
+  const log: string[] = [];
+
+  const findLesson = async (moduleSlug: string, lessonSlug: string) => {
+    const [mod] = await db.select().from(modules).where(eq(modules.slug, moduleSlug));
+    if (!mod) return null;
+    const [lesson] = await db
+      .select()
+      .from(lessons)
+      .where(and(eq(lessons.moduleId, mod.id), eq(lessons.slug, lessonSlug)));
+    return lesson ? { mod, lesson } : null;
+  };
+
+  const removeLesson = async (lessonId: string) => {
+    await db.delete(progress).where(eq(progress.lessonId, lessonId));
+    await db.delete(lessons).where(eq(lessons.id, lessonId)); // resources cascade
+  };
+
+  // Append only the paragraphs the target doesn't already contain.
+  const appendUnique = (target: string, addition: string, heading: string) => {
+    const norm = (s: string) => s.replace(/\s+/g, " ").trim().toLowerCase();
+    const have = norm(target);
+    const paras = addition.split(/\n\s*\n/).filter((p) => p.trim() && !have.includes(norm(p)));
+    if (paras.length === 0) return target;
+    return `${target.trimEnd()}\n\n### ${heading}\n\n${paras.join("\n\n")}`;
+  };
+
+  const renumber = async (moduleId: string) => {
+    const rows = await db.select().from(lessons).where(eq(lessons.moduleId, moduleId)).orderBy(asc(lessons.displayOrder));
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i].displayOrder !== i + 1) {
+        await db.update(lessons).set({ displayOrder: i + 1 }).where(eq(lessons.id, rows[i].id));
+      }
+    }
+  };
+
+  // M1: "Fermata, Caesura & Tempo Terms" is a word-for-word copy of
+  // "Fermata, Dal Segno & Musical Road Signs" (which has the video).
+  const m1 = await findLesson("basic-music-terminology", "fermata-caesura-tempo-terms");
+  const m1Keep = await findLesson("basic-music-terminology", "fermata-dal-segno-musical-road-signs");
+  if (m1 && m1Keep) {
+    if ((m1.lesson.notes || "").trim() !== (m1Keep.lesson.notes || "").trim()) {
+      await db.update(lessons)
+        .set({ notes: appendUnique(m1Keep.lesson.notes || "", m1.lesson.notes || "", "Caesura & tempo terms") })
+        .where(eq(lessons.id, m1Keep.lesson.id));
+    }
+    await removeLesson(m1.lesson.id);
+    log.push("M1: removed duplicate 'Fermata, Caesura & Tempo Terms'");
+  }
+
+  // M2: the two back-phrasing lessons are identical; keep the one with
+  // resources, fix the spelling (colla voce).
+  const m2 = await findLesson("basic-music-terminology", "colle-voce-back-phrasing-tacet");
+  const m2Keep = await findLesson("basic-music-terminology", "back-phrasing-tacet-critical-terms-for-auditions");
+  if (m2Keep) {
+    await db.update(lessons)
+      .set({
+        title: "Colla Voce, Back Phrasing & Tacet",
+        notes: (m2Keep.lesson.notes || "").replace(/Colle Voce/g, "Colla Voce"),
+      })
+      .where(eq(lessons.id, m2Keep.lesson.id));
+    if (m2) {
+      await removeLesson(m2.lesson.id);
+      log.push("M2: removed duplicate 'Colle Voce, Back Phrasing & Tacet'; renamed to 'Colla Voce, Back Phrasing & Tacet'");
+    }
+    await renumber(m2Keep.mod.id);
+  }
+
+  // M3: 10.3 "Delivering Tempo & Introductions" is really about intros —
+  // fold its unique sections into 10.5 (skipping its duplicate bell-tone timing).
+  const MOD10 = "approaching-and-talking-to-your-accompanist";
+  const m3 = await findLesson(MOD10, "delivering-tempo-introductions");
+  const m3Keep = await findLesson(MOD10, "choosing-and-communicating-your-intro-bell-tones-chords-tacet");
+  if (m3 && m3Keep) {
+    const src = m3.lesson.notes || "";
+    const cut = src.search(/^Bell Tone Timing/m);
+    const addition = cut > -1 ? src.slice(0, cut) : src;
+    await db.update(lessons)
+      .set({
+        title: "Your Intro: Bell Tones, Chords, Tacet & Starting on the Vocal",
+        notes: appendUnique(m3Keep.lesson.notes || "", addition, "Intro length, repeat bars and \"lead us in\""),
+      })
+      .where(eq(lessons.id, m3Keep.lesson.id));
+    await removeLesson(m3.lesson.id);
+    log.push("M3: merged 'Delivering Tempo & Introductions' into the intro lesson");
+  }
+
+  // M4: 10.4 "Putting Things Down & Second Songs" — putting things down is
+  // already in 10.2; move the second-song section across.
+  const m4 = await findLesson(MOD10, "putting-things-down-second-songs");
+  const m4Keep = await findLesson(MOD10, "how-to-approach-walk-them-through-the-music");
+  if (m4 && m4Keep) {
+    const src = m4.lesson.notes || "";
+    const start = src.search(/^If They Ask for a Second Song/m);
+    const addition = start > -1 ? src.slice(start).replace(/^If They Ask for a Second Song:?\s*\n/, "") : src;
+    await db.update(lessons)
+      .set({ notes: appendUnique(m4Keep.lesson.notes || "", addition, "If they ask for a second song") })
+      .where(eq(lessons.id, m4Keep.lesson.id));
+    await removeLesson(m4.lesson.id);
+    log.push("M4: merged 'Putting Things Down & Second Songs' into the walk-through lesson");
+  }
+  if (m3Keep) await renumber(m3Keep.mod.id);
+  if (m1Keep) await renumber(m1Keep.mod.id);
+
+  revalidatePath("/modules");
+  revalidatePath("/admin");
+  return { log: log.length ? log : ["Nothing to do — merges already applied"] };
+}

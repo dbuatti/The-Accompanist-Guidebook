@@ -1,5 +1,7 @@
 import type { MetadataRoute } from "next";
 
+import { FREE_PREVIEWS, previewHref } from "@/lib/constants";
+
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 
 // Only public, indexable pages. Module and lesson URLs are deliberately left
@@ -23,6 +25,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: today,
       changeFrequency: "monthly" as const,
       priority: 0.7,
+    })),
+    ...FREE_PREVIEWS.map((p) => ({
+      url: `${BASE}${previewHref(p)}`,
+      lastModified: today,
+      changeFrequency: "monthly" as const,
+      priority: 0.8,
     })),
     { url: `${BASE}/terms`, lastModified: today, changeFrequency: "yearly", priority: 0.2 },
     { url: `${BASE}/privacy`, lastModified: today, changeFrequency: "yearly", priority: 0.2 },
