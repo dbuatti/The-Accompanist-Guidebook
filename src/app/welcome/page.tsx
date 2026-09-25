@@ -49,6 +49,18 @@ export default function WelcomePage() {
     }
   }, [session]);
 
+  const readPendingSession = () => {
+    if (typeof document === "undefined") return null;
+    const c = document.cookie.split(";").map((x) => x.trim()).find((x) => x.startsWith("pending_session="));
+    if (!c) return null;
+    const raw = c.slice("pending_session=".length);
+    try {
+      return decodeURIComponent(raw);
+    } catch {
+      return null;
+    }
+  };
+
   const fetchData = async () => {
     try {
       let paid = false;
@@ -58,7 +70,7 @@ export default function WelcomePage() {
         setIsPaid(p.isPaid);
         paid = p.isPaid;
         if (!paid) {
-          const v = await verifyAndApplyPurchase();
+          const v = await verifyAndApplyPurchase(readPendingSession());
           if (v.isPaid) {
             setIsPaid(true);
             paid = true;
@@ -79,20 +91,26 @@ export default function WelcomePage() {
     if (isPending) return;
     const params = new URLSearchParams(window.location.search);
     const hasPaidParam = params.get("paid") === "1";
+    const sessionIdFromUrl = params.get("session_id");
     const hasPendingCookie = document.cookie.split(";").some((c) => c.trim().startsWith("pending_paid=1"));
-    if (!hasPaidParam && !hasPendingCookie) return;
+    if (!hasPaidParam && !hasPendingCookie && !sessionIdFromUrl) return;
 
     if (!session?.user) {
       document.cookie = "pending_paid=1; path=/; max-age=3600";
+      if (sessionIdFromUrl) {
+        document.cookie = `pending_session=${encodeURIComponent(sessionIdFromUrl)}; path=/; max-age=3600`;
+      }
       router.push("/auth/sign-in");
       return;
     }
 
     const applyPurchase = async () => {
       document.cookie = "pending_paid=1; path=/; max-age=0";
+      document.cookie = "pending_session=; path=/; max-age=0";
       params.delete("paid");
+      params.delete("session_id");
       window.history.replaceState({}, "", window.location.pathname + params.toString());
-      const result = await verifyAndApplyPurchase();
+      const result = await verifyAndApplyPurchase(sessionIdFromUrl || readPendingSession());
       if (result.isPaid) {
         setIsPaid(true);
         showSuccess("Course unlocked, welcome aboard!");

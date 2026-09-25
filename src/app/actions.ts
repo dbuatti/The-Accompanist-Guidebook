@@ -83,7 +83,34 @@ export async function getPaidStatus() {
   }
 }
 
-export async function verifyAndApplyPurchase() {
+async function applyPurchaseToUser(
+  userId: string,
+  email: string,
+  purchase: { customerId: string | null; paymentIntentId: string; amountTotal: number | null }
+) {
+  // If the webhook already recorded this payment, claim it for this user —
+  // even when the cardholder email differs from the sign-in email.
+  const existing = await db
+    .select()
+    .from(purchases)
+    .where(eq(purchases.paymentIntentId, purchase.paymentIntentId))
+    .limit(1);
+  if (existing.length > 0) {
+    await db.update(users)
+      .set({ isPaid: true, stripeCustomerId: purchase.customerId, stripePaymentId: purchase.paymentIntentId })
+      .where(eq(users.id, userId));
+    await db.update(purchases).set({ appliedToUserId: userId }).where(eq(purchases.id, existing[0].id));
+    return;
+  }
+  await db.update(users)
+    .set({ isPaid: true, stripeCustomerId: purchase.customerId, stripePaymentId: purchase.paymentIntentId })
+    .where(eq(users.id, userId));
+  await db.insert(purchases)
+    .values({ email, customerId: purchase.customerId, paymentIntentId: purchase.paymentIntentId, amountTotal: purchase.amountTotal, appliedToUserId: userId })
+    .onConflictDoNothing();
+}
+
+export async function verifyAndApplyPurchase(sessionId?: string | null) {
   try {
     const user = await requireUser();
     if (!user.email) return { isPaid: false };
@@ -93,35 +120,39 @@ export async function verifyAndApplyPurchase() {
 
     const email = user.email.toLowerCase();
 
-    // 1. Apply any webhook-confirmed purchase recorded for this email.
+    // Unlock by the exact Stripe Checkout session carried through sign-in, so a
+    // purchase counts even when the cardholder's email differs from the login.
+    if (sessionId && process.env.STRIPE_SECRET_KEY) {
+      const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      if (session.payment_status === "paid" && session.status === "complete") {
+        const customerId = typeof session.customer === "string" ? session.customer : session.customer?.id ?? null;
+        const paymentIntentId = typeof session.payment_intent === "string" ? session.payment_intent : session.payment_intent?.id ?? sessionId;
+        await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: session.amount_total ?? null });
+        return { isPaid: true };
+      }
+    }
+
+    // Apply any webhook-confirmed purchase recorded for this email.
     const [pending] = await db.select()
       .from(purchases)
       .where(eq(purchases.email, email))
       .orderBy(desc(purchases.createdAt))
       .limit(1);
     if (pending && !pending.appliedToUserId) {
-      await db.update(users)
-        .set({ isPaid: true, stripeCustomerId: pending.customerId, stripePaymentId: pending.paymentIntentId })
-        .where(eq(users.id, user.id));
-      await db.update(purchases).set({ appliedToUserId: user.id }).where(eq(purchases.id, pending.id));
+      await applyPurchaseToUser(user.id, email, { customerId: pending.customerId, paymentIntentId: pending.paymentIntentId, amountTotal: pending.amountTotal });
       return { isPaid: true };
     }
 
-    // 2. Fallback: verify directly with Stripe (covers missed webhooks).
+    // Fallback: verify directly with Stripe by email (covers missed webhooks).
     if (process.env.STRIPE_SECRET_KEY) {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
       const sessions = await stripe.checkout.sessions.list({ customer_email: email, limit: 10 } as any);
       const paid = sessions.data.find((s) => s.payment_status === "paid" && s.status === "complete");
       if (paid) {
-        const customerId = typeof paid.customer === "string" ? paid.customer : paid.customer?.id;
-        const pi = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id;
-        const paymentId = pi || paid.id;
-        await db.update(users)
-          .set({ isPaid: true, stripeCustomerId: customerId, stripePaymentId: paymentId })
-          .where(eq(users.id, user.id));
-        await db.insert(purchases)
-          .values({ email, customerId, paymentIntentId: paymentId, amountTotal: paid.amount_total ?? null, appliedToUserId: user.id })
-          .onConflictDoNothing();
+        const customerId = typeof paid.customer === "string" ? paid.customer : paid.customer?.id ?? null;
+        const paymentIntentId = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id ?? paid.id;
+        await applyPurchaseToUser(user.id, email, { customerId, paymentIntentId, amountTotal: paid.amount_total ?? null });
         return { isPaid: true };
       }
     }
