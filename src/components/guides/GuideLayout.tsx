@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Music, ArrowRight, CheckCircle2, Printer } from "lucide-react";
-import { SITE_NAME, primaryHref, primaryLabel, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, primaryHref, primaryLabel, COURSE_PRICE_DISPLAY, GUARANTEE_DAYS } from "@/lib/constants";
 import WaitlistForm from "@/components/WaitlistForm";
 
 export interface GuideSection {
@@ -51,7 +51,7 @@ export default function GuideLayout({
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
-            <span className="font-serif font-bold text-primary text-lg tracking-tight">
+            <span className="font-serif font-bold text-primary text-base sm:text-lg tracking-tight whitespace-nowrap">
               {SITE_NAME}
             </span>
           </Link>
@@ -64,9 +64,10 @@ export default function GuideLayout({
             </Link>
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap hover:bg-primary/90 transition-all shadow-md shadow-primary/15 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
-              {primaryLabel}
+              <span className="sm:hidden">Get access</span>
+              <span className="hidden sm:inline">{primaryLabel}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </nav>
@@ -203,7 +204,7 @@ export default function GuideLayout({
             <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
           </nav>
           <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">
-            Educational Resource &copy; 2026
+            {COPYRIGHT_LINE}
           </p>
         </div>
       </footer>

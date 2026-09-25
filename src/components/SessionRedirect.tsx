@@ -14,11 +14,7 @@ export default function SessionRedirect() {
     }
   }, [session, isPending, router]);
 
-  if (isPending) {
-    return <div className="min-h-screen flex items-center justify-center bg-background" />;
-  }
-
-  if (session) return null;
-
+  // Render nothing: a placeholder here used to push the whole page down by a
+  // full screen height while the session check was in flight.
   return null;
 }

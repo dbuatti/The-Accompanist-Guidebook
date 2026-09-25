@@ -4,6 +4,8 @@
 // the purchase flow is never blocked by email issues.
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+import { SUPPORT_EMAIL } from "@/lib/constants";
+
 const DEFAULT_FROM = "The Audition Guidebook <onboarding@resend.dev>";
 
 export function isEmailConfigured(): boolean {
@@ -144,6 +146,9 @@ export async function sendPurchaseConfirmation(input: {
       body: JSON.stringify({
         from: process.env.EMAIL_FROM || DEFAULT_FROM,
         to: [input.email],
+        // Replies ("Need help? Reply to this email") must reach a real inbox,
+        // not the sending address.
+        reply_to: SUPPORT_EMAIL,
         subject: "Your course is ready — The Audition Guidebook",
         html: purchaseConfirmationHtml({ amount, date, orderRef, portalUrl }),
         text: purchaseConfirmationText({ amount, date, orderRef, portalUrl }),

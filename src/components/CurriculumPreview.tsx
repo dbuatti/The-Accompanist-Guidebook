@@ -34,7 +34,7 @@ export default function CurriculumPreview() {
   );
 
   return (
-    <section className="w-full py-20 sm:py-24">
+    <section id="curriculum" className="w-full py-20 sm:py-24 scroll-mt-20">
       <div className="max-w-4xl mx-auto px-6">
         <Reveal>
           <div className="flex items-center gap-3 justify-center mb-4">

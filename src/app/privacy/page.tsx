@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Music, ArrowLeft } from "lucide-react";
-import { SITE_NAME } from "@/lib/constants";
+import { SITE_NAME, SUPPORT_EMAIL } from "@/lib/constants";
 
 export const metadata = {
   title: "Privacy Policy",
@@ -20,7 +20,7 @@ const sections = [
     h: "How we use it",
     p: [
       "Your data is used to give you access to the course you purchased, to keep you signed in, to send the email tips you subscribed to, and to understand how the course is used so we can improve it.",
-      "We never sell your data. We only share it with the providers required to make the product work: our database host (Neon), our payment provider (Stripe), and our email service (Kit, formerly ConvertKit), which stores the email addresses of people who join our list and sends the emails they've opted into.",
+      "We never sell your data. We only share it with the providers required to make the product work: our hosting provider (Vercel), our database and sign-in provider (Neon), Google (only if you choose “Continue with Google”), our payment provider (Stripe), our receipt email service (Resend), and our mailing-list service (Kit, formerly ConvertKit), which stores the email addresses of people who join our list and sends the emails they've opted into. Lesson videos are embedded from YouTube, which may set its own cookies when you play them.",
     ],
   },
   {
@@ -32,7 +32,7 @@ const sections = [
   {
     h: "Your rights",
     p: [
-      "You can ask us for a copy of the data we hold about you, correct it, or ask us to delete it. Contact us at support@theauditionguidebook.com and we will respond within 30 days.",
+      `You can ask us for a copy of the data we hold about you, correct it, or ask us to delete it. Contact us at ${SUPPORT_EMAIL} and we will respond within 30 days.`,
     ],
   },
   {
@@ -84,8 +84,8 @@ export default function PrivacyPolicy() {
         <div className="mt-10 rounded-2xl border border-border/60 bg-card/50 p-5">
           <p className="text-xs text-muted-foreground leading-relaxed">
             Questions? Contact{" "}
-            <a href="mailto:support@theauditionguidebook.com" className="text-primary hover:underline">
-              support@theauditionguidebook.com
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary hover:underline">
+              {SUPPORT_EMAIL}
             </a>
             .
           </p>

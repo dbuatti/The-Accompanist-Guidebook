@@ -13,7 +13,7 @@ import {
   Infinity as InfinityIcon,
 } from "lucide-react";
 import PromoCountdown from "@/components/PromoCountdown";
-import { SITE_NAME, paymentLink, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, paymentLink, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import { usePricing } from "@/hooks/use-pricing";
 
@@ -162,6 +162,10 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                 {hasSession && (
                   <span> Or try refreshing if you just purchased.</span>
                 )}
+                <span className="block mt-1.5">
+                  Trouble accessing your purchase?{" "}
+                  <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary hover:underline">{SUPPORT_EMAIL}</a>
+                </span>
               </p>
             </div>
           </div>
@@ -182,7 +186,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
               Back to home
             </Link>
             <p className="text-[11px] text-muted-foreground/60 uppercase tracking-[0.2em]">
-              Educational Resource &copy; 2026
+              {COPYRIGHT_LINE}
             </p>
           </div>
         </footer>

@@ -1,5 +1,11 @@
 export const SITE_NAME = "The Audition Guidebook";
 
+// Where buyers email for refunds, access problems and questions. Must be an
+// inbox you actually read — the 14-day guarantee depends on it.
+export const SUPPORT_EMAIL = "info@danielebuatti.com";
+export const OWNER_NAME = "Daniele Buatti";
+export const COPYRIGHT_LINE = `© ${new Date().getFullYear()} ${OWNER_NAME} · Melbourne, Australia`;
+
 export const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
 export const primaryHref = paymentLink || "/modules";

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Music, ArrowLeft, ShieldCheck } from "lucide-react";
-import { SITE_NAME, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, GUARANTEE_DAYS, SUPPORT_EMAIL, OWNER_NAME } from "@/lib/constants";
 import { getCoursePrice } from "@/lib/pricing";
 
 export const metadata = {
@@ -9,8 +9,16 @@ export const metadata = {
   robots: { index: true, follow: true },
 };
 
+export const revalidate = 300;
+
 function buildSections(priceDisplay: string) {
   return [
+    {
+      h: "Who we are",
+      p: [
+        `${SITE_NAME} is created and sold by ${OWNER_NAME}, a sole trader based in Melbourne, Victoria, Australia. For anything to do with your purchase, email ${SUPPORT_EMAIL}.`,
+      ],
+    },
     {
       h: "What you're buying",
       p: [
@@ -21,8 +29,8 @@ function buildSections(priceDisplay: string) {
   {
     h: `Our ${GUARANTEE_DAYS}-day money-back guarantee`,
     p: [
-      `If the course isn't exactly what you hoped, email us within ${GUARANTEE_DAYS} days of purchase and we will refund your payment in full. No questions and no hard feelings.`,
-      "Refunds are issued to the original payment method and usually appear within 5–10 business days.",
+      `If the course isn't exactly what you hoped, email ${SUPPORT_EMAIL} within ${GUARANTEE_DAYS} days of purchase and we will refund your payment in full. No questions and no hard feelings.`,
+      "Refunds are issued to the original payment method and usually appear within 5–10 business days. Course access ends when a refund is processed.",
     ],
   },
   {
@@ -42,7 +50,8 @@ function buildSections(priceDisplay: string) {
   {
     h: "Liability",
     p: [
-      `To the maximum extent permitted by law, our total liability to you is limited to the amount you paid for the course.`,
+      "Nothing in these terms excludes, restricts or modifies any right or remedy you have under the Australian Consumer Law, including the consumer guarantees, that cannot lawfully be excluded.",
+      `Subject to that, and to the maximum extent permitted by law, our total liability to you is limited to the amount you paid for the course.`,
     ],
   },
   {

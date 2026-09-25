@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Music, ArrowRight, Scissors, ListChecks, Hand, Library, Sheet } from "lucide-react";
 import WaitlistForm from "@/components/WaitlistForm";
-import { SITE_NAME, primaryHref, primaryLabel } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, primaryHref, primaryLabel } from "@/lib/constants";
 
 const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 
@@ -77,7 +77,7 @@ export default function GuidesHub() {
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
-            <span className="font-serif font-bold text-primary text-lg tracking-tight">{SITE_NAME}</span>
+            <span className="font-serif font-bold text-primary text-base sm:text-lg tracking-tight whitespace-nowrap">{SITE_NAME}</span>
           </Link>
           <nav className="flex items-center gap-3">
             <Link
@@ -88,9 +88,10 @@ export default function GuidesHub() {
             </Link>
             <Link
               href={primaryHref}
-              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15"
+              className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-3 sm:px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap hover:bg-primary/90 transition-all shadow-md shadow-primary/15"
             >
-              {primaryLabel}
+              <span className="sm:hidden">Get access</span>
+              <span className="hidden sm:inline">{primaryLabel}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </nav>
@@ -167,7 +168,7 @@ export default function GuidesHub() {
             <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
           </nav>
           <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">
-            Educational Resource &copy; 2026
+            {COPYRIGHT_LINE}
           </p>
         </div>
       </footer>

@@ -6,11 +6,15 @@ import CurriculumPreview from "@/components/CurriculumPreview";
 import Reveal from "@/components/Reveal";
 import WaitlistForm from "@/components/WaitlistForm";
 import MobileStickyCTA from "@/components/MobileStickyCTA";
-import { SITE_NAME, primaryHref, primaryLabel, GUARANTEE_DAYS } from "@/lib/constants";
+import { SITE_NAME, COPYRIGHT_LINE, SUPPORT_EMAIL, primaryHref, primaryLabel, GUARANTEE_DAYS } from "@/lib/constants";
 import { CTAButton } from "@/components/CTAButton";
 import SessionRedirect from "@/components/SessionRedirect";
 import { getPublicCourseStats } from "@/app/actions";
 import { getCoursePrice } from "@/lib/pricing";
+
+// Re-render every 5 minutes so the live Stripe price and lesson counts stay
+// current without a redeploy.
+export const revalidate = 300;
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
 
@@ -37,7 +41,7 @@ const faqs = [
   },
   {
     q: "What if it isn't for me?",
-    a: `There's a ${GUARANTEE_DAYS}-day money-back guarantee. Start the course, and if it isn't exactly what you hoped, email us within ${GUARANTEE_DAYS} days for a full refund.`,
+    a: `There's a ${GUARANTEE_DAYS}-day money-back guarantee. Start the course, and if it isn't exactly what you hoped, email ${SUPPORT_EMAIL} within ${GUARANTEE_DAYS} days for a full refund.`,
   },
 ];
 
@@ -132,20 +136,20 @@ export default async function Home() {
             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
               <Music size={18} />
             </div>
-            <span className="font-serif font-bold text-primary text-lg tracking-tight">
+            <span className="font-serif font-bold text-primary text-base sm:text-lg tracking-tight whitespace-nowrap">
               {SITE_NAME}
             </span>
           </Link>
           <nav className="flex items-center gap-3">
             <Link
               href="/auth/sign-in"
-              className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-4 py-2 rounded-lg font-medium text-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-3 sm:px-4 py-2 rounded-lg font-medium text-sm whitespace-nowrap transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
-              Sign In
+              Sign in
             </Link>
             <Link
               href={primaryHref}
-              className="btn-sheen inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="btn-sheen hidden sm:inline-flex items-center gap-2 bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium text-sm hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:shadow-lg hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               {primaryLabel}
               <ArrowRight className="w-3.5 h-3.5" />
@@ -560,7 +564,7 @@ export default async function Home() {
               <div className="text-left sm:text-right">
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 mb-3">Course</p>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="/modules" className="text-foreground/70 hover:text-primary transition-colors">Browse the curriculum</Link></li>
+                  <li><Link href="/#curriculum" className="text-foreground/70 hover:text-primary transition-colors">Browse the curriculum</Link></li>
                   <li><Link href="/guides" className="text-foreground/70 hover:text-primary transition-colors">Free audition guides</Link></li>
                   <li><Link href="/auth/sign-in" className="text-foreground/70 hover:text-primary transition-colors">Sign in to your course</Link></li>
                   <li><Link href={primaryHref} className="text-foreground/70 hover:text-primary transition-colors">{primaryLabel}</Link></li>
@@ -570,7 +574,7 @@ export default async function Home() {
                 <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 mb-3">Support</p>
                 <ul className="space-y-2 text-sm">
                   <li><Link href="/#faq" className="text-foreground/70 hover:text-primary transition-colors">Frequently asked questions</Link></li>
-                  <li><Link href="/auth/sign-in" className="text-foreground/70 hover:text-primary transition-colors">Account help</Link></li>
+                  <li><a href={`mailto:${SUPPORT_EMAIL}`} className="text-foreground/70 hover:text-primary transition-colors">Contact &amp; refunds</a></li>
                   <li><Link href="/privacy" className="text-foreground/70 hover:text-primary transition-colors">Privacy policy</Link></li>
                   <li><Link href="/terms" className="text-foreground/70 hover:text-primary transition-colors">Terms</Link></li>
                 </ul>
@@ -581,8 +585,8 @@ export default async function Home() {
                 <Music className="w-4 h-4 text-primary/40" />
                 <span className="text-[11px] text-muted-foreground/60">{SITE_NAME}</span>
               </div>
-              <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">
-                Educational Resource &copy; 2026
+              <p className="text-[11px] text-muted-foreground/70 tracking-wide">
+                {COPYRIGHT_LINE}
               </p>
             </div>
           </div>
