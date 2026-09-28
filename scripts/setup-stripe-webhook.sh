@@ -16,7 +16,7 @@
 set -euo pipefail
 
 SECRET_KEY="${STRIPE_SECRET_KEY:-}"
-URL="${1:-https://theauditionguidebook.vercel.app/api/webhooks/stripe}"
+URL="${1:-https://www.theauditionguidebook.com/api/webhooks/stripe}"
 
 if [ -z "$SECRET_KEY" ]; then
   echo "✗ Set STRIPE_SECRET_KEY (sk_test_... or sk_live_...)." >&2

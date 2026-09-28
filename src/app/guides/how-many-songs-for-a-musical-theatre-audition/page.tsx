@@ -2,7 +2,7 @@ import GuideLayout from "@/components/guides/GuideLayout";
 import { SITE_NAME } from "@/lib/constants";
 import { getCoursePrice } from "@/lib/pricing";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://www.theauditionguidebook.com";
 const PATH = "/guides/how-many-songs-for-a-musical-theatre-audition";
 
 export const metadata = {

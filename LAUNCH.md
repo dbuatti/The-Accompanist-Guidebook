@@ -18,7 +18,7 @@ You cannot prioritize the engineering work until these two are decided. Each fli
   - *Free funnel* (audition-prep → coaching/CDs): backlog is SEO + shareability + content completion + email capture.
   - *Paid course* (Stripe checkout, gated lessons): backlog is paywall + Stripe + refund/checkout + drip + license logic.
   - Open since `AUDIT.md` Q3 (2026-08-07). **This is the next decision.**
-- [ ] **Production domain** — buy + verify the brand domain. A `.vercel.app` URL isn't sellable and breaks OG/canonical/sitemap/Stripe redirects. Candidates: short brand name.
+- [x] **Production domain** — `theauditionguidebook.com` purchased (Namecheap). Canonical host is `https://www.theauditionguidebook.com`; the apex 308-redirects to `www` in Vercel.
 
 ## Phase 1 — Production wiring (cheap, unblocks measurement)
 
@@ -26,7 +26,10 @@ You cannot prioritize the engineering work until these two are decided. Each fli
 - [ ] **Set Vercel env vars** (Project → Settings → Environment Variables). Vercel does *not* auto-pull `.env.local`. Without these the live build 500s on any DB call:
   - `DATABASE_URL`, `POSTGRES_URL`, `NEON_AUTH_BASE_URL`, `NEON_AUTH_COOKIE_SECRET`, `GEMINI_API_KEY` (server)
   - `NEXT_PUBLIC_APP_URL` = your custom domain (public)
-- [ ] **Connect the custom domain** (Vercel → Domains → Add) and set it as `NEXT_PUBLIC_APP_URL`. Your Vercel dashboard shows only the auto-generated `*.vercel.app` domain.
+- [x] **Connect the custom domain** — apex + `www` added in Vercel, both "Valid Configuration". Code fallbacks now default to `https://www.theauditionguidebook.com`.
+  - [ ] Set `NEXT_PUBLIC_APP_URL=https://www.theauditionguidebook.com` in Vercel (Production) and redeploy.
+  - [ ] Namecheap cleanup: delete the stale `www` CNAME → `parkingpage.namecheap.com.` and the `@` URL Redirect Record. Keep only `A @ 216.198.79.1` and `CNAME www → …vercel-dns-017.com.`
+  - [ ] Update the Stripe webhook endpoint + Google OAuth authorised origins/redirect URIs to the new domain.
 - [ ] **Enable Web Analytics** (one toggle, Free tier). You currently have **0 traffic data** — nothing to optimise against until this is on.
 - [ ] **Confirm the live build actually serves** — `scripts/smoke-test.sh https://accompanist-guidebook.vercel.app` (see Phase 2). Dashboard shows 0 invocations, so nothing has ever run in production.
 

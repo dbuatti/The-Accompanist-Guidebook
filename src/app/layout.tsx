@@ -11,7 +11,7 @@ import { SITE_NAME } from "@/lib/constants";
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.theauditionguidebook.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),

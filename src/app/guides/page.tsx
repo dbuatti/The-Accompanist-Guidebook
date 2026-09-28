@@ -3,7 +3,7 @@ import { Music, ArrowRight, Scissors, ListChecks, Hand, Library, Sheet } from "l
 import WaitlistForm from "@/components/WaitlistForm";
 import { SITE_NAME, COPYRIGHT_LINE, primaryHref, primaryLabel } from "@/lib/constants";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://www.theauditionguidebook.com";
 
 export const metadata = {
   title: "Free Audition Preparation Guides",

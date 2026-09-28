@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 import { FREE_PREVIEWS, previewHref } from "@/lib/constants";
 
-const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+const BASE = process.env.NEXT_PUBLIC_APP_URL || "https://www.theauditionguidebook.com";
 
 // Only public, indexable pages. Module and lesson URLs are deliberately left
 // out: to a search engine every one of them is the same paywall, which reads

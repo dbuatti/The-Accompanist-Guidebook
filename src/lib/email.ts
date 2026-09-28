@@ -3,7 +3,7 @@
 // here should ever throw to the caller — failures are logged and swallowed so
 // the purchase flow is never blocked by email issues.
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://theauditionguidebook.vercel.app";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.theauditionguidebook.com";
 import { SUPPORT_EMAIL } from "@/lib/constants";
 
 const DEFAULT_FROM = "The Audition Guidebook <onboarding@resend.dev>";
