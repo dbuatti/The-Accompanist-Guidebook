@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/select";
 import { Sparkles, Video, FileText, Plus, Loader2 } from "lucide-react";
 
+export type LessonTemplate = "none" | "standard" | "story" | "exercise";
+
 interface AddLessonModalProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -31,8 +33,8 @@ interface AddLessonModalProps {
   onDurationChange: (val: string) => void;
   hasVideo: boolean;
   onHasVideoChange: (val: boolean) => void;
-  template: string;
-  onTemplateChange: (val: any) => void;
+  template: LessonTemplate;
+  onTemplateChange: (val: LessonTemplate) => void;
   onSubmit: () => void;
   isPending: boolean;
 }
@@ -117,7 +119,7 @@ export default function AddLessonModal({
             <p className="text-[10px] text-muted-foreground mb-2">
               Defeat blank-page anxiety! Pre-populate your draft with a structured outline.
             </p>
-            <Select value={template} onValueChange={onTemplateChange}>
+            <Select value={template} onValueChange={(value) => onTemplateChange(value as LessonTemplate)}>
               <SelectTrigger id="lesson-template" className="h-9 bg-background border-border/80 text-xs">
                 <SelectValue placeholder="Select template" />
               </SelectTrigger>

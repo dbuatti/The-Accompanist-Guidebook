@@ -30,7 +30,20 @@ function sourceTags(source: string): string[] {
   return tags;
 }
 
-async function kitFetch(path: string, init: RequestInit = {}): Promise<any> {
+interface KitTag {
+  id: number;
+  name: string;
+}
+
+interface KitTagsResponse {
+  tags?: KitTag[];
+}
+
+interface KitTagResponse {
+  tag?: KitTag;
+}
+
+async function kitFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
   const key = process.env.KIT_API_KEY;
   if (!key) throw new Error("KIT_API_KEY is not configured");
 
@@ -40,7 +53,7 @@ async function kitFetch(path: string, init: RequestInit = {}): Promise<any> {
 
   const res = await fetch(`${KIT_API_URL}${path}`, { ...init, headers });
   const text = await res.text();
-  let json: any = null;
+  let json: unknown = null;
   try {
     json = text ? JSON.parse(text) : null;
   } catch {
@@ -49,7 +62,7 @@ async function kitFetch(path: string, init: RequestInit = {}): Promise<any> {
   if (!res.ok) {
     throw new Error(`Kit API ${path} failed (${res.status}): ${text}`);
   }
-  return json;
+  return json as T;
 }
 
 // Kit tags are keyed by numeric id in v4, but we work with human-readable
@@ -58,7 +71,7 @@ let tagIdCache: Record<string, number> | null = null;
 
 async function resolveTagIds(names: string[]): Promise<Record<string, number>> {
   if (!tagIdCache) {
-    const data = await kitFetch("/tags");
+    const data = await kitFetch<KitTagsResponse>("/tags");
     const map: Record<string, number> = {};
     for (const tag of data?.tags ?? []) {
       map[tag.name] = Number(tag.id);
@@ -70,7 +83,7 @@ async function resolveTagIds(names: string[]): Promise<Record<string, number>> {
   for (const name of names) {
     let id = tagIdCache[name];
     if (!id) {
-      const created = await kitFetch("/tags", {
+      const created = await kitFetch<KitTagResponse>("/tags", {
         method: "POST",
         body: JSON.stringify({ name }),
       });

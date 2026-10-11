@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -32,6 +32,20 @@ import { SITE_NAME } from "@/lib/constants";
 import { CTAButton, SecondaryButton } from "@/components/CTAButton";
 import type { CourseLevel, CourseProgress } from "@/lib/types";
 
+function readPendingSession(): string | null {
+  if (typeof document === "undefined") return null;
+  const cookie = document.cookie
+    .split(";")
+    .map((x) => x.trim())
+    .find((x) => x.startsWith("pending_session="));
+  if (!cookie) return null;
+  try {
+    return decodeURIComponent(cookie.slice("pending_session=".length));
+  } catch {
+    return null;
+  }
+}
+
 export default function WelcomePage() {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
@@ -49,19 +63,7 @@ export default function WelcomePage() {
     }
   }, [session]);
 
-  const readPendingSession = () => {
-    if (typeof document === "undefined") return null;
-    const c = document.cookie.split(";").map((x) => x.trim()).find((x) => x.startsWith("pending_session="));
-    if (!c) return null;
-    const raw = c.slice("pending_session=".length);
-    try {
-      return decodeURIComponent(raw);
-    } catch {
-      return null;
-    }
-  };
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       let paid = false;
       if (session?.user?.id) {
@@ -87,7 +89,7 @@ export default function WelcomePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (isPending) return;
@@ -125,7 +127,7 @@ export default function WelcomePage() {
       fetchData();
     };
     applyPurchase();
-  }, [session, isPending]);
+  }, [session, isPending, router, fetchData]);
 
   useEffect(() => {
     if (isPending) return;
@@ -136,7 +138,7 @@ export default function WelcomePage() {
       // instead of loading forever.
       setIsLoading(false);
     }
-  }, [isPending, session?.user?.id]);
+  }, [isPending, session?.user?.id, fetchData]);
 
   const handleLogout = async () => { await authClient.signOut(); router.push("/"); };
 

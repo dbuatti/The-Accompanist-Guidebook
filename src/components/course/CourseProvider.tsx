@@ -42,6 +42,19 @@ interface CourseContextValue {
 
 const CourseContext = createContext<CourseContextValue | null>(null);
 
+function readPendingSession(): string | null {
+  const cookie = document.cookie
+    .split(";")
+    .map((x) => x.trim())
+    .find((x) => x.startsWith("pending_session="));
+  if (!cookie) return null;
+  try {
+    return decodeURIComponent(cookie.slice("pending_session=".length));
+  } catch {
+    return null;
+  }
+}
+
 export function useCourse() {
   const ctx = useContext(CourseContext);
   if (!ctx) throw new Error("useCourse must be used within CourseProvider");
@@ -62,17 +75,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     if (session?.user) ensureUserExists();
   }, [session]);
 
-  const readPendingSession = () => {
-    const c = document.cookie.split(";").map((x) => x.trim()).find((x) => x.startsWith("pending_session="));
-    if (!c) return null;
-    try {
-      return decodeURIComponent(c.slice("pending_session=".length));
-    } catch {
-      return null;
-    }
-  };
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       let paid = false;
       if (session?.user?.id) {
@@ -95,7 +98,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [session?.user?.id]);
 
   useEffect(() => {
     if (isPending) return;
@@ -104,7 +107,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       return;
     }
     fetchData();
-  }, [isPending, session?.user?.id]);
+  }, [isPending, session?.user?.id, fetchData]);
 
   useEffect(() => {
     if (isPending) return;
@@ -142,7 +145,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       fetchData();
     };
     applyPurchase();
-  }, [session, isPending]);
+  }, [session, isPending, router, fetchData]);
 
   const isLessonCompleted = useCallback(
     (id: string) => progressData.some((p) => p.lessonId === id && p.completedAt),
@@ -168,7 +171,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     } catch {
       showError("Failed to publish");
     }
-  }, []);
+  }, [fetchData]);
 
   const logout = useCallback(async () => {
     await authClient.signOut();

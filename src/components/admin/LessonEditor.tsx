@@ -20,6 +20,8 @@ import { showSuccess, showError } from "@/utils/toast";
 import VideoPlayer from "@/components/VideoPlayer";
 import ResourceManager from "@/components/admin/ResourceManager";
 import BlockEditor, { DocBlock, parseNotesToBlocks, blocksToNotes } from "@/components/admin/BlockEditor";
+import { getErrorMessage } from "@/lib/errors";
+import type { CourseLesson } from "@/lib/types";
 
 const STATUS_LABELS: Record<string, string> = {
   not_started: "Not Started",
@@ -53,7 +55,7 @@ export const WRITING_TEMPLATES: Record<"standard" | "story" | "exercise", { note
 };
 
 interface LessonEditorProps {
-  lesson: any;
+  lesson: CourseLesson;
   moduleTitle: string;
   onRefetch: () => void | Promise<void>;
   onDeleted: () => void;
@@ -122,8 +124,8 @@ export default function LessonEditor({ lesson, moduleTitle, onRefetch, onDeleted
         setBlocks(parseNotesToBlocks(result.notes));
         showSuccess("Draft loaded — review it, then press Save to publish the changes");
       }
-    } catch (error: any) {
-      showError(error.message || "Failed to generate notes with Gemini AI");
+    } catch (error) {
+      showError(getErrorMessage(error) || "Failed to generate notes with Gemini AI");
     } finally {
       setIsGenerating(false);
     }

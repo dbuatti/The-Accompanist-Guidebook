@@ -5,6 +5,7 @@ import { users, purchases } from "@/lib/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { sendPurchaseConfirmation } from "@/lib/email";
+import { getErrorMessage } from "@/lib/errors";
 
 const secretKey = process.env.STRIPE_SECRET_KEY;
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -26,8 +27,8 @@ export async function POST(req: Request) {
   let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(await req.text(), sig, webhookSecret);
-  } catch (err: any) {
-    console.error("Stripe webhook signature verification failed:", err.message);
+  } catch (err) {
+    console.error("Stripe webhook signature verification failed:", getErrorMessage(err));
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 

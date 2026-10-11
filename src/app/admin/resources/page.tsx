@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2, ExternalLink, Copy, Check, Presentation, FileText, MessageSquare, Sparkles, Calendar, Kanban } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
 import { authClient } from "@/lib/auth/client";
 
@@ -15,7 +16,7 @@ interface Resource {
   description: string;
   url: string;
   category: string;
-  icon: any;
+  icon: LucideIcon;
   color: string;
 }
 

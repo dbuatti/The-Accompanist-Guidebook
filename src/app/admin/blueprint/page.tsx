@@ -2,6 +2,7 @@ import CopyDocumentButton from "@/components/admin/CopyDocumentButton";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Compass, ShieldCheck, Building2, Database, Cloud, KeyRound, Cpu, Video, Sparkles } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 
 export const metadata = {
   title: "Blueprint · Admin · The Audition Guidebook",
@@ -9,7 +10,7 @@ export const metadata = {
   robots: { index: false, follow: false },
 };
 
-function Pill({ icon: Icon, children }: { icon: any; children: React.ReactNode }) {
+function Pill({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-card/60 px-3 py-1 text-[11px] font-medium text-muted-foreground">
       <Icon className="h-3.5 w-3.5 text-primary/70" />

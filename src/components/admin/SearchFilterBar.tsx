@@ -11,13 +11,16 @@ import {
   SelectValue
 } from "@/components/ui/select";
 
+export type StatusFilter = "all" | "published" | "draft";
+export type VideoFilter = "all" | "requires_video" | "no_video";
+
 interface SearchFilterBarProps {
   searchQuery: string;
   onSearchQueryChange: (val: string) => void;
-  statusFilter: string;
-  onStatusFilterChange: (val: string) => void;
-  videoFilter: string;
-  onVideoFilterChange: (val: string) => void;
+  statusFilter: StatusFilter;
+  onStatusFilterChange: (val: StatusFilter) => void;
+  videoFilter: VideoFilter;
+  onVideoFilterChange: (val: VideoFilter) => void;
 }
 
 export default function SearchFilterBar({
@@ -40,7 +43,7 @@ export default function SearchFilterBar({
         />
       </div>
       <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-        <Select value={statusFilter} onValueChange={onStatusFilterChange}>
+        <Select value={statusFilter} onValueChange={(val) => onStatusFilterChange(val as StatusFilter)}>
           <SelectTrigger className="w-36 h-9 text-xs bg-background/50" aria-label="Filter by status">
             <SelectValue />
           </SelectTrigger>
@@ -51,7 +54,7 @@ export default function SearchFilterBar({
           </SelectContent>
         </Select>
 
-        <Select value={videoFilter} onValueChange={onVideoFilterChange}>
+        <Select value={videoFilter} onValueChange={(val) => onVideoFilterChange(val as VideoFilter)}>
           <SelectTrigger className="w-40 h-9 text-xs bg-background/50" aria-label="Filter by video requirement">
             <SelectValue />
           </SelectTrigger>

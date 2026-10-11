@@ -11,6 +11,9 @@ import Stripe from "stripe";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { getCurrentUser, requireUser, requireAdmin } from "@/lib/auth";
 import { slugify } from "@/lib/utils";
+import { getErrorMessage, serializeError } from "@/lib/errors";
+import { z } from "zod";
+import { parseUuid, parseText, urlSchema, stripeSessionIdSchema, nonNegativeInt, parse, text, optionalText } from "@/lib/validation";
 import type { CourseLevelPreview } from "@/lib/types";
 
 // Gemini client is lazily instantiated inside generateLessonNotes to avoid an eager env read at module load.
@@ -51,14 +54,8 @@ export async function ensureUserExists() {
         role,
       });
     }
-  } catch (error: any) {
-    console.error("Error ensuring user exists (FULL ERROR):", {
-      message: error.message,
-      stack: error.stack,
-      detail: error.detail,
-      code: error.code,
-      hint: error.hint
-    });
+  } catch (error) {
+    console.error("Error ensuring user exists (FULL ERROR):", serializeError(error));
   }
 }
 
@@ -66,8 +63,8 @@ export async function getAllUsers() {
   await requireAdmin();
   try {
     return await db.select().from(users).orderBy(desc(users.createdAt));
-  } catch (error: any) {
-    console.error("Error fetching users (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching users (FULL ERROR):", getErrorMessage(error));
     return [];
   }
 }
@@ -77,8 +74,8 @@ export async function getPaidStatus() {
     const user = await requireUser();
     const existing = await db.select().from(users).where(eq(users.id, user.id));
     return { isPaid: existing.length > 0 && existing[0].isPaid === true };
-  } catch (error: any) {
-    console.error("Error fetching paid status (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching paid status (FULL ERROR):", getErrorMessage(error));
     return { isPaid: false };
   }
 }
@@ -130,6 +127,7 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
   try {
     const user = await requireUser();
     if (!user.email) return { isPaid: false };
+    if (sessionId) sessionId = parse(stripeSessionIdSchema, sessionId);
 
     const [dbUser] = await db.select().from(users).where(eq(users.id, user.id));
     if (dbUser?.isPaid) return { isPaid: true };
@@ -167,7 +165,7 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
     // Fallback: verify directly with Stripe by email (covers missed webhooks).
     if (process.env.STRIPE_SECRET_KEY) {
       const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-      const sessions = await stripe.checkout.sessions.list({ customer_email: email, limit: 10 } as any);
+      const sessions = await stripe.checkout.sessions.list({ customer_details: { email }, limit: 10 });
       const paid = sessions.data.find((s) => s.payment_status === "paid" && s.status === "complete");
       if (paid) {
         const piId = typeof paid.payment_intent === "string" ? paid.payment_intent : paid.payment_intent?.id;
@@ -181,8 +179,8 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
     }
 
     return { isPaid: false };
-  } catch (error: any) {
-    console.error("Error verifying purchase (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error verifying purchase (FULL ERROR):", getErrorMessage(error));
     return { isPaid: false };
   }
 }
@@ -193,14 +191,16 @@ export async function getWelcomeContent() {
     await requireUser();
     const rows = await db.select().from(welcomeContent).where(eq(welcomeContent.id, "welcome"));
     return rows.length > 0 ? { title: rows[0].title, content: rows[0].content } : null;
-  } catch (error: any) {
-    console.error("Error fetching welcome content (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching welcome content (FULL ERROR):", getErrorMessage(error));
     return null;
   }
 }
 
 export async function updateWelcomeContent(title: string, content: string) {
   await requireAdmin();
+  title = parseText(title, 200, "title");
+  content = parseText(content, 100000, "content");
   try {
     await db.insert(welcomeContent)
       .values({ id: "welcome", title, content })
@@ -211,9 +211,9 @@ export async function updateWelcomeContent(title: string, content: string) {
     revalidatePath("/welcome");
     revalidatePath("/admin/welcome");
     return { success: true };
-  } catch (error: any) {
-    console.error("Error updating welcome content (FULL ERROR):", error.message);
-    throw new Error("Failed to update welcome content: " + error.message);
+  } catch (error) {
+    console.error("Error updating welcome content (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update welcome content: " + getErrorMessage(error));
   }
 }
 
@@ -239,9 +239,10 @@ export async function getLearnerStats() {
 
     // Top 5 most-completed lessons
     const lessonMap = new Map(allLessons.map(l => [l.id, l]));
+    type LessonRow = typeof lessons.$inferSelect;
     const topLessons = Object.entries(lessonCompletion)
       .map(([lessonId, count]) => ({ lesson: lessonMap.get(lessonId), completions: count }))
-      .filter(x => x.lesson)
+      .filter((x): x is { lesson: LessonRow; completions: number } => x.lesson != null)
       .sort((a, b) => b.completions - a.completions)
       .slice(0, 5);
 
@@ -263,20 +264,23 @@ export async function getLearnerStats() {
       topLessons,
       userProgressCount,
     };
-  } catch (error: any) {
-    console.error("Error fetching learner stats (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching learner stats (FULL ERROR):", getErrorMessage(error));
     return null;
   }
 }
 
 export async function updateUser(userId: string, data: { name?: string, role?: string }) {
   await requireAdmin();
+  userId = parseUuid(userId, "userId");
+  if (data.name !== undefined) data.name = parse(optionalText(255), data.name) ?? undefined;
+  if (data.role !== undefined) data.role = parse(z.enum(["user", "admin"]), data.role);
   try {
     await db.update(users).set(data).where(eq(users.id, userId));
     revalidatePath("/admin/users");
-  } catch (error: any) {
-    console.error("Error updating user (FULL ERROR):", error.message);
-    throw new Error("Failed to update user: " + error.message);
+  } catch (error) {
+    console.error("Error updating user (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update user: " + getErrorMessage(error));
   }
 }
 
@@ -284,6 +288,8 @@ export async function updateUser(userId: string, data: { name?: string, role?: s
 // testimonial givers) and for sorting out a purchase that didn't unlock.
 export async function setUserAccess(userId: string, isPaid: boolean) {
   await requireAdmin();
+  userId = parseUuid(userId, "userId");
+  isPaid = parse(z.boolean(), isPaid);
   await db.update(users).set({ isPaid }).where(eq(users.id, userId));
   revalidatePath("/admin/users");
   return { isPaid };
@@ -291,15 +297,16 @@ export async function setUserAccess(userId: string, isPaid: boolean) {
 
 export async function deleteUser(userId: string) {
   await requireAdmin();
+  userId = parseUuid(userId, "userId");
   try {
     // progress.user_id has no ON DELETE CASCADE, so remove the learner's
     // progress first or the delete fails for anyone who has started lessons.
     await db.delete(progress).where(eq(progress.userId, userId));
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
-  } catch (error: any) {
-    console.error("Error deleting user (FULL ERROR):", error.message);
-    throw new Error("Failed to delete user: " + error.message);
+  } catch (error) {
+    console.error("Error deleting user (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to delete user: " + getErrorMessage(error));
   }
 }
 
@@ -309,8 +316,8 @@ export async function getProgress() {
     const user = await requireUser();
     const results = await db.select().from(progress).where(eq(progress.userId, user.id));
     return results;
-  } catch (error: any) {
-    console.error("Error fetching progress (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching progress (FULL ERROR):", getErrorMessage(error));
     return [];
   }
 }
@@ -318,6 +325,8 @@ export async function getProgress() {
 export async function saveVideoProgress(lessonId: string, seconds: number) {
   try {
     const user = await requireUser();
+    lessonId = parseUuid(lessonId, "lessonId");
+    seconds = parse(nonNegativeInt, seconds);
     await db.insert(progress)
       // completedAt must be explicit: the column defaults to now(), which would
       // mark a lesson complete the first time any watch position is saved.
@@ -326,14 +335,15 @@ export async function saveVideoProgress(lessonId: string, seconds: number) {
         target: [progress.userId, progress.lessonId],
         set: { lastPosition: Math.max(0, Math.floor(seconds)) }
       });
-  } catch (error: any) {
-    console.error("Error saving video progress (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error saving video progress (FULL ERROR):", getErrorMessage(error));
   }
 }
 
 export async function toggleLessonProgress(lessonId: string) {
   try {
     const user = await requireUser();
+    lessonId = parseUuid(lessonId, "lessonId");
     const existing = await db
       .select()
       .from(progress)
@@ -356,9 +366,9 @@ export async function toggleLessonProgress(lessonId: string) {
         });
       return { completed: true };
     }
-  } catch (error: any) {
-    console.error("Error toggling progress (FULL ERROR):", error.message);
-    throw new Error("Failed to update progress: " + error.message);
+  } catch (error) {
+    console.error("Error toggling progress (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update progress: " + getErrorMessage(error));
   }
 }
 
@@ -371,8 +381,8 @@ export async function getPublicCourseStats() {
       db.select().from(lessons).where(eq(lessons.isPublished, true)),
     ]);
     return { levelCount: levelRows.length, moduleCount: moduleRows.length, lessonCount: lessonRows.length };
-  } catch (error: any) {
-    console.error("Error fetching public course stats (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching public course stats (FULL ERROR):", getErrorMessage(error));
     return { levelCount: 3, moduleCount: 13, lessonCount: 49 };
   }
 }
@@ -409,8 +419,8 @@ export async function getPublicCurriculumPreview(): Promise<CourseLevelPreview[]
           })),
       }))
       .filter((lvl) => lvl.modules.length > 0);
-  } catch (error: any) {
-    console.error("Error fetching public curriculum preview (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching public curriculum preview (FULL ERROR):", getErrorMessage(error));
     return [];
   }
 }
@@ -441,7 +451,7 @@ export async function getCourseContent() {
 
     const allResources = await db.select().from(resources).orderBy(asc(resources.displayOrder));
 
-    const resourceMap = new Map<string, any[]>();
+    const resourceMap = new Map<string, (typeof resources.$inferSelect)[]>();
     for (const r of allResources) {
       if (!resourceMap.has(r.lessonId)) resourceMap.set(r.lessonId, []);
       resourceMap.get(r.lessonId)!.push(r);
@@ -469,8 +479,8 @@ export async function getCourseContent() {
         modules: lvlModules
       };
     }).filter(lvl => isAdmin || lvl.modules.length > 0);
-  } catch (error: any) {
-    console.error("Error fetching course content (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching course content (FULL ERROR):", getErrorMessage(error));
     return [];
   }
 }
@@ -478,98 +488,109 @@ export async function getCourseContent() {
 export async function getLevelsOnly() {
   try {
     return await db.select().from(levels).orderBy(asc(levels.displayOrder));
-  } catch (error: any) {
-    console.error("Error fetching levels (FULL ERROR):", error.message);
+  } catch (error) {
+    console.error("Error fetching levels (FULL ERROR):", getErrorMessage(error));
     return [];
   }
 }
 
 export async function createLevel(title: string) {
   await requireAdmin();
+  title = parseText(title, 200, "title");
   try {
     const result = await db.insert(levels).values({ title }).returning();
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error: any) {
-    console.error("Error creating level (FULL ERROR):", error.message);
-    throw new Error("Failed to create level: " + error.message);
+  } catch (error) {
+    console.error("Error creating level (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to create level: " + getErrorMessage(error));
   }
 }
 
 export async function updateLevel(levelId: string, title: string) {
   await requireAdmin();
+  levelId = parseUuid(levelId, "levelId");
+  title = parseText(title, 200, "title");
   try {
     await db.update(levels).set({ title }).where(eq(levels.id, levelId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error updating level (FULL ERROR):", error.message);
-    throw new Error("Failed to update level: " + error.message);
+  } catch (error) {
+    console.error("Error updating level (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update level: " + getErrorMessage(error));
   }
 }
 
 export async function deleteLevel(levelId: string) {
   await requireAdmin();
+  levelId = parseUuid(levelId, "levelId");
   try {
     // Set levelId to null for any modules in this level
     await db.update(modules).set({ levelId: null }).where(eq(modules.levelId, levelId));
     await db.delete(levels).where(eq(levels.id, levelId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error deleting level (FULL ERROR):", error.message);
-    throw new Error("Failed to delete level: " + error.message);
+  } catch (error) {
+    console.error("Error deleting level (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to delete level: " + getErrorMessage(error));
   }
 }
 
 export async function createModule(title: string, levelId?: string) {
   await requireAdmin();
+  title = parseText(title, 200, "title");
+  if (levelId) levelId = parseUuid(levelId, "levelId");
   try {
     const slug = await uniqueModuleSlug(title);
     const result = await db.insert(modules).values({ title, slug, levelId: levelId || null }).returning();
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error: any) {
-    console.error("Error creating module (FULL ERROR):", error.message);
-    throw new Error("Failed to create module: " + error.message);
+  } catch (error) {
+    console.error("Error creating module (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to create module: " + getErrorMessage(error));
   }
 }
 
 export async function updateModule(moduleId: string, title: string) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
+  title = parseText(title, 200, "title");
   try {
     await db.update(modules).set({ title }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error updating module (FULL ERROR):", error.message);
-    throw new Error("Failed to update module: " + error.message);
+  } catch (error) {
+    console.error("Error updating module (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update module: " + getErrorMessage(error));
   }
 }
 
 export async function deleteModule(moduleId: string) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
   try {
     await db.delete(modules).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error deleting module (FULL ERROR):", error.message);
-    throw new Error("Failed to delete module: " + error.message);
+  } catch (error) {
+    console.error("Error deleting module (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to delete module: " + getErrorMessage(error));
   }
 }
 
 export async function updateModuleLevel(moduleId: string, levelId: string | null) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
+  if (levelId) levelId = parseUuid(levelId, "levelId");
   try {
     await db.update(modules).set({ levelId }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error updating module level (FULL ERROR):", error.message);
-    throw new Error("Failed to update module level: " + error.message);
+  } catch (error) {
+    console.error("Error updating module level (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update module level: " + getErrorMessage(error));
   }
 }
 
@@ -589,6 +610,14 @@ export async function updateLesson(
   }
 ) {
   await requireAdmin();
+  lessonId = parseUuid(lessonId, "lessonId");
+  data.title = parseText(data.title, 200, "title");
+  data.videoUrl = parse(urlSchema, data.videoUrl);
+  data.duration = parse(text(20), data.duration);
+  data.notes = parseText(data.notes, 100000, "notes");
+  data.adminNotes = parseText(data.adminNotes, 100000, "adminNotes");
+  if (data.cliffnotes !== undefined) data.cliffnotes = parse(optionalText(100000), data.cliffnotes) ?? undefined;
+  data.isPublished = parse(z.boolean(), data.isPublished);
   try {
     await db.update(lessons).set({
       title: data.title,
@@ -606,14 +635,21 @@ export async function updateLesson(
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
-  } catch (error: any) {
-    console.error("Error updating lesson (FULL ERROR):", error.message);
-    throw new Error("Failed to update lesson: " + error.message);
+  } catch (error) {
+    console.error("Error updating lesson (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to update lesson: " + getErrorMessage(error));
   }
 }
 
 export async function createLesson(moduleId: string, data: { title: string, videoUrl: string, duration: string, notes: string, adminNotes: string, isPublished: boolean, hasVideo?: boolean, videoStatus?: string, filmingDate?: Date | null }) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
+  data.title = parseText(data.title, 200, "title");
+  data.videoUrl = parse(urlSchema, data.videoUrl);
+  data.duration = parse(text(20), data.duration);
+  data.notes = parseText(data.notes, 100000, "notes");
+  data.adminNotes = parseText(data.adminNotes, 100000, "adminNotes");
+  data.isPublished = parse(z.boolean(), data.isPublished);
   try {
     const slug = await uniqueLessonSlug(moduleId, data.title);
     const result = await db.insert(lessons).values({
@@ -628,27 +664,30 @@ export async function createLesson(moduleId: string, data: { title: string, vide
     revalidatePath("/modules");
     revalidatePath("/admin/tree");
     return result[0];
-  } catch (error: any) {
-    console.error("Error creating lesson (FULL ERROR):", error.message);
-    throw new Error("Failed to create lesson: " + error.message);
+  } catch (error) {
+    console.error("Error creating lesson (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to create lesson: " + getErrorMessage(error));
   }
 }
 
 export async function deleteLesson(lessonId: string) {
   await requireAdmin();
+  lessonId = parseUuid(lessonId, "lessonId");
   try {
     await db.delete(lessons).where(eq(lessons.id, lessonId));
     revalidatePath("/admin");
     revalidatePath("/modules");
     revalidatePath("/admin/tree");
-  } catch (error: any) {
-    console.error("Error deleting lesson (FULL ERROR):", error.message);
-    throw new Error("Failed to delete lesson: " + error.message);
+  } catch (error) {
+    console.error("Error deleting lesson (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to delete lesson: " + getErrorMessage(error));
   }
 }
 
 export async function reorderLesson(lessonId: string, direction: "up" | "down") {
   await requireAdmin();
+  lessonId = parseUuid(lessonId, "lessonId");
+  direction = parse(z.enum(["up", "down"]), direction);
   try {
     const [current] = await db.select().from(lessons).where(eq(lessons.id, lessonId));
     if (!current) throw new Error("Lesson not found");
@@ -677,15 +716,17 @@ export async function reorderLesson(lessonId: string, direction: "up" | "down") 
     revalidatePath("/modules");
     revalidatePath("/admin/tree");
     return { success: true };
-  } catch (error: any) {
-    console.error("Error reordering lesson (FULL ERROR):", error.message);
-    throw new Error("Failed to reorder lesson: " + error.message);
+  } catch (error) {
+    console.error("Error reordering lesson (FULL ERROR):", getErrorMessage(error));
+    throw new Error("Failed to reorder lesson: " + getErrorMessage(error));
   }
 }
 
 // --- Gemini AI Generation Action ---
 export async function generateLessonNotes(lessonId: string, templateType: string = "standard") {
   await requireAdmin();
+  lessonId = parseUuid(lessonId, "lessonId");
+  templateType = parse(text(50), templateType);
   try {
     // 1. Fetch the lesson details
     const [lesson] = await db.select().from(lessons).where(eq(lessons.id, lessonId));
@@ -724,9 +765,9 @@ Format the output beautifully with clear headings, bullet points, and bold text.
     // reaches students until you press Save — previously this overwrote the
     // live lesson notes (with no undo) the moment Gemini replied.
     return { success: true, notes: generatedNotes };
-  } catch (error: any) {
+  } catch (error) {
     console.error("Error generating lesson notes with Gemini:", error);
-    throw new Error(error.message || "Failed to generate lesson notes");
+    throw new Error(getErrorMessage(error) || "Failed to generate lesson notes");
   }
 }
 
@@ -757,7 +798,19 @@ export async function scaffoldAuditionGuidebook() {
     }
 
     // Helper to create module and lessons
-    const addModuleWithLessons = async (levelId: string, title: string, displayOrder: number, lessonsData: any[]) => {
+    const addModuleWithLessons = async (
+      levelId: string,
+      title: string,
+      displayOrder: number,
+      lessonsData: {
+        title: string;
+        videoUrl?: string;
+        duration?: string;
+        notes?: string;
+        adminNotes?: string;
+        hasVideo?: boolean;
+      }[],
+    ) => {
       const modSlug = await uniqueModuleSlug(title);
       const modRes = await db.insert(modules).values({ title, slug: modSlug, levelId, displayOrder }).returning();
       const modId = modRes[0].id;
@@ -1245,6 +1298,10 @@ export async function restructureCourse() {
 // --- Resource Actions ---
 export async function addResource(lessonId: string, title: string, url: string, description?: string) {
   await requireAdmin();
+  lessonId = parseUuid(lessonId, "lessonId");
+  title = parseText(title, 200, "title");
+  url = parse(urlSchema, url);
+  if (description) description = parse(text(2000), description);
   try {
     const maxOrder = await db.select({ maxOrder: resources.displayOrder }).from(resources).where(eq(resources.lessonId, lessonId));
     const nextOrder = (maxOrder.length > 0 && maxOrder[0].maxOrder !== null) ? maxOrder[0].maxOrder + 1 : 0;
@@ -1257,39 +1314,43 @@ export async function addResource(lessonId: string, title: string, url: string, 
     }).returning();
     revalidatePath("/admin/modules");
     return result[0];
-  } catch (error: any) {
-    console.error("Error adding resource:", error.message);
-    throw new Error("Failed to add resource: " + error.message);
+  } catch (error) {
+    console.error("Error adding resource:", getErrorMessage(error));
+    throw new Error("Failed to add resource: " + getErrorMessage(error));
   }
 }
 
 export async function deleteResource(id: string) {
   await requireAdmin();
+  id = parseUuid(id, "resourceId");
   try {
     await db.delete(resources).where(eq(resources.id, id));
     revalidatePath("/admin/modules");
-  } catch (error: any) {
-    console.error("Error deleting resource:", error.message);
-    throw new Error("Failed to delete resource: " + error.message);
+  } catch (error) {
+    console.error("Error deleting resource:", getErrorMessage(error));
+    throw new Error("Failed to delete resource: " + getErrorMessage(error));
   }
 }
 
 export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: string) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
+  wrapUpVideoUrl = parse(urlSchema, wrapUpVideoUrl);
   try {
     await db.update(modules).set({ wrapUpVideoUrl }).where(eq(modules.id, moduleId));
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
-  } catch (error: any) {
-    console.error("Error updating module wrap-up video:", error.message);
-    throw new Error("Failed to update module wrap-up video: " + error.message);
+  } catch (error) {
+    console.error("Error updating module wrap-up video:", getErrorMessage(error));
+    throw new Error("Failed to update module wrap-up video: " + getErrorMessage(error));
   }
 }
 
 export async function toggleModuleVisibility(moduleId: string) {
   await requireAdmin();
+  moduleId = parseUuid(moduleId, "moduleId");
   try {
     const mod = await db.select({ isPublished: modules.isPublished }).from(modules).where(eq(modules.id, moduleId)).limit(1);
     if (mod.length === 0) throw new Error("Module not found");
@@ -1300,9 +1361,9 @@ export async function toggleModuleVisibility(moduleId: string) {
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
     return { success: true, isPublished: newValue };
-  } catch (error: any) {
-    console.error("Error toggling module visibility:", error.message);
-    throw new Error("Failed to toggle module visibility: " + error.message);
+  } catch (error) {
+    console.error("Error toggling module visibility:", getErrorMessage(error));
+    throw new Error("Failed to toggle module visibility: " + getErrorMessage(error));
   }
 }
 
@@ -1315,9 +1376,9 @@ export async function publishAllLessons() {
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
     return { success: true };
-  } catch (error: any) {
-    console.error("Error publishing all lessons:", error.message);
-    throw new Error("Failed to publish all lessons: " + error.message);
+  } catch (error) {
+    console.error("Error publishing all lessons:", getErrorMessage(error));
+    throw new Error("Failed to publish all lessons: " + getErrorMessage(error));
   }
 }
 
@@ -1365,9 +1426,9 @@ export async function fixCourseStructure() {
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
     return { success: true };
-  } catch (error: any) {
-    console.error("Error fixing course structure:", error.message);
-    throw new Error("Failed to fix course structure: " + error.message);
+  } catch (error) {
+    console.error("Error fixing course structure:", getErrorMessage(error));
+    throw new Error("Failed to fix course structure: " + getErrorMessage(error));
   }
 }
 
@@ -1390,9 +1451,9 @@ export async function stripModuleNumberPrefixes() {
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
     return { success: true, updated };
-  } catch (error: any) {
-    console.error("Error stripping prefixes:", error.message);
-    throw new Error("Failed to strip prefixes: " + error.message);
+  } catch (error) {
+    console.error("Error stripping prefixes:", getErrorMessage(error));
+    throw new Error("Failed to strip prefixes: " + getErrorMessage(error));
   }
 }
 // --- One-off content tidy (25 Sep 2026 launch plan, merges M1–M4) ---

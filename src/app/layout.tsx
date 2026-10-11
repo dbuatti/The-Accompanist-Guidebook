@@ -7,6 +7,7 @@ import Providers from "./providers";
 import { NeonAuthUIProvider } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
 import { SITE_NAME } from "@/lib/constants";
+import type { ComponentProps } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-serif" });
@@ -49,8 +50,15 @@ export default function RootLayout({
   return (
     <html lang="en-AU" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {/* Cast authClient to any to bypass internal SDK type mismatches */}
-        <NeonAuthUIProvider authClient={authClient as any} defaultTheme="light" redirectTo="/welcome?" baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}>
+        {/* The Neon Auth UI provider expects the core better-auth client type, but
+            @neondatabase/auth/next returns its Next.js adapter. The SDK (beta) does not
+            reconcile these, so bridge them without widening to `any`. */}
+        <NeonAuthUIProvider
+          authClient={authClient as unknown as ComponentProps<typeof NeonAuthUIProvider>["authClient"]}
+          defaultTheme="light"
+          redirectTo="/welcome?"
+          baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}
+        >
           <Providers>
             <TooltipProvider>
               {children}

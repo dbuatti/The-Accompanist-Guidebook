@@ -6,6 +6,7 @@ import { authClient } from "@/lib/auth/client";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { showError } from "@/utils/toast";
+import { getErrorMessage } from "@/lib/errors";
 
 interface AuthContainerProps {
   path: string;
@@ -21,8 +22,8 @@ export default function AuthContainer({ path }: AuthContainerProps) {
         provider: "google",
         callbackURL: `${window.location.origin}/welcome?`,
       });
-    } catch (error: any) {
-      showError(error.message || "Failed to sign in with Google.");
+    } catch (error) {
+      showError(getErrorMessage(error) || "Failed to sign in with Google.");
       setIsGoogleLoading(false);
     }
   };

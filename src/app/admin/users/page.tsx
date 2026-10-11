@@ -48,12 +48,14 @@ import { Badge } from "@/components/ui/badge";
 
 import { ADMIN_EMAILS } from "@/lib/admin";
 
+type UserRow = Awaited<ReturnType<typeof getAllUsers>>[number];
+
 export default function AdminUsersPage() {
   const { data: session, isPending: isAuthPending } = authClient.useSession();
-  const [users, setUsers] = useState<any[]>([]);
+  const [users, setUsers] = useState<UserRow[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isActionPending, setIsActionPending] = useState<string | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<any | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<UserRow | null>(null);
 
   useEffect(() => {
     if (!isAuthPending && session) {

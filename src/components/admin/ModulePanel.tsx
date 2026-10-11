@@ -10,9 +10,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { FolderOpen, Video, Save, Loader2, Plus } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import type { CourseModule } from "@/lib/types";
 
 interface ModulePanelProps {
-  module: any;
+  module: CourseModule;
   onRefetch: () => void | Promise<void>;
   onAddLesson: () => void;
 }

@@ -6,19 +6,20 @@ import { authClient } from "@/lib/auth/client";
 import { formatModuleTitle } from "@/lib/utils";
 import { Loader2, Layers, BookOpen } from "lucide-react";
 import { showSuccess, showError } from "@/utils/toast";
+import type { CourseLevel, CourseModule, CourseLesson } from "@/lib/types";
 
 import CurriculumTree from "@/components/admin/CurriculumTree";
 import ModulePanel from "@/components/admin/ModulePanel";
 import LessonEditor, { WRITING_TEMPLATES } from "@/components/admin/LessonEditor";
 import CurriculumToolsMenu from "@/components/admin/CurriculumToolsMenu";
 import SearchFilterBar from "@/components/admin/SearchFilterBar";
-import AddLessonModal from "@/components/admin/AddLessonModal";
+import AddLessonModal, { type LessonTemplate } from "@/components/admin/AddLessonModal";
 import StatsDashboard from "@/components/admin/StatsDashboard";
 import LearnerStats from "@/components/admin/LearnerStats";
 
 type Selection = { type: "module" | "lesson"; id: string } | null;
 
-function findModule(content: any[], moduleId: string | null): any | null {
+function findModule(content: CourseLevel[], moduleId: string | null): CourseModule | null {
   if (!moduleId) return null;
   for (const level of content) {
     for (const module of level.modules || []) {
@@ -28,7 +29,7 @@ function findModule(content: any[], moduleId: string | null): any | null {
   return null;
 }
 
-function findLessonWithModule(content: any[], lessonId: string | null): { lesson: any; module: any } | null {
+function findLessonWithModule(content: CourseLevel[], lessonId: string | null): { lesson: CourseLesson; module: CourseModule } | null {
   if (!lessonId) return null;
   for (const level of content) {
     for (const module of level.modules || []) {
@@ -42,21 +43,21 @@ function findLessonWithModule(content: any[], lessonId: string | null): { lesson
 
 export default function AdminPage() {
   const { data: session, isPending: isAuthPending } = authClient.useSession();
-  const [content, setContent] = useState<any[]>([]);
-  const [learnerStats, setLearnerStats] = useState<any>(null);
+  const [content, setContent] = useState<CourseLevel[]>([]);
+  const [learnerStats, setLearnerStats] = useState<Awaited<ReturnType<typeof getLearnerStats>> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selection, setSelection] = useState<Selection>(null);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [videoFilter, setVideoFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "published" | "draft">("all");
+  const [videoFilter, setVideoFilter] = useState<"all" | "requires_video" | "no_video">("all");
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [activeModuleId, setActiveModuleId] = useState<string | null>(null);
   const [newLessonTitle, setNewLessonTitle] = useState("");
   const [newLessonDuration, setNewLessonDuration] = useState("05:00");
   const [newLessonHasVideo, setNewLessonHasVideo] = useState(true);
-  const [newLessonTemplate, setNewLessonTemplate] = useState<"none" | "standard" | "story" | "exercise">("none");
+  const [newLessonTemplate, setNewLessonTemplate] = useState<LessonTemplate>("none");
   const [isCreatingLesson, setIsCreatingLesson] = useState(false);
 
   useEffect(() => {
@@ -85,8 +86,8 @@ export default function AdminPage() {
     let uploadedVideos = 0;
 
     content.forEach((level) => {
-      level.modules.forEach((module: any) => {
-        module.lessons.forEach((lesson: any) => {
+      level.modules.forEach((module: CourseModule) => {
+        module.lessons.forEach((lesson: CourseLesson) => {
           totalLessons++;
           if (lesson.isPublished) publishedLessons++;
           else draftLessons++;
@@ -198,8 +199,8 @@ export default function AdminPage() {
             onRefetch={fetchData}
             onAddLesson={openAddLessonModal}
             searchQuery={searchQuery}
-            statusFilter={statusFilter as any}
-            videoFilter={videoFilter as any}
+            statusFilter={statusFilter}
+            videoFilter={videoFilter}
           />
         </div>
 

@@ -30,7 +30,27 @@ function formatDisplay(amount: number, currency: string): string {
   return `$${amount.toLocaleString("en-AU")} ${c}`;
 }
 
-async function stripeFetch(path: string): Promise<any | null> {
+interface StripePaymentLinkListItem {
+  id: string;
+  url: string | null;
+}
+
+interface StripePaymentLinkListResponse {
+  data: StripePaymentLinkListItem[];
+}
+
+interface StripeLineItemPrice {
+  unit_amount: number | null;
+  currency: string | null;
+}
+
+interface StripePaymentLinkResponse {
+  id: string;
+  currency: string | null;
+  line_items?: { data: { price: StripeLineItemPrice; quantity?: number }[] };
+}
+
+async function stripeFetch<T>(path: string): Promise<T | null> {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) return null;
   try {
@@ -39,7 +59,7 @@ async function stripeFetch(path: string): Promise<any | null> {
       next: { revalidate: REVALIDATE_SECONDS },
     });
     if (!res.ok) return null;
-    return res.json();
+    return (await res.json()) as T;
   } catch (error) {
     console.error("Stripe price fetch failed:", error);
     return null;
@@ -53,12 +73,12 @@ export const getCoursePrice = cache(async (): Promise<CoursePrice> => {
 
   // Public buy.stripe.com URLs don't embed the pl_ id, so list active payment
   // links and match on the URL we advertise.
-  const list = await stripeFetch("/v1/payment_links?active=true&limit=100");
-  const match = (list?.data ?? []).find((pl: any) => pl.url === linkUrl);
+  const list = await stripeFetch<StripePaymentLinkListResponse>("/v1/payment_links?active=true&limit=100");
+  const match = (list?.data ?? []).find((pl) => pl.url === linkUrl);
   if (!match?.id) return base;
 
-  const pl = await stripeFetch(`/v1/payment_links/${match.id}?expand[]=line_items.data.price`);
-  const items = (pl?.line_items?.data ?? []) as { price: any; quantity?: number }[];
+  const pl = await stripeFetch<StripePaymentLinkResponse>(`/v1/payment_links/${match.id}?expand[]=line_items.data.price`);
+  const items = pl?.line_items?.data ?? [];
   let totalMinor = 0;
   let currency = pl?.currency || base.currency;
   for (const item of items) {

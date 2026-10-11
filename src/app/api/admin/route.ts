@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { syncLessonContent, restructureCourse, fixCourseStructure, scaffoldAuditionGuidebook, stripModuleNumberPrefixes, mergeDuplicateLessons } from "@/app/actions";
 import { auth } from "@/lib/auth/server";
 import { isAdmin } from "@/lib/admin";
+import { getErrorMessage } from "@/lib/errors";
 
 export async function POST(request: NextRequest) {
   const { data: session } = await auth.getSession();
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing 'action' field" }, { status: 400 });
     }
 
-    let result: any;
+    let result: unknown;
 
     switch (action) {
       case "syncLessons":
@@ -43,8 +44,8 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true, result });
-  } catch (error: any) {
+  } catch (error) {
     console.error("API admin error:", error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }
