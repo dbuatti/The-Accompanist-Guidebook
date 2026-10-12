@@ -204,6 +204,7 @@ export default function AdminUsersPage() {
                                   size="icon"
                                   className="text-muted-foreground/40 cursor-not-allowed"
                                   disabled
+                                  aria-label="Protected admin cannot be deleted"
                                 >
                                   <Trash2 className="w-4 h-4" />
                                 </Button>

@@ -23,11 +23,11 @@ const AdminNav = () => {
     <div className="flex flex-col space-y-4 mb-8">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Link href="/modules">
-            <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" asChild>
+            <Link href="/modules" aria-label="Back to all modules">
               <ArrowLeft className="w-5 h-5" />
-            </Button>
-          </Link>
+            </Link>
+          </Button>
           <h1 className="text-3xl font-serif font-bold text-primary">Admin Dashboard</h1>
         </div>
       </div>
