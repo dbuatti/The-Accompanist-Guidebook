@@ -8,6 +8,15 @@ import type { NextRequest } from "next/server";
 //   /welcome?neon_auth_session_verifier=...  (correct)
 // Normalise it back into a query param so the sign-in/session-verifier flow
 // works even if the remote service mangles the redirect URL.
+
+// NOTE (CSP): strict `nonce`/`strict-dynamic` enforcement for the App Router
+// is currently blocked by Next 14 not threading the nonce into its own inline
+// hydration scripts (the pattern in nextjs.org/docs CSP + the x-nonce request
+// header both leave framework scripts bare — cf. vercel/next.js#95433). We
+// verified both mechanisms by curling a production build: all 32 framework
+// script tags shipped without a nonce attribute. The enforced, cacheable
+// baseline in next.config.js is the right posture for now; revisit strict
+// nonces when the framework inserts them itself (Next 15+).
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
