@@ -23,7 +23,9 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # jsdom@30 (transitively undici@8) requires Node >= 22.19; Node 24
+          # also satisfies jsdom's engine range and matches local dev.
+          node-version: 24
           cache: pnpm
 
       - name: Install dependencies
