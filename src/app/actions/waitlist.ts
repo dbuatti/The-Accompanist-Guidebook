@@ -1,17 +1,32 @@
 "use server";
 
 import { sql } from "drizzle-orm";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { waitlist } from "@/lib/schema";
 import { subscribeToKit } from "@/lib/kit";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 const emailSchema = z.string().trim().toLowerCase().email();
 const sourceSchema = z.string().trim().max(50).default("landing");
 
+function clientRateLimitKey(): string {
+  const h = headers();
+  const forwarded = h.get("x-forwarded-for");
+  const ip = forwarded?.split(",")[0]?.trim() || h.get("x-real-ip") || "unknown";
+  return `waitlist:${ip}`;
+}
+
 export type JoinWaitlistResult = { ok: true } | { ok: false; reason: string };
 
 export async function joinWaitlist(input: { email: string; source?: string }): Promise<JoinWaitlistResult> {
+  // Public, unauthenticated endpoint — throttle by IP before touching the DB.
+  const rate = checkRateLimit(clientRateLimitKey(), 5, 10 * 60_000);
+  if (!rate.allowed) {
+    return { ok: false, reason: "Too many sign-ups from this connection — please try again shortly." };
+  }
+
   const email = emailSchema.safeParse(input.email);
   if (!email.success) return { ok: false, reason: "That doesn't look like a valid email address." };
 
