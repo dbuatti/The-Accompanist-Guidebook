@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { db } from "@/lib/db";
 import { welcomeContent } from "@/lib/schema";
 import { eq } from "drizzle-orm";
@@ -12,7 +13,7 @@ export async function getWelcomeContent() {
     const rows = await db.select().from(welcomeContent).where(eq(welcomeContent.id, "welcome"));
     return rows.length > 0 ? { title: rows[0].title, content: rows[0].content } : null;
   } catch (error) {
-    console.error("Error fetching welcome content (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching welcome content:", getErrorMessage(error));
     return null;
   }
 }
@@ -32,7 +33,7 @@ export async function updateWelcomeContent(title: string, content: string) {
     revalidatePath("/admin/welcome");
     return { success: true };
   } catch (error) {
-    console.error("Error updating welcome content (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating welcome content:", getErrorMessage(error));
     throw new Error("Failed to update welcome content: " + getErrorMessage(error));
   }
 }

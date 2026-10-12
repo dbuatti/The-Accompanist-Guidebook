@@ -1,4 +1,5 @@
 "use client";
+import { logger } from "@/lib/logger";
 
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Unhandled route error:", error);
+    logger.error("Unhandled route error:", error);
   }, [error]);
 
   return (

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 // Kit.com (ConvertKit) v4 API client for the mailing list.
 // Used by the waitlist server action to keep every signup in sync with Kit so
 // automations (welcome series, the 48-hour checklist lead magnet, weekly tips)
@@ -126,7 +127,7 @@ export async function subscribeToKit(input: {
 
     return { ok: true };
   } catch (error) {
-    console.error("Kit sync error:", error);
+    logger.error("Kit sync error:", error);
     return { ok: false, error: "Failed to sync to Kit" };
   }
 }

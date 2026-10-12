@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
@@ -28,7 +29,7 @@ export async function POST(req: Request) {
   try {
     event = stripe.webhooks.constructEvent(await req.text(), sig, webhookSecret);
   } catch (err) {
-    console.error("Stripe webhook signature verification failed:", getErrorMessage(err));
+    logger.error("Stripe webhook signature verification failed:", getErrorMessage(err));
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
@@ -51,7 +52,7 @@ export async function POST(req: Request) {
     const paymentId = paymentIntentId || session.id;
 
     if (!email) {
-      console.warn("Stripe checkout completed with no customer email — cannot match to account:", session.id);
+      logger.warn("Stripe checkout completed with no customer email — cannot match to account:", session.id);
       return NextResponse.json({ received: true });
     }
 
@@ -122,7 +123,7 @@ export async function POST(req: Request) {
       // Drop the purchase record too, so an unclaimed refunded payment can't
       // be applied to an account later.
       await db.delete(purchases).where(eq(purchases.paymentIntentId, pi));
-      console.log("Access revoked for refunded/disputed payment:", pi);
+      logger.log("Access revoked for refunded/disputed payment:", pi);
     }
     return NextResponse.json({ received: true, revoked: !!pi });
   }

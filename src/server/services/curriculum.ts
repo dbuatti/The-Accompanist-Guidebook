@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { db } from "@/lib/db";
 import { users, levels, modules, lessons, resources, progress } from "@/lib/schema";
 import { eq, and, asc } from "drizzle-orm";
@@ -20,7 +21,7 @@ export async function getPublicCourseStats() {
     ]);
     return { levelCount: levelRows.length, moduleCount: moduleRows.length, lessonCount: lessonRows.length };
   } catch (error) {
-    console.error("Error fetching public course stats (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching public course stats:", getErrorMessage(error));
     return { levelCount: 3, moduleCount: 13, lessonCount: 49 };
   }
 }
@@ -58,7 +59,7 @@ export async function getPublicCurriculumPreview(): Promise<CourseLevelPreview[]
       }))
       .filter((lvl) => lvl.modules.length > 0);
   } catch (error) {
-    console.error("Error fetching public curriculum preview (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching public curriculum preview:", getErrorMessage(error));
     return [];
   }
 }
@@ -117,7 +118,7 @@ export async function getCourseContent() {
       };
     }).filter(lvl => isAdmin || lvl.modules.length > 0);
   } catch (error) {
-    console.error("Error fetching course content (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching course content:", getErrorMessage(error));
     return [];
   }
 }
@@ -126,7 +127,7 @@ export async function getLevelsOnly() {
   try {
     return await db.select().from(levels).orderBy(asc(levels.displayOrder));
   } catch (error) {
-    console.error("Error fetching levels (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching levels:", getErrorMessage(error));
     return [];
   }
 }
@@ -140,7 +141,7 @@ export async function createLevel(title: string) {
     revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
-    console.error("Error creating level (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error creating level:", getErrorMessage(error));
     throw new Error("Failed to create level: " + getErrorMessage(error));
   }
 }
@@ -154,7 +155,7 @@ export async function updateLevel(levelId: string, title: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error updating level (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating level:", getErrorMessage(error));
     throw new Error("Failed to update level: " + getErrorMessage(error));
   }
 }
@@ -169,7 +170,7 @@ export async function deleteLevel(levelId: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error deleting level (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error deleting level:", getErrorMessage(error));
     throw new Error("Failed to delete level: " + getErrorMessage(error));
   }
 }
@@ -185,7 +186,7 @@ export async function createModule(title: string, levelId?: string) {
     revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
-    console.error("Error creating module (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error creating module:", getErrorMessage(error));
     throw new Error("Failed to create module: " + getErrorMessage(error));
   }
 }
@@ -199,7 +200,7 @@ export async function updateModule(moduleId: string, title: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error updating module (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating module:", getErrorMessage(error));
     throw new Error("Failed to update module: " + getErrorMessage(error));
   }
 }
@@ -212,7 +213,7 @@ export async function deleteModule(moduleId: string) {
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error deleting module (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error deleting module:", getErrorMessage(error));
     throw new Error("Failed to delete module: " + getErrorMessage(error));
   }
 }
@@ -226,7 +227,7 @@ export async function updateModuleLevel(moduleId: string, levelId: string | null
     revalidatePath("/admin");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error updating module level (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating module level:", getErrorMessage(error));
     throw new Error("Failed to update module level: " + getErrorMessage(error));
   }
 }
@@ -273,7 +274,7 @@ export async function updateLesson(
     revalidatePath("/admin/tree");
     revalidatePath("/admin/modules");
   } catch (error) {
-    console.error("Error updating lesson (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating lesson:", getErrorMessage(error));
     throw new Error("Failed to update lesson: " + getErrorMessage(error));
   }
 }
@@ -302,7 +303,7 @@ export async function createLesson(moduleId: string, data: { title: string, vide
     revalidatePath("/admin/tree");
     return result[0];
   } catch (error) {
-    console.error("Error creating lesson (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error creating lesson:", getErrorMessage(error));
     throw new Error("Failed to create lesson: " + getErrorMessage(error));
   }
 }
@@ -316,7 +317,7 @@ export async function deleteLesson(lessonId: string) {
     revalidatePath("/modules");
     revalidatePath("/admin/tree");
   } catch (error) {
-    console.error("Error deleting lesson (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error deleting lesson:", getErrorMessage(error));
     throw new Error("Failed to delete lesson: " + getErrorMessage(error));
   }
 }
@@ -354,7 +355,7 @@ export async function reorderLesson(lessonId: string, direction: "up" | "down") 
     revalidatePath("/admin/tree");
     return { success: true };
   } catch (error) {
-    console.error("Error reordering lesson (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error reordering lesson:", getErrorMessage(error));
     throw new Error("Failed to reorder lesson: " + getErrorMessage(error));
   }
 }
@@ -378,7 +379,7 @@ export async function addResource(lessonId: string, title: string, url: string, 
     revalidatePath("/admin/modules");
     return result[0];
   } catch (error) {
-    console.error("Error adding resource:", getErrorMessage(error));
+    logger.error("Error adding resource:", getErrorMessage(error));
     throw new Error("Failed to add resource: " + getErrorMessage(error));
   }
 }
@@ -390,7 +391,7 @@ export async function deleteResource(id: string) {
     await db.delete(resources).where(eq(resources.id, id));
     revalidatePath("/admin/modules");
   } catch (error) {
-    console.error("Error deleting resource:", getErrorMessage(error));
+    logger.error("Error deleting resource:", getErrorMessage(error));
     throw new Error("Failed to delete resource: " + getErrorMessage(error));
   }
 }
@@ -406,7 +407,7 @@ export async function updateModuleWrapUpVideo(moduleId: string, wrapUpVideoUrl: 
     revalidatePath("/admin/modules");
     revalidatePath("/modules");
   } catch (error) {
-    console.error("Error updating module wrap-up video:", getErrorMessage(error));
+    logger.error("Error updating module wrap-up video:", getErrorMessage(error));
     throw new Error("Failed to update module wrap-up video: " + getErrorMessage(error));
   }
 }
@@ -425,7 +426,7 @@ export async function toggleModuleVisibility(moduleId: string) {
     revalidatePath("/modules");
     return { success: true, isPublished: newValue };
   } catch (error) {
-    console.error("Error toggling module visibility:", getErrorMessage(error));
+    logger.error("Error toggling module visibility:", getErrorMessage(error));
     throw new Error("Failed to toggle module visibility: " + getErrorMessage(error));
   }
 }
@@ -440,7 +441,7 @@ export async function publishAllLessons() {
     revalidatePath("/modules");
     return { success: true };
   } catch (error) {
-    console.error("Error publishing all lessons:", getErrorMessage(error));
+    logger.error("Error publishing all lessons:", getErrorMessage(error));
     throw new Error("Failed to publish all lessons: " + getErrorMessage(error));
   }
 }
@@ -490,7 +491,7 @@ export async function fixCourseStructure() {
     revalidatePath("/modules");
     return { success: true };
   } catch (error) {
-    console.error("Error fixing course structure:", getErrorMessage(error));
+    logger.error("Error fixing course structure:", getErrorMessage(error));
     throw new Error("Failed to fix course structure: " + getErrorMessage(error));
   }
 }
@@ -515,7 +516,7 @@ export async function stripModuleNumberPrefixes() {
     revalidatePath("/modules");
     return { success: true, updated };
   } catch (error) {
-    console.error("Error stripping prefixes:", getErrorMessage(error));
+    logger.error("Error stripping prefixes:", getErrorMessage(error));
     throw new Error("Failed to strip prefixes: " + getErrorMessage(error));
   }
 }

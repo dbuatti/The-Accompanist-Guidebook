@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { desc } from "drizzle-orm";
 import { Mail, CheckCircle2, AlertTriangle } from "lucide-react";
 import { db } from "@/lib/db";
@@ -13,7 +14,7 @@ export default async function AdminLeadsPage() {
       .from(waitlist)
       .orderBy(desc(waitlist.createdAt));
   } catch (error) {
-    console.error("Error fetching waitlist:", error);
+    logger.error("Error fetching waitlist:", error);
   }
 
   const emails = leads.map((l) => l.email);

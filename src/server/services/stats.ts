@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { db } from "@/lib/db";
 import { users, progress, lessons } from "@/lib/schema";
 import { getErrorMessage } from "@/lib/errors";
@@ -51,7 +52,7 @@ export async function getLearnerStats() {
       userProgressCount,
     };
   } catch (error) {
-    console.error("Error fetching learner stats (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching learner stats:", getErrorMessage(error));
     return null;
   }
 }

@@ -1,4 +1,5 @@
 "use server";
+import { logger } from "@/lib/logger";
 
 import { sql } from "drizzle-orm";
 import { headers } from "next/headers";
@@ -44,7 +45,7 @@ export async function joinWaitlist(input: { email: string; source?: string }): P
     `);
     await db.insert(waitlist).values({ email: email.data, source: source.data }).onConflictDoNothing();
   } catch (error) {
-    console.error("Error saving waitlist entry:", error);
+    logger.error("Error saving waitlist entry:", error);
     return { ok: false, reason: "Something went wrong on our end — please try again in a moment." };
   }
 

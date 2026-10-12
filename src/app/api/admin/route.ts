@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { NextRequest, NextResponse } from "next/server";
 import { syncLessonContent, restructureCourse, fixCourseStructure, scaffoldAuditionGuidebook, stripModuleNumberPrefixes, mergeDuplicateLessons } from "@/app/actions";
 import { auth } from "@/lib/auth/server";
@@ -45,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, result });
   } catch (error) {
-    console.error("API admin error:", error);
+    logger.error("API admin error:", error);
     return NextResponse.json({ error: getErrorMessage(error) }, { status: 500 });
   }
 }

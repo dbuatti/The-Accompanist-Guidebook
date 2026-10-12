@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { db } from "@/lib/db";
 import { users, progress } from "@/lib/schema";
 import { eq, desc } from "drizzle-orm";
@@ -22,7 +23,7 @@ export async function ensureUserExists() {
       });
     }
   } catch (error) {
-    console.error("Error ensuring user exists (FULL ERROR):", serializeError(error));
+    logger.error("Error ensuring user exists:", serializeError(error));
   }
 }
 
@@ -31,7 +32,7 @@ export async function getAllUsers() {
   try {
     return await db.select().from(users).orderBy(desc(users.createdAt));
   } catch (error) {
-    console.error("Error fetching users (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching users:", getErrorMessage(error));
     return [];
   }
 }
@@ -42,7 +43,7 @@ export async function getPaidStatus() {
     const existing = await db.select().from(users).where(eq(users.id, user.id));
     return { isPaid: existing.length > 0 && existing[0].isPaid === true };
   } catch (error) {
-    console.error("Error fetching paid status (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching paid status:", getErrorMessage(error));
     return { isPaid: false };
   }
 }
@@ -56,7 +57,7 @@ export async function updateUser(userId: string, data: { name?: string; role?: s
     await db.update(users).set(data).where(eq(users.id, userId));
     revalidatePath("/admin/users");
   } catch (error) {
-    console.error("Error updating user (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error updating user:", getErrorMessage(error));
     throw new Error("Failed to update user: " + getErrorMessage(error));
   }
 }
@@ -82,7 +83,7 @@ export async function deleteUser(userId: string) {
     await db.delete(users).where(eq(users.id, userId));
     revalidatePath("/admin/users");
   } catch (error) {
-    console.error("Error deleting user (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error deleting user:", getErrorMessage(error));
     throw new Error("Failed to delete user: " + getErrorMessage(error));
   }
 }

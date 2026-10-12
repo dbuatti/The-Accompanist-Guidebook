@@ -1,4 +1,5 @@
 "use server";
+import { logger } from "@/lib/logger";
 
 import { db } from "@/lib/db";
 import { levels, modules, lessons } from "@/lib/schema";
@@ -112,7 +113,7 @@ Format the output beautifully with clear headings, bullet points, and bold text.
     // live lesson notes (with no undo) the moment Gemini replied.
     return { success: true, notes: generatedNotes };
   } catch (error) {
-    console.error("Error generating lesson notes with Gemini:", error);
+    logger.error("Error generating lesson notes with Gemini:", error);
     throw new Error(getErrorMessage(error) || "Failed to generate lesson notes");
   }
 }
@@ -433,7 +434,7 @@ export async function scaffoldAuditionGuidebook() {
     revalidatePath("/admin/modules");
     return { success: true };
   } catch (error) {
-    console.error("Error scaffolding guidebook:", error);
+    logger.error("Error scaffolding guidebook:", error);
     throw new Error("Failed to scaffold guidebook");
   }
 }
@@ -454,7 +455,7 @@ export async function syncLessonContent() {
     for (const modUpdate of moduleUpdates) {
       const dbModule = allModules.find(m => m.title === modUpdate.moduleTitle);
       if (!dbModule) {
-        console.log(`Module not found: "${modUpdate.moduleTitle}" — skipping`);
+        logger.log(`Module not found: "${modUpdate.moduleTitle}" — skipping`);
         continue;
       }
 
@@ -501,7 +502,7 @@ export async function syncLessonContent() {
     revalidatePath("/modules");
     return { success: true, updatedLessons: updated, createdLessons: created };
   } catch (error) {
-    console.error("Error syncing lesson content:", error);
+    logger.error("Error syncing lesson content:", error);
     throw new Error("Failed to sync lesson content: " + getErrorMessage(error));
   }
 }
@@ -610,12 +611,12 @@ export async function restructureCourse() {
     for (const u of updates) {
       const dbMod = allUpdatedMods.find(m => m.title === u.moduleTitle);
       if (!dbMod) {
-        console.log(`Module not found: "${u.moduleTitle}" — skipping`);
+        logger.log(`Module not found: "${u.moduleTitle}" — skipping`);
         continue;
       }
       const dbLes = allLessons.find(l => l.moduleId === dbMod.id && l.title === u.lessonTitle);
       if (!dbLes) {
-        console.log(`Lesson not found: "${u.lessonTitle}" in "${u.moduleTitle}" — skipping`);
+        logger.log(`Lesson not found: "${u.lessonTitle}" in "${u.moduleTitle}" — skipping`);
         continue;
       }
       await db.update(lessons)
@@ -636,7 +637,7 @@ export async function restructureCourse() {
       modulesRenumbered: lvl1Mods.length,
     };
   } catch (error) {
-    console.error("Error restructuring course:", error);
+    logger.error("Error restructuring course:", error);
     throw new Error("Failed to restructure course: " + getErrorMessage(error));
   }
 }

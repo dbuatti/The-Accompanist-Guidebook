@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { cache } from "react";
 import { COURSE_PRICE_AMOUNT, COURSE_PRICE_CURRENCY } from "@/lib/constants";
 
@@ -61,7 +62,7 @@ async function stripeFetch<T>(path: string): Promise<T | null> {
     if (!res.ok) return null;
     return (await res.json()) as T;
   } catch (error) {
-    console.error("Stripe price fetch failed:", error);
+    logger.error("Stripe price fetch failed:", error);
     return null;
   }
 }

@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { z } from "zod";
 
 // Single source of truth for runtime configuration. Validates everything the
@@ -59,7 +60,7 @@ function loadEnv(): Env {
   }
 
   // Build/dev/test: fill placeholders and keep going, but always surface it.
-  console.warn(`[env] Incomplete configuration (non-production): ${problems}`);
+  logger.warn(`[env] Incomplete configuration (non-production): ${problems}`);
   return envSchema.parse({ ...process.env, ...BUILD_PLACEHOLDERS });
 }
 

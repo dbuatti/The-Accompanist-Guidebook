@@ -9,11 +9,26 @@ interface VideoPlayerProps {
   onProgress?: (seconds: number) => void;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// Minimal surface of the YouTube IFrame API we actually use. The official
+// API ships no types, so we declare only what we call rather than reaching
+// for `any`.
+interface YouTubePlayer {
+  getCurrentTime(): number;
+  getPlayerState(): number;
+}
+
+interface YouTubeApi {
+  Player: new (
+    element: HTMLElement | string,
+    options: { events?: { onStateChange?: (event: { data: number }) => void } },
+  ) => YouTubePlayer;
+  PlayerState: { ENDED: number; PLAYING: number };
+}
+
 declare global {
   interface Window {
     onYouTubeIframeAPIReady: () => void;
-    YT: any;
+    YT?: YouTubeApi;
   }
 }
 
@@ -45,7 +60,7 @@ function getYoutubeId(url: string) {
 
 const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlayerProps) => {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const playerRef = useRef<any>(null);
+  const playerRef = useRef<YouTubePlayer | null>(null);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
   const playerDomId = useId();
   const videoId = getYoutubeId(url);
@@ -75,12 +90,12 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
   }, [videoId]);
 
   useEffect(() => {
-    if (!isApiLoaded || !videoId || !iframeRef.current) return;
+    if (!isApiLoaded || !videoId || !iframeRef.current || !window.YT) return;
 
     const player = new window.YT.Player(iframeRef.current, {
       events: {
-        onStateChange: (event: any) => {
-          if (event.data === window.YT.PlayerState.ENDED) onCompleteRef.current();
+        onStateChange: (event) => {
+          if (event.data === window.YT?.PlayerState.ENDED) onCompleteRef.current();
         },
       },
     });
@@ -90,7 +105,7 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
       const p = playerRef.current;
       if (!p?.getCurrentTime || !p?.getPlayerState) return;
       // Only report while actually playing, so pausing doesn't spam saves.
-      if (p.getPlayerState() === window.YT.PlayerState.PLAYING) {
+      if (p.getPlayerState() === window.YT?.PlayerState.PLAYING) {
         onProgressRef.current?.(Math.floor(p.getCurrentTime()));
       }
     }, 10000);

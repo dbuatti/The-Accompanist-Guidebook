@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 // Transactional email via Resend (https://resend.com).
 // Fire-and-forget helpers used by server code (webhooks, actions). Nothing
 // here should ever throw to the caller — failures are logged and swallowed so
@@ -161,7 +162,7 @@ export async function sendPurchaseConfirmation(input: {
     }
     return { ok: true };
   } catch (error) {
-    console.error("Resend purchase confirmation error:", error);
+    logger.error("Resend purchase confirmation error:", error);
     return { ok: false, error: "Failed to send purchase confirmation email" };
   }
 }

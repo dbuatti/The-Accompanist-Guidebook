@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import Stripe from "stripe";
 import { db } from "@/lib/db";
 import { users, purchases } from "@/lib/schema";
@@ -19,7 +20,7 @@ async function applyPurchaseToUser(
     .limit(1);
 
   if (isPurchaseClaimedByOther(existing, userId)) {
-    console.warn("Purchase already claimed by another account:", purchase.paymentIntentId);
+    logger.warn("Purchase already claimed by another account:", purchase.paymentIntentId);
     return false;
   }
 
@@ -105,7 +106,7 @@ export async function verifyAndApplyPurchase(sessionId?: string | null) {
 
     return { isPaid: false };
   } catch (error) {
-    console.error("Error verifying purchase (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error verifying purchase:", getErrorMessage(error));
     return { isPaid: false };
   }
 }

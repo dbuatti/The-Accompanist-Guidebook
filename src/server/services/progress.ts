@@ -1,3 +1,4 @@
+import { logger } from "@/lib/logger";
 import { db } from "@/lib/db";
 import { progress } from "@/lib/schema";
 import { eq, and } from "drizzle-orm";
@@ -11,7 +12,7 @@ export async function getProgress() {
     const results = await db.select().from(progress).where(eq(progress.userId, user.id));
     return results;
   } catch (error) {
-    console.error("Error fetching progress (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error fetching progress:", getErrorMessage(error));
     return [];
   }
 }
@@ -30,7 +31,7 @@ export async function saveVideoProgress(lessonId: string, seconds: number) {
         set: { lastPosition: Math.max(0, Math.floor(seconds)) },
       });
   } catch (error) {
-    console.error("Error saving video progress (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error saving video progress:", getErrorMessage(error));
   }
 }
 
@@ -61,7 +62,7 @@ export async function toggleLessonProgress(lessonId: string) {
       return { completed: true };
     }
   } catch (error) {
-    console.error("Error toggling progress (FULL ERROR):", getErrorMessage(error));
+    logger.error("Error toggling progress:", getErrorMessage(error));
     throw new Error("Failed to update progress: " + getErrorMessage(error));
   }
 }
