@@ -8,7 +8,10 @@ export default defineConfig({
     jsx: "automatic",
   },
   test: {
-    environment: "jsdom",
+    // Default to a plain Node environment: the current suites are pure logic.
+    // Component tests can opt into DOM by adding `// @vitest-environment jsdom`
+    // at the top of the file.
+    environment: "node",
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["node_modules", ".next"],
