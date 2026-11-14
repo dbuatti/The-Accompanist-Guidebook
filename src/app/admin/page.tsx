@@ -66,6 +66,15 @@ export default function AdminPage() {
     }
   }, [session, isAuthPending]);
 
+  // Deep link from the Health page: /admin?lesson=<id> or /admin?module=<id>
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const lessonId = params.get("lesson");
+    const moduleId = params.get("module");
+    if (lessonId) setSelection({ type: "lesson", id: lessonId });
+    else if (moduleId) setSelection({ type: "module", id: moduleId });
+  }, []);
+
   const fetchData = async () => {
     try {
       const [courseData, stats] = await Promise.all([getCourseContent(), getLearnerStats()]);

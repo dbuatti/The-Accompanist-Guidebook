@@ -19,6 +19,7 @@ import * as purchasesService from "@/server/services/purchases";
 import * as welcomeService from "@/server/services/welcome";
 import * as statsService from "@/server/services/stats";
 import * as curriculumService from "@/server/services/curriculum";
+import * as contentHealthService from "@/server/services/contentHealth";
 
 // --- User management ---
 export async function ensureUserExists() { return usersService.ensureUserExists(); }
@@ -642,3 +643,8 @@ export async function restructureCourse() {
   }
 }
 
+
+// --- Content health & YouTube durations ---
+export async function getContentHealth() { return contentHealthService.getContentHealth(); }
+export async function getYoutubeDuration(url: string) { return contentHealthService.getYoutubeDuration(url); }
+export async function syncYoutubeDurations() { return contentHealthService.syncYoutubeDurations(); }

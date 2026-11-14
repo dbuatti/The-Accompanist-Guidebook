@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { updateLesson, deleteLesson, generateLessonNotes } from "@/app/actions";
+import { updateLesson, deleteLesson, generateLessonNotes, getYoutubeDuration } from "@/app/actions";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,26 @@ export default function LessonEditor({ lesson, moduleTitle, onRefetch, onDeleted
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isFetchingDuration, setIsFetchingDuration] = useState(false);
+
+  const fetchDurationFromYoutube = async (url = videoUrl, quiet = false) => {
+    if (!/youtu\.?be/.test(url)) {
+      if (!quiet) showError("Add a YouTube link first");
+      return;
+    }
+    setIsFetchingDuration(true);
+    try {
+      const d = await getYoutubeDuration(url);
+      if (d) {
+        setDuration(d);
+        if (!quiet) showSuccess(`Duration set to ${d}`);
+      } else if (!quiet) {
+        showError("Couldn't read the length from YouTube (is the video private?)");
+      }
+    } finally {
+      setIsFetchingDuration(false);
+    }
+  };
 
   const handleSave = async () => {
     setIsSaving(true);
@@ -216,11 +236,35 @@ Please write the complete, client-facing lesson notes. Use a warm, professional,
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-xs font-semibold text-muted-foreground">Duration (e.g., 08:45)</label>
-            <Input value={duration} onChange={(e) => setDuration(e.target.value)} className="h-9 text-sm bg-background" />
+            <div className="flex gap-2">
+              <Input value={duration} onChange={(e) => setDuration(e.target.value)} className="h-9 text-sm bg-background" />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-9 shrink-0 text-xs"
+                disabled={isFetchingDuration}
+                onClick={() => fetchDurationFromYoutube()}
+                title="Read the length from the YouTube video"
+              >
+                {isFetchingDuration ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "From YouTube"}
+              </Button>
+            </div>
           </div>
           <div className="space-y-1">
             <label className="text-xs font-semibold text-muted-foreground">Video URL (YouTube)</label>
-            <Input value={videoUrl} onChange={(e) => setVideoUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..." className="h-9 text-sm bg-background" />
+            <Input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              onBlur={(e) => {
+                // New link pasted and duration still the placeholder: fill it in.
+                if (e.target.value !== (lesson.videoUrl || "") && (!duration || duration === "05:00")) {
+                  fetchDurationFromYoutube(e.target.value, true);
+                }
+              }}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="h-9 text-sm bg-background"
+            />
           </div>
         </div>
 

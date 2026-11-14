@@ -203,6 +203,7 @@ export default function GuideLayout({
             <Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-primary transition-colors">Terms</Link>
             <a href="https://pianobackings.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Backing tracks</a>
+            <a href="https://www.danielebuatti.com/audition-cut-playthrough" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">Cut playthrough</a>
             <a href="https://www.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">danielebuatti.com</a>
           </nav>
           <p className="text-[11px] text-muted-foreground/70 uppercase tracking-[0.2em]">

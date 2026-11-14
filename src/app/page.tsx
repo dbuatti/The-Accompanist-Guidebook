@@ -590,6 +590,7 @@ export default async function Home() {
                 <ul className="space-y-2 text-sm">
                   <li><a href="https://pianobackings.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">Custom audition backing tracks</a></li>
                   <li><a href="https://www.danielebuatti.com/coaching" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">1:1 coaching</a></li>
+                  <li><a href="https://www.danielebuatti.com/audition-cut-playthrough" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">15-min cut playthrough</a></li>
                   <li><a href="https://www.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">danielebuatti.com</a></li>
                 </ul>
               </div>
