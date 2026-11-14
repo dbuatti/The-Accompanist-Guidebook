@@ -1,15 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, EyeOff, CheckCircle2 } from "lucide-react";
+import { Layers, EyeOff, CheckCircle2, ArrowRight } from "lucide-react";
+import { useEffect } from "react";
 import VideoPlayer from "@/components/VideoPlayer";
 import { formatModuleTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 import { CTAButton } from "@/components/CTAButton";
+import { showSuccess } from "@/utils/toast";
 
 export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
-  const { getModule, isLessonCompleted, session } = useCourse();
+  const { getModule, isLessonCompleted, session, content } = useCourse();
   const module = getModule(moduleSlug);
+
+  const lessons = module?.lessons || [];
+  const done = lessons.filter((l) => isLessonCompleted(l.id)).length;
+  const pct = lessons.length > 0 ? Math.round((done / lessons.length) * 100) : 0;
+  const isLoggedIn = !!session;
+  const isComplete = lessons.length > 0 && done === lessons.length;
+  const nextLesson = lessons.find((l) => !isLessonCompleted(l.id)) || lessons[0];
+
+  // Find next module (first lesson of next module in the same level)
+  const nextModule = (() => {
+    if (!module?.levelId) return null;
+    const level = content?.find((lvl) => lvl.id === module.levelId);
+    if (!level) return null;
+    const modIdx = level.modules.findIndex((m) => m.id === module.id);
+    if (modIdx === -1 || modIdx === level.modules.length - 1) return null;
+    const nextMod = level.modules[modIdx + 1];
+    if (!nextMod || !nextMod.isPublished) return null;
+    return nextMod;
+  })();
+
+  // Show toast when module completes
+  useEffect(() => {
+    if (module && module.isPublished && isComplete && isLoggedIn) {
+      showSuccess("Module complete! Great work.");
+    }
+  }, [module, isComplete, isLoggedIn]);
 
   if (!module) {
     return (
@@ -33,13 +61,6 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
       </div>
     );
   }
-
-  const lessons = module.lessons || [];
-  const done = lessons.filter((l) => isLessonCompleted(l.id)).length;
-  const pct = lessons.length > 0 ? Math.round((done / lessons.length) * 100) : 0;
-  const isLoggedIn = !!session;
-  const isComplete = lessons.length > 0 && done === lessons.length;
-  const nextLesson = lessons.find((l) => !isLessonCompleted(l.id)) || lessons[0];
 
   return (
     <div>
@@ -73,12 +94,58 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
             </CTAButton>
           )}
           {isLoggedIn && isComplete && (
-            <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent-foreground px-3 py-1.5 text-[11px] font-semibold">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Module complete — nice work
-            </span>
+            <div className="mt-4 flex items-center gap-3">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-accent/20 border border-accent/30 text-accent-foreground px-3 py-1.5 text-[11px] font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Module complete — nice work
+              </span>
+              {nextModule && (
+                <Link
+                  href={`/modules/${nextModule.slug}/${nextModule.lessons[0]?.slug || ""}`}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-primary text-primary-foreground px-3 py-1.5 text-[11px] font-semibold hover:bg-primary/90 transition-colors"
+                >
+                  Go to next module <ArrowRight className="w-3 h-3" />
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </div>
+
+      {/* Lesson list */}
+      {lessons.length > 0 && (
+        <div className="max-w-2xl mx-auto px-5 sm:px-10 py-8 sm:py-10">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-4">Lessons in this module</h3>
+          <div className="space-y-2">
+            {lessons.map((lesson, i) => {
+              const lessonDone = isLessonCompleted(lesson.id);
+              const isCurrent = lesson.id === (lessons.find((l) => !isLessonCompleted(l.id))?.id || lessons[0]?.id);
+              return (
+                <Link
+                  key={lesson.id}
+                  href={`/modules/${module.slug}/${lesson.slug}`}
+                  className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:border-primary/20 hover:bg-card/70 ${
+                    lessonDone
+                      ? "border-border/30 bg-card/30 opacity-60"
+                      : isCurrent
+                        ? "border-primary/25 bg-primary/[0.04] ring-1 ring-primary/10"
+                        : "border-border/20 bg-card/40"
+                  }`}
+                >
+                  <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${
+                    lessonDone ? "bg-accent/20 text-accent-foreground" : "bg-primary/10 text-primary"
+                  }`}>
+                    {lessonDone ? <CheckCircle2 className="w-3.5 h-3.5" /> : i + 1}
+                  </span>
+                  <span className="text-sm text-foreground/80 flex-1 min-w-0 truncate">{lesson.title}</span>
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground/60 shrink-0">
+                    {lessonDone ? "Done" : isCurrent ? "Next up" : "Locked"}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Wrap-Up Video */}
       {module.wrapUpVideoUrl && (

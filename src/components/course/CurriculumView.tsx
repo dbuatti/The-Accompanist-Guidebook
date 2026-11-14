@@ -19,6 +19,15 @@ export default function CurriculumView() {
   const totalModules = content.reduce((sum, lvl) => sum + lvl.modules.length, 0);
   const totalLessons = content.reduce((sum, lvl) => sum + lvl.modules.reduce((s, mod) => s + mod.lessons.length, 0), 0);
 
+  const completedCount = isLoggedIn
+    ? content.reduce(
+        (sum, lvl) =>
+          sum + lvl.modules.reduce((s, mod) => s + mod.lessons.filter((l) => isLessonCompleted(l.id)).length, 0),
+        0,
+      )
+    : 0;
+  const overallPct = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
   const continueLesson = (() => {
     if (!isLoggedIn) return null;
     for (const level of content) {
@@ -49,6 +58,14 @@ export default function CurriculumView() {
             <p className="text-xs sm:text-sm text-muted-foreground/70">
               {totalModules} modules spanning {totalLessons} lessons
             </p>
+
+          {isLoggedIn && (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground/60 mt-2">
+              <span className="text-accent-bright">{totalLessons} lessons</span>
+              <span className="ml-2">·</span>
+              <span className="text-primary">{overallPct}% complete</span>
+            </div>
+          )}
         </div>
       </div>
 

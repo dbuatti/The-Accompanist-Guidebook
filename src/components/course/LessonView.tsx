@@ -9,7 +9,7 @@ import { formatModuleTitle } from "@/lib/utils";
 import { saveVideoProgress } from "@/app/actions";
 
 export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: string; lessonSlug: string }) {
-  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session, progressData } = useCourse();
+  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session, progressData, content } = useCourse();
   const module = getModule(moduleSlug);
   const lesson = getLesson(moduleSlug, lessonSlug);
   const { prev, next } = getAdjacentLesson(moduleSlug, lessonSlug);
@@ -80,6 +80,45 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           )}
         </div>
       </div>
+
+      {/* --- COMPACT SIDEBAR: Level → Module → Lessons --- */}
+      <div className="max-w-4xl mx-auto px-5 sm:px-10 pt-6">
+        <div className="rounded-xl bg-card/50 border border-border/60 p-4 sm:p-6">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
+              {formatModuleTitle(module)}
+            </span>
+            <span className="text-[10px] text-muted-foreground/60">
+              Lesson {lessonIndex + 1} of {lessons.length}
+            </span>
+          </div>
+          <div className="h-1 rounded-full bg-primary/10 overflow-hidden">
+            <div className="h-full bg-primary transition-all duration-500" style={{ width: `${modulePct}%` }} />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {lessons.map((l, i) => {
+              const done = isLessonCompleted(l.id);
+              const isCurrent = l.id === lesson.id;
+              return (
+                <Link
+                  key={l.id}
+                  href={`/modules/${module.slug}/${l.slug}`}
+                  className={`text-[10px] px-2 py-1 rounded-md transition-colors ${
+                    done
+                      ? "bg-accent/20 text-accent-foreground"
+                      : isCurrent
+                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
+                        : "bg-card/60 text-muted-foreground/60 hover:bg-card/80"
+                  }`}
+                >
+                  {i + 1}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+      {/* --- END SIDEBAR --- */}
 
       {/* Body */}
       <div className="max-w-4xl mx-auto px-5 sm:px-10 py-8 sm:py-12">
