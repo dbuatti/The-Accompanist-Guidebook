@@ -101,6 +101,23 @@ export default function CurriculumView() {
             </Link>
           </div>
         ) : null}
+        {hasStarted && !continueLesson && totalLessons > 0 ? (
+          <a
+            href="https://pianobackings.danielebuatti.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-4 rounded-2xl border border-border/40 bg-card/60 hover:bg-card transition-colors p-5 mt-3 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+          >
+            <div className="flex-1 min-w-0">
+              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">Next step</span>
+              <p className="text-base font-serif font-semibold text-primary mt-1">Practise your audition song with a real piano track</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                I&apos;ll record a custom backing of your cut, in your key, the way it&apos;ll be played in the room. Piano Backings by Daniele.
+              </p>
+            </div>
+            <ArrowRight className="w-4 h-4 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
+          </a>
+        ) : null}
       </div>
 
       <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-10 sm:pb-14 pt-8 sm:pt-4 space-y-12 sm:space-y-14">

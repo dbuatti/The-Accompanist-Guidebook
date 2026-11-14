@@ -553,7 +553,7 @@ export default async function Home() {
         {/* Footer */}
         <footer className="w-full border-t border-border/40 bg-card/40 pb-10 pt-12">
           <div className="max-w-5xl mx-auto px-6">
-            <div className="grid sm:grid-cols-[1fr_auto_auto] gap-8 sm:gap-12 items-start mb-10">
+            <div className="grid sm:grid-cols-[1fr_auto_auto_auto] gap-8 sm:gap-12 items-start mb-10">
               <div>
                 <Link href="/" className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
@@ -583,6 +583,14 @@ export default async function Home() {
                   <li><a href={`mailto:${SUPPORT_EMAIL}`} className="text-foreground/70 hover:text-primary transition-colors">Contact &amp; refunds</a></li>
                   <li><Link href="/privacy" className="text-foreground/70 hover:text-primary transition-colors">Privacy policy</Link></li>
                   <li><Link href="/terms" className="text-foreground/70 hover:text-primary transition-colors">Terms</Link></li>
+                </ul>
+              </div>
+              <div className="text-left sm:text-right">
+                <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60 mb-3">More from Daniele</p>
+                <ul className="space-y-2 text-sm">
+                  <li><a href="https://pianobackings.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">Custom audition backing tracks</a></li>
+                  <li><a href="https://www.danielebuatti.com/coaching" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">1:1 coaching</a></li>
+                  <li><a href="https://www.danielebuatti.com" target="_blank" rel="noopener noreferrer" className="text-foreground/70 hover:text-primary transition-colors">danielebuatti.com</a></li>
                 </ul>
               </div>
             </div>
