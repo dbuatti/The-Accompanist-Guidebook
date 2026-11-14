@@ -69,25 +69,19 @@ export async function getCourseContent() {
     const user = await getCurrentUser();
     const isAdmin = ADMIN_EMAILS.includes((user?.email || "").toLowerCase());
 
-    let isPaid = false;
-    if (user) {
-      const dbUser = await db.select().from(users).where(eq(users.id, user.id));
-      isPaid = dbUser.length > 0 && dbUser[0].isPaid === true;
-    }
-
-    const allLevels = await db.select().from(levels).orderBy(asc(levels.displayOrder));
-    const allModules = await db.select().from(modules).orderBy(asc(modules.displayOrder));
-
-    let allLessons;
-    if (isAdmin) {
-      allLessons = await db.select().from(lessons).orderBy(asc(lessons.displayOrder));
-    } else {
-      allLessons = await db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder));
-    }
+    // Run the queries together rather than one after another.
+    const [dbUser, allLevels, allModules, allLessons, allResources] = await Promise.all([
+      user ? db.select().from(users).where(eq(users.id, user.id)) : Promise.resolve([]),
+      db.select().from(levels).orderBy(asc(levels.displayOrder)),
+      db.select().from(modules).orderBy(asc(modules.displayOrder)),
+      isAdmin
+        ? db.select().from(lessons).orderBy(asc(lessons.displayOrder))
+        : db.select().from(lessons).where(eq(lessons.isPublished, true)).orderBy(asc(lessons.displayOrder)),
+      db.select().from(resources).orderBy(asc(resources.displayOrder)),
+    ]);
+    const isPaid = dbUser.length > 0 && dbUser[0].isPaid === true;
 
     if (!isAdmin && !isPaid) return [];
-
-    const allResources = await db.select().from(resources).orderBy(asc(resources.displayOrder));
 
     const resourceMap = new Map<string, (typeof resources.$inferSelect)[]>();
     for (const r of allResources) {

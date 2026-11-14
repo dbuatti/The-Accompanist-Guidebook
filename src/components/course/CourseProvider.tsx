@@ -77,6 +77,10 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
 
   const fetchData = useCallback(async () => {
     try {
+      // Start loading the course content straight away, in parallel with the
+      // progress/paid checks, instead of waiting for them (saves a round trip).
+      const contentPromise = getCourseContent();
+      let refetchContent = false;
       let paid = false;
       if (session?.user?.id) {
         const [progress, p] = await Promise.all([getProgress(), getPaidStatus()]);
@@ -89,9 +93,11 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
         if (v.isPaid) {
           setIsPaid(true);
           paid = true;
+          // Content was requested before the purchase was applied; fetch again.
+          refetchContent = true;
         }
       }
-      const data = await getCourseContent();
+      const data = refetchContent ? await getCourseContent() : await contentPromise;
       setContent(data);
     } catch {
       showError("Failed to load content");
