@@ -133,7 +133,8 @@ const VideoPlayer = ({ url, onComplete, initialTime = 0, onProgress }: VideoPlay
         ref={iframeRef}
         id={playerDomId}
         src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&rel=0&modestbranding=1&playsinline=1${startAt ? `&start=${startAt}` : ""}`}
-        title="Lesson video"
+        title="YouTube video player — lesson video"
+        aria-label="Lesson video player"
         className="absolute inset-0 w-full h-full"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
         allowFullScreen

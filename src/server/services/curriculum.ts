@@ -81,7 +81,15 @@ export async function getCourseContent() {
     ]);
     const isPaid = dbUser.length > 0 && dbUser[0].isPaid === true;
 
-    if (!isAdmin && !isPaid) return [];
+    // Non-paid, non-admin users: if logged in, they see nothing (must purchase).
+    // Anonymous visitors (no session) see published modules + published lessons only (B3 fix).
+    if (!isAdmin && !isPaid) {
+      if (!user) {
+        // Anonymous: fall through, allLessons already filtered to published only above.
+      } else {
+        return [];
+      }
+    }
 
     const resourceMap = new Map<string, (typeof resources.$inferSelect)[]>();
     for (const r of allResources) {

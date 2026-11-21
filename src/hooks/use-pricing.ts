@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getCoursePriceAction } from "@/app/actions/pricing";
+import { getCoursePriceAction } from "@/app/actions";
 import { COURSE_PRICE_DISPLAY } from "@/lib/constants";
 
 // Shows the live Stripe price once it loads; falls back to the configured

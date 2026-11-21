@@ -40,7 +40,7 @@ describe("VideoPlayer", () => {
       <VideoPlayer url="https://www.youtube.com/watch?v=dQw4w9WgXcQ" onComplete={vi.fn()} />,
     );
 
-    const frame = screen.getByTitle("Lesson video") as HTMLIFrameElement;
+    const frame = screen.getByTitle("YouTube video player — lesson video") as HTMLIFrameElement;
     expect(frame).toBeInTheDocument();
     expect(frame.src).toContain("/embed/dQw4w9WgXcQ");
     expect(frame.src).toContain("enablejsapi=1");
@@ -57,7 +57,7 @@ describe("VideoPlayer", () => {
       />,
     );
 
-    const frame = screen.getByTitle("Lesson video") as HTMLIFrameElement;
+    const frame = screen.getByTitle("YouTube video player — lesson video") as HTMLIFrameElement;
     expect(frame.src).toContain("start=90");
   });
 
@@ -67,7 +67,7 @@ describe("VideoPlayer", () => {
     expect(
       screen.getByText("This video isn't available right now."),
     ).toBeInTheDocument();
-    expect(screen.queryByTitle("Lesson video")).not.toBeInTheDocument();
+    expect(screen.queryByTitle("YouTube video player — lesson video")).not.toBeInTheDocument();
   });
 
   it("fires onComplete when the player emits ENDED", async () => {

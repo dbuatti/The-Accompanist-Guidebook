@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Audition Guidebook</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="popup">
+    <div class="header">
+      <div class="brand">
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h1a2 2 0 0 1 2 2v6Z"/></svg>
+        <span>The Audition Guidebook</span>
+      </div>
+    </div>
+
+    <div class="body">
+      <p class="tagline">Your audition-prep companion.</p>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="openCourse">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          Open course
+        </button>
+        <button class="btn btn-outline" id="viewProgress">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          My progress
+        </button>
+      </div>
+
+      <div class="shortcuts">
+        <p class="shortcut-label">Keyboard shortcuts (on course pages)</p>
+        <div class="shortcut">
+          <kbd>Alt</kbd> + <kbd>M</kbd>
+          <span>Open course</span>
+        </div>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="footer">
+      <span class="version">v1.0.0</span>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

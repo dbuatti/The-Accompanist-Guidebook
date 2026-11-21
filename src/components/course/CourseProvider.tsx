@@ -14,6 +14,7 @@ import {
   verifyAndApplyPurchase,
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
+import { analytics } from "@/lib/analytics";
 import { formatModuleTitle } from "@/lib/utils";
 import type { CourseLevel, CourseProgress, CourseModule, CourseLesson } from "@/lib/types";
 
@@ -71,8 +72,20 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
 
   const isAdmin = !!(session?.user?.email && ADMIN_EMAILS.includes(session.user.email.toLowerCase()));
 
+  // Ensure the user row exists before any progress write (fixes B4: new sign-ups
+  // couldn't save progress because of a FK failure on progress.user_id).
   useEffect(() => {
-    if (session?.user) ensureUserExists();
+    let mounted = true;
+    (async () => {
+      if (session?.user) {
+        await ensureUserExists();
+        if (!mounted) return;
+        analytics.event("signup", { userId: session.user.id, email: session.user.email });
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
   }, [session]);
 
   const fetchData = useCallback(async () => {
@@ -93,6 +106,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
         if (v.isPaid) {
           setIsPaid(true);
           paid = true;
+          analytics.event("purchase_applied", { userId: session.user.id });
           // Content was requested before the purchase was applied; fetch again.
           refetchContent = true;
         }
@@ -144,6 +158,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       const result = await verifyAndApplyPurchase(sessionIdFromUrl || readPendingSession());
       if (result.isPaid) {
         setIsPaid(true);
+        analytics.event("purchase_applied", { userId: session?.user?.id });
         showSuccess("Course unlocked, welcome aboard!");
       } else {
         showError("We couldn't verify your payment yet. It usually appears within a minute, try again shortly.");
@@ -163,6 +178,7 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
       await toggleLessonProgress(lessonId);
       setProgressData(await getProgress());
       showSuccess("Progress updated!");
+      analytics.event("lesson_complete", { lessonId });
     } catch {
       showError("Failed to update progress");
     }

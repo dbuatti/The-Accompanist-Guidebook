@@ -1,0 +1,28 @@
+{
+  "name": "The Audition Guidebook",
+  "short_name": "Audition Guidebook",
+  "description": "A video course for musical theatre performers. Choose your songs, cut and prepare your music, deliver tempo, and collaborate with the pianist and panel like a pro. Taught from the accompanist's bench.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e3a8a",
+  "orientation": "portrait",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/icon",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/opengraph-image",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["education", "music", "lifestyle"],
+  "lang": "en-AU",
+  "dir": "ltr"
+}

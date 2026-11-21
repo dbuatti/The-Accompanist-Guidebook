@@ -1,13 +1,25 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { Music, Feather, LogOut, Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useCourse } from "@/components/course/CourseProvider";
 import CurriculumView from "@/components/course/CurriculumView";
 import { SITE_NAME } from "@/lib/constants";
 
 export default function ModulesPage() {
-  const { session, isAdmin, logout } = useCourse();
+  const { session, isAdmin, isPaid, isLoading, logout } = useCourse();
+  const router = useRouter();
+
+  // Non-paid, non-admin learners hit the paywall on /welcome instead of the course.
+  // Wait until isPaid is determined (not just initial false) before redirecting.
+  useEffect(() => {
+    if (isLoading || !session) return;
+    if (!isAdmin && !isPaid) {
+      router.replace("/welcome");
+    }
+  }, [session, isAdmin, isPaid, isLoading, router]);
 
   return (
     <div className="min-h-dvh bg-background">

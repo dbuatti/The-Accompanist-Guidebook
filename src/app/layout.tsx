@@ -7,6 +7,7 @@ import Providers from "./providers";
 import { NeonAuthUIProvider } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
 import { SITE_NAME } from "@/lib/constants";
+import AnalyticsTracker from "@/components/AnalyticsTracker";
 import type { ComponentProps } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -20,7 +21,8 @@ export const metadata: Metadata = {
     default: SITE_NAME,
     template: `%s | ${SITE_NAME}`,
   },
-  description: "A video course for musical theatre performers. Choose and prepare your songs, set your tempo, and collaborate with the audition pianist and panel with confidence. Taught from the accompanist's bench.",
+  description:
+    "A video course for musical theatre performers. Choose and prepare your songs, set your tempo, and collaborate with the audition pianist and panel with confidence. Taught from the accompanist's bench.",
   keywords: ["musical theatre", "audition", "vocal", "singer", "accompanist", "pianist", "music director", "online course"],
   openGraph: {
     type: "website",
@@ -50,9 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en-AU" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        {/* The Neon Auth UI provider expects the core better-auth client type, but
-            @neondatabase/auth/next returns its Next.js adapter. The SDK (beta) does not
-            reconcile these, so bridge them without widening to `any`. */}
+        <link rel="manifest" href="/manifest.json" />
         <NeonAuthUIProvider
           authClient={authClient as unknown as ComponentProps<typeof NeonAuthUIProvider>["authClient"]}
           defaultTheme="light"
@@ -63,6 +63,7 @@ export default function RootLayout({
             <TooltipProvider>
               {children}
               <Sonner position="top-center" />
+              <AnalyticsTracker />
             </TooltipProvider>
           </Providers>
         </NeonAuthUIProvider>

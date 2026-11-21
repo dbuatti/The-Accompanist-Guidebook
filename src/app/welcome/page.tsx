@@ -25,6 +25,7 @@ import {
   getPaidStatus,
   verifyAndApplyPurchase,
   ensureUserExists,
+  getCoursePriceAction,
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { formatModuleTitle } from "@/lib/utils";

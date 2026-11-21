@@ -12,6 +12,7 @@ import { requireAdmin } from "@/lib/auth";
 import { parseUuid, parse, text } from "@/lib/validation";
 import { dedupeSlug, uniqueModuleSlug } from "@/server/services/slugs";
 import { slugify } from "@/lib/utils";
+import { getCoursePrice } from "@/lib/pricing";
 
 import * as usersService from "@/server/services/users";
 import * as progressService from "@/server/services/progress";
@@ -36,6 +37,7 @@ export async function toggleLessonProgress(lessonId: string) { return progressSe
 
 // --- Purchases ---
 export async function verifyAndApplyPurchase(sessionId?: string | null) { return purchasesService.verifyAndApplyPurchase(sessionId); }
+export async function getCoursePriceAction() { return getCoursePrice(); }
 
 // --- Welcome content ---
 export async function getWelcomeContent() { return welcomeService.getWelcomeContent(); }
