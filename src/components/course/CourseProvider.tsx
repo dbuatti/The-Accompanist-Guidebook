@@ -78,9 +78,11 @@ export function CourseProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     (async () => {
       if (session?.user) {
-        await ensureUserExists();
+        const created = await ensureUserExists();
         if (!mounted) return;
-        analytics.event("signup", { userId: session.user.id, email: session.user.email });
+        // Fire only for a genuinely new account, and never send the email
+        // address to analytics.
+        if (created) analytics.event("signup", { userId: session.user.id });
       }
     })();
     return () => {

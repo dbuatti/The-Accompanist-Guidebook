@@ -6,7 +6,7 @@ const openCourseBtn = document.getElementById("openCourse");
 const viewProgressBtn = document.getElementById("viewProgress");
 const statusEl = document.getElementById("status");
 
-const COURSE_URL = "https://theauditionguidebook.vercel.app/modules";
+const COURSE_URL = "https://www.theauditionguidebook.com/modules";
 
 function setStatus(message, type = "info") {
   statusEl.textContent = message;
@@ -37,7 +37,7 @@ viewProgressBtn.addEventListener("click", () => {
 });
 
 // Check if user is logged in by probing the course URL
-chrome.tabs.query({ url: ["https://theauditionguidebook.vercel.app/modules*"] }, (tabs) => {
+chrome.tabs.query({ url: ["https://www.theauditionguidebook.com/modules*"] }, (tabs) => {
   if (tabs.length > 0) {
     setStatus("Course tab is open", "success");
   }

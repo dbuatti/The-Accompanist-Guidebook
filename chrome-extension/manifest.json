@@ -9,6 +9,8 @@
     "alarms"
   ],
   "host_permissions": [
+    "https://www.theauditionguidebook.com/*",
+    "https://theauditionguidebook.com/*",
     "https://theauditionguidebook.vercel.app/*",
     "http://localhost:3000/*"
   ],
@@ -23,6 +25,8 @@
   "content_scripts": [
     {
       "matches": [
+        "https://www.theauditionguidebook.com/modules*",
+        "https://theauditionguidebook.com/modules*",
         "https://theauditionguidebook.vercel.app/modules*",
         "http://localhost:3000/modules*"
       ],

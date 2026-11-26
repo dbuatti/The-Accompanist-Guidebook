@@ -7,7 +7,7 @@
  *  - Quick navigation to the course
  */
 
-const COURSE_URL = "https://theauditionguidebook.vercel.app/modules";
+const COURSE_URL = "https://www.theauditionguidebook.com/modules";
 
 // --- Daily reminder alarm (fires at 9am Melbourne time) ---
 chrome.alarms.onAlarm.addListener((alarm) => {

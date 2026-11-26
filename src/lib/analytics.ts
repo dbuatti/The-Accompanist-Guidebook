@@ -3,22 +3,30 @@
  *
  * Sends page-view and custom events to a self-hosted /api/analytics endpoint
  * (or to a Plausible/Google Analytics endpoint if configured). All events are
- * fire-and-forget: failures never block the UI. No cookies, no personal data,
- * no IP logging — just anonymous event counts.
+ * fire-and-forget: failures never block the UI. No cookies, no email addresses
+ * or payment details, no IP logging — just event counts with opaque user ids.
  */
 
 const ENDPOINT = "/api/analytics";
 let queue: { name: string; props?: Record<string, unknown> }[] = [];
-let flushed = false;
+let scheduled = false;
 
 function flushQueue() {
-  if (flushed || typeof window === "undefined") return;
-  flushed = true;
+  if (typeof window === "undefined" || queue.length === 0) return;
   const pending = queue.slice();
   queue = [];
-  if (pending.length) {
-    void sendBatch(pending);
-  }
+  void sendBatch(pending);
+}
+
+function scheduleFlush() {
+  if (scheduled || typeof window === "undefined") return;
+  scheduled = true;
+  const run = () => {
+    scheduled = false;
+    flushQueue();
+  };
+  if (typeof requestIdleCallback === "function") requestIdleCallback(run, { timeout: 2000 });
+  else setTimeout(run, 2000);
 }
 
 async function sendBatch(events: { name: string; props?: Record<string, unknown> }[]) {
@@ -55,14 +63,10 @@ function track(name: string, props?: Record<string, unknown>) {
   }
 
   queue.push(event);
-  // Debounce: flush on next idle tick, max ~10 events per batch.
-  if (queue.length >= 10) {
-    const batch = queue.slice();
-    queue = [];
-    void sendBatch(batch);
-  } else if (!flushed) {
-    void (requestIdleCallback?.(flushQueue, { timeout: 2000 }) || setTimeout(flushQueue, 2000));
-  }
+  // Debounce: flush on the next idle tick, or immediately at ~10 events.
+  // Scheduling must work for every batch, not only the first one.
+  if (queue.length >= 10) flushQueue();
+  else scheduleFlush();
 }
 
 /** Capture an uncaught error for reporting. */

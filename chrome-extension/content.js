@@ -7,7 +7,7 @@
  *  - Quick navigation hints
  */
 
-const COURSE_BASE = "https://theauditionguidebook.vercel.app";
+const COURSE_BASE = "https://www.theauditionguidebook.com";
 
 let progressBadge = null;
 

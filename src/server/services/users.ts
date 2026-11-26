@@ -9,7 +9,8 @@ import { requireUser, requireAdmin } from "@/lib/auth";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { parseUuid, parse, optionalText } from "@/lib/validation";
 
-export async function ensureUserExists() {
+/** Returns true only when a brand-new user row was created. */
+export async function ensureUserExists(): Promise<boolean> {
   try {
     const user = await requireUser();
     const existing = await db.select().from(users).where(eq(users.id, user.id));
@@ -21,10 +22,12 @@ export async function ensureUserExists() {
         name: user.name || null,
         role,
       });
+      return true;
     }
   } catch (error) {
     logger.error("Error ensuring user exists:", serializeError(error));
   }
+  return false;
 }
 
 export async function getAllUsers() {
