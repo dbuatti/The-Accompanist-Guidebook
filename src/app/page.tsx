@@ -208,11 +208,11 @@ export default async function Home() {
         <section className="w-full mt-16 sm:mt-20 bg-gradient-to-b from-periwinkle/35 via-periwinkle/25 to-transparent py-16 sm:py-24">
           <div className="max-w-4xl mx-auto px-6">
             <Reveal>
-              <div className="flex items-center gap-3 justify-center mb-12">
+              <h2 className="flex items-center gap-3 justify-center mb-12">
                 <span className="h-px w-10 bg-gradient-to-r from-transparent to-accent-bright/60" />
                 <span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-accent-bright">What you&apos;ll master</span>
                 <span className="h-px w-10 bg-gradient-to-l from-transparent to-accent-bright/60" />
-              </div>
+              </h2>
             </Reveal>
             <div className="grid sm:grid-cols-3 gap-5">
               {[
@@ -270,8 +270,8 @@ export default async function Home() {
                 <Reveal key={item.n} delay={i * 90}>
                   <div className="group h-full p-6 rounded-2xl border border-white/10 bg-white/[0.04] hover:border-white/25 hover:bg-white/[0.07] hover:-translate-y-1 transition-all duration-200">
                     <div className="flex items-center gap-2 mb-4">
-                      <Layers className="w-3.5 h-3.5 text-accent/80" />
-                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent/80">Level {item.n}</span>
+                      <Layers className="w-3.5 h-3.5 text-accent" />
+                      <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent">Level {item.n}</span>
                     </div>
                     <h3 className="text-base font-serif font-semibold text-primary-foreground mb-1.5">{item.name}</h3>
                     <p className="text-xs text-primary-foreground/70 leading-relaxed">{item.desc}</p>
