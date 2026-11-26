@@ -8,6 +8,7 @@ import { NeonAuthUIProvider } from "@neondatabase/auth/react";
 import { authClient } from "@/lib/auth/client";
 import { SITE_NAME } from "@/lib/constants";
 import AnalyticsTracker from "@/components/AnalyticsTracker";
+import { Analytics } from "@vercel/analytics/next";
 import type { ComponentProps } from "react";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
@@ -64,6 +65,7 @@ export default function RootLayout({
               {children}
               <Sonner position="top-center" />
               <AnalyticsTracker />
+              <Analytics />
             </TooltipProvider>
           </Providers>
         </NeonAuthUIProvider>
