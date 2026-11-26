@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { GoogleGenAI } from "@google/genai";
 import { getErrorMessage } from "@/lib/errors";
 import { requireAdmin } from "@/lib/auth";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { parseUuid, parse, text } from "@/lib/validation";
 import { dedupeSlug, uniqueModuleSlug } from "@/server/services/slugs";
 import { slugify } from "@/lib/utils";
@@ -74,7 +75,13 @@ export async function mergeDuplicateLessons() { return curriculumService.mergeDu
 // --- Content generation (Gemini + one-click scaffold/sync/restructure) ---
 // --- Gemini AI Generation Action ---
 export async function generateLessonNotes(lessonId: string, templateType: string = "standard") {
-  await requireAdmin();
+  const admin = await requireAdmin();
+  // Each call bills the Gemini API key. Cap repeats per admin so an accidental
+  // double-click or a stuck client can't run up a surprise bill.
+  const rate = checkRateLimit(`gemini:${admin.id}`, 10, 60_000);
+  if (!rate.allowed) {
+    throw new Error(`Too many generation requests. Please try again in ${rate.retryAfterSeconds} seconds.`);
+  }
   lessonId = parseUuid(lessonId, "lessonId");
   templateType = parse(text(50), templateType);
   try {
