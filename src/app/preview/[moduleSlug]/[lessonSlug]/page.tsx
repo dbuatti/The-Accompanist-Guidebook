@@ -142,7 +142,7 @@ export default async function PreviewPage({ params }: { params: Params }) {
       </main>
 
       <footer className="border-t border-border/40 py-8 mt-10">
-        <p className="text-center text-[11px] text-muted-foreground/70">{COPYRIGHT_LINE}</p>
+        <p className="text-center text-[11px] text-muted-foreground">{COPYRIGHT_LINE}</p>
       </footer>
     </div>
   );

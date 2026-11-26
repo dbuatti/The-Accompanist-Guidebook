@@ -82,6 +82,7 @@ export default function PaywallGate({ hasSession }: { hasSession: boolean }) {
                 The complete curriculum unlocks the moment you purchase. Every module, lesson, and resource is yours to work through at your own pace.
               </p>
 
+              <h2 className="sr-only">What&apos;s included</h2>
               <div className="space-y-4 pt-1">
                 {included.map((item) => (
                   <div key={item.title} className="flex items-start gap-4 p-4 rounded-2xl bg-card border border-border/40">
