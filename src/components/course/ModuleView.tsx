@@ -123,12 +123,12 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
                 <Link
                   key={lesson.id}
                   href={`/modules/${module.slug}/${lesson.slug}`}
-                  className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:border-primary/20 hover:bg-card/70 ${
+                  className={`flex items-center gap-3 p-4 rounded-xl border transition-all hover:border-primary/20 hover:bg-card ${
                     lessonDone
-                      ? "border-border/30 bg-card/30 opacity-60"
+                      ? "border-border/30 bg-card/50 opacity-70"
                       : isCurrent
                         ? "border-primary/25 bg-primary/[0.04] ring-1 ring-primary/10"
-                        : "border-border/20 bg-card/40"
+                        : "border-border/30 bg-card/70"
                   }`}
                 >
                   <span className={`w-6 h-6 rounded-md flex items-center justify-center text-[10px] font-bold shrink-0 ${

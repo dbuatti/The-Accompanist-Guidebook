@@ -28,7 +28,7 @@ export default function ModuleReadingLayout({ children }: { children: React.Reac
 
   return (
     <div className="h-dvh flex flex-col bg-background">
-      <header className="h-14 sm:h-16 border-b border-border/30 flex items-center justify-between px-4 sm:px-6 shrink-0 bg-background/95 backdrop-blur-sm">
+      <header className="h-14 sm:h-16 border-b border-border/30 flex items-center justify-between px-5 sm:px-8 shrink-0 bg-background/95 backdrop-blur-sm">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link
             href="/modules"
@@ -109,7 +109,7 @@ export default function ModuleReadingLayout({ children }: { children: React.Reac
 
       <div className="flex-1 flex overflow-hidden">
         <div className="flex-1 overflow-y-auto">{children}</div>
-        <aside className="hidden lg:flex w-[21rem] border-l border-border/20 shrink-0 flex-col bg-card/20">
+        <aside className="hidden lg:flex w-[21rem] border-l border-border/30 shrink-0 flex-col bg-card/40">
           <CurriculumNav moduleSlug={moduleSlug} currentLessonSlug={currentLessonSlug} />
         </aside>
       </div>
