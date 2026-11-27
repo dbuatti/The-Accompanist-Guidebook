@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Layers, FileText, CheckCircle2, ArrowRight, EyeOff, PartyPopper } from "lucide-react";
+import { FileText, CheckCircle2, ArrowRight, EyeOff, PartyPopper } from "lucide-react";
 import { formatModuleTitle, formatLevelTitle } from "@/lib/utils";
 import { useCourse } from "./CourseProvider";
 import type { CourseLevel, CourseModule, CourseLesson } from "@/lib/types";
@@ -45,104 +45,104 @@ export default function CurriculumView() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="relative border-b border-border/20 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-primary/[0.02] to-transparent" />
-        <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/[0.03] blur-3xl" />
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8 text-center">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 ring-1 ring-primary/10">
-            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight mb-2">
-            Course Curriculum
-          </h1>
-          <p className="text-sm text-muted-foreground/70">
-            {totalModules} modules · {totalLessons} lessons
-          </p>
-
-          {isLoggedIn && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground/60 mt-2">
-              <span className="text-accent-bright">{totalLessons} lessons</span>
-              <span className="ml-2">·</span>
-              <span className="text-primary">{overallPct}% complete</span>
+      <div className="border-b border-border/20">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-primary/70 mb-2">Your course</p>
+              <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">Course Curriculum</h1>
+              <p className="text-sm text-muted-foreground mt-1">
+                {totalModules} modules · {totalLessons} lessons
+              </p>
             </div>
-          )}
+            {isLoggedIn && (
+              <div className="sm:text-right shrink-0">
+                <p className="text-sm font-medium text-primary">{overallPct}% complete</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{completedCount} of {totalLessons} lessons</p>
+                <div className="mt-2 h-1.5 w-full sm:w-40 rounded-full bg-primary/10 overflow-hidden">
+                  <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${overallPct}%` }} />
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-5 sm:px-10 pt-8 sm:pt-10">
-        {hasStarted && continueLesson ? (
-          <Link
-            href={continueLesson.href}
-            className="group flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] hover:bg-accent/[0.1] transition-colors p-5 mb-2 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
-          >
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent-bright">Continue learning</span>
-              <p className="text-base font-serif font-semibold text-primary mt-1 truncate">{continueLesson.title}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{continueLesson.moduleTitle}</p>
-            </div>
-            <ArrowRight className="w-4 h-4 text-accent-bright shrink-0 group-hover:translate-x-0.5 transition-transform" />
-          </Link>
-        ) : hasStarted && totalLessons > 0 ? (
-          <div className="flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] p-5 mb-2">
-            <div className="w-10 h-10 rounded-xl bg-accent-bright/10 flex items-center justify-center shrink-0">
-              <PartyPopper className="w-5 h-5 text-accent-bright" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-base font-serif font-semibold text-primary">You&apos;ve completed the course</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                Every lesson, done. Come back anytime to revisit a module or brush up before your next audition.
-              </p>
-            </div>
+      {hasStarted && totalLessons > 0 && (
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pt-6">
+          {continueLesson ? (
             <Link
-              href="/welcome"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline shrink-0 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-sm"
+              href={continueLesson.href}
+              className="group flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] hover:bg-accent/[0.1] transition-colors p-4 sm:p-5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
-              Welcome page <ArrowRight className="w-3.5 h-3.5" />
+              <div className="flex-1 min-w-0">
+                <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-accent-bright">Continue learning</span>
+                <p className="text-base font-serif font-semibold text-primary mt-1 truncate">{continueLesson.title}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{continueLesson.moduleTitle}</p>
+              </div>
+              <ArrowRight className="w-4 h-4 text-accent-bright shrink-0 group-hover:translate-x-0.5 transition-transform" />
             </Link>
-          </div>
-        ) : null}
-        {hasStarted && !continueLesson && totalLessons > 0 ? (
-          <a
-            href="https://pianobackings.danielebuatti.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-4 rounded-2xl border border-border/40 bg-card/60 hover:bg-card transition-colors p-5 mt-3 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
-          >
-            <div className="flex-1 min-w-0">
-              <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">Next step</span>
-              <p className="text-base font-serif font-semibold text-primary mt-1">Practise your audition song with a real piano track</p>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                I&apos;ll record a custom backing of your cut, in your key, the way it&apos;ll be played in the room. Piano Backings by Daniele.
-              </p>
+          ) : (
+            <div className="space-y-3">
+              <div className="flex items-center gap-4 rounded-2xl border border-accent/25 bg-accent/[0.07] p-4 sm:p-5">
+                <div className="w-10 h-10 rounded-xl bg-accent-bright/10 flex items-center justify-center shrink-0">
+                  <PartyPopper className="w-5 h-5 text-accent-bright" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-base font-serif font-semibold text-primary">You&apos;ve completed the course</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Every lesson, done. Come back anytime to revisit a module or brush up before your next audition.
+                  </p>
+                </div>
+                <Link
+                  href="/welcome"
+                  className="hidden sm:inline-flex items-center gap-1.5 text-sm text-primary font-medium hover:underline shrink-0 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-sm"
+                >
+                  Welcome page <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+              <a
+                href="https://pianobackings.danielebuatti.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-4 rounded-2xl border border-border/40 bg-card/60 hover:bg-card transition-colors p-4 sm:p-5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              >
+                <div className="flex-1 min-w-0">
+                  <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">Next step</span>
+                  <p className="text-base font-serif font-semibold text-primary mt-1">Practise your audition song with a real piano track</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    I&apos;ll record a custom backing of your cut, in your key, the way it&apos;ll be played in the room. Piano Backings by Daniele.
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
+              </a>
             </div>
-            <ArrowRight className="w-4 h-4 text-primary shrink-0 group-hover:translate-x-0.5 transition-transform" />
-          </a>
-        ) : null}
-      </div>
+          )}
+        </div>
+      )}
 
-      <div className="max-w-3xl mx-auto px-5 sm:px-10 pb-10 sm:pb-14 pt-8 sm:pt-4 space-y-12 sm:space-y-14">
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 pb-10 sm:pb-14 pt-6 space-y-8">
         {content.map((level, li) => {
           const accent = LEVEL_ACCENTS[li % LEVEL_ACCENTS.length];
           return (
           <section key={level.id}>
-            <div className="flex items-center gap-4 mb-6">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${accent.badgeBg}`}>
-                <span className={`text-xs font-bold ${accent.badgeText}`}>{li + 1}</span>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`w-7 h-7 rounded-md flex items-center justify-center shrink-0 ${accent.badgeBg}`}>
+                <span className={`text-[11px] font-bold ${accent.badgeText}`}>{li + 1}</span>
               </div>
-              <div>
+              <div className="min-w-0">
                 <span className={`text-[10px] font-bold uppercase tracking-[0.15em] ${accent.label}`}>
                   Level {li + 1}
                 </span>
-                <h2 className="text-xl font-serif font-bold text-primary -mt-0.5">{formatLevelTitle(level.title)}</h2>
+                <h2 className="text-lg sm:text-xl font-serif font-bold text-primary leading-tight">{formatLevelTitle(level.title)}</h2>
               </div>
-              <div className="flex-1 h-px bg-gradient-to-r from-border/40 to-transparent ml-auto max-w-[120px]" />
             </div>
 
-            <div className="space-y-5">
+            <div className="space-y-3">
               {level.modules.map((mod) => {
                 const isHidden = mod.isPublished === false;
                 return (
-                  <div key={mod.id} className="border border-border/20 rounded-2xl bg-card/40 overflow-hidden">
+                  <div key={mod.id} className="border border-border/30 rounded-2xl bg-card/70 overflow-hidden">
                     <div className="flex items-center gap-3 px-5 py-4 border-b border-border/10">
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${accent.numBg}`}>
                         <span className={`text-xs font-bold tabular-nums ${accent.numText}`}>

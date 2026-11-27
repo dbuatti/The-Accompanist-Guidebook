@@ -118,7 +118,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
                   href={res.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-4 p-4 bg-card/40 border border-border/20 rounded-2xl hover:bg-accent/5 hover:border-primary/15 transition-all group"
+                  className="flex items-center gap-4 p-4 bg-card/70 border border-border/30 rounded-2xl hover:bg-card hover:border-primary/15 transition-all group"
                 >
                   <div className="w-10 h-10 rounded-xl bg-primary/8 flex items-center justify-center shrink-0 border border-primary/10">
                     <ExternalLink className="w-4 h-4 text-primary" />
@@ -151,7 +151,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           {prev ? (
             <Link
               href={prev.href}
-              className="group flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="group flex flex-col gap-1 p-5 rounded-2xl border border-border/30 bg-card/70 hover:border-primary/20 hover:bg-card transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70 flex items-center gap-1">
                 <ChevronLeft className="w-3 h-3" /> Previous lesson
@@ -165,7 +165,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           {next ? (
             <Link
               href={next.href}
-              className="group sm:text-right flex flex-col gap-1 p-5 rounded-2xl border border-border/20 bg-card/40 hover:border-primary/20 hover:bg-card/60 transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
+              className="group sm:text-right flex flex-col gap-1 p-5 rounded-2xl border border-border/30 bg-card/70 hover:border-primary/20 hover:bg-card transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
             >
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground/70 flex items-center gap-1 sm:justify-end">
                 Next lesson <ChevronRight className="w-3 h-3" />
