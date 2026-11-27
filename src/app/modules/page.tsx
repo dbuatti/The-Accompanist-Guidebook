@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Music, Feather, LogOut, Settings, Shield } from "lucide-react";
+import { BookOpen, Feather, LogOut, Music, Settings, Shield } from "lucide-react";
 import { useCourse } from "@/components/course/CourseProvider";
 import CurriculumView from "@/components/course/CurriculumView";
 import { SITE_NAME } from "@/lib/constants";
@@ -36,6 +36,12 @@ export default function ModulesPage() {
             >
               <Feather className="w-3.5 h-3.5" /> Welcome
             </Link>
+            <Link
+              href="/modules/resources"
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-foreground/70 hover:text-primary hover:bg-accent/20 transition-colors"
+            >
+              <BookOpen className="w-3.5 h-3.5" /> Resources
+            </Link>
             {session ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -47,6 +53,9 @@ export default function ModulesPage() {
                 <DropdownMenuContent align="end" className="w-48">
                   <DropdownMenuItem asChild>
                     <Link href="/account/settings">Account settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/modules/resources">Tools &amp; resources</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/welcome">Welcome letter</Link>

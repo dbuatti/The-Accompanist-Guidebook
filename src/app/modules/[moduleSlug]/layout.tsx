@@ -81,6 +81,9 @@ export default function ModuleReadingLayout({ children }: { children: React.Reac
                   <Link href="/account/settings">Account settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link href="/modules/resources">Tools &amp; resources</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link href="/modules">All modules</Link>
                 </DropdownMenuItem>
                 {isAdmin && (

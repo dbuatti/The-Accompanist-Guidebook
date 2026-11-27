@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { CheckCircle2, ChevronDown, ChevronRight, Layers, LogOut, Settings, Shield } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronDown, ChevronRight, Layers, LogOut, Settings, Shield } from "lucide-react";
 import { useCourse } from "./CourseProvider";
 import { formatLevelTitle, formatModuleTitle } from "@/lib/utils";
 
@@ -125,6 +125,12 @@ export default function CurriculumNav({
 
       {session && (
         <div className="border-t border-border/20 p-3 space-y-1 shrink-0 bg-background/40">
+          <Link
+            href="/modules/resources"
+            className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-accent/15 transition-colors"
+          >
+            <BookOpen className="w-4 h-4" /> Tools &amp; resources
+          </Link>
           <Link
             href="/account/settings"
             className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-accent/15 transition-colors"
