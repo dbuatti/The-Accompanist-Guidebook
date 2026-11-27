@@ -2,13 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import {
   Loader2,
-  ArrowRight,
-  Music,
-  LogOut,
   CheckCircle2,
   BookOpen,
   Feather,
@@ -28,8 +24,8 @@ import {
 } from "@/app/actions";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { formatModuleTitle } from "@/lib/utils";
-import { SITE_NAME } from "@/lib/constants";
 import { CTAButton, SecondaryButton } from "@/components/CTAButton";
+import CourseHeader from "@/components/course/CourseHeader";
 import type { CourseLevel, CourseProgress } from "@/lib/types";
 
 function readPendingSession(): string | null {
@@ -172,41 +168,16 @@ export default function WelcomePage() {
   const isCourseComplete = totalLessons > 0 && completedLessons === totalLessons;
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden flex flex-col">
-      <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
+    <div className="min-h-screen bg-background flex flex-col">
+      <CourseHeader session={session} isAdmin={isAdmin} onLogout={handleLogout} active="welcome" />
 
-      {/* Nav */}
-      <header className="relative z-20">
-        <div className="max-w-3xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/modules" className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center ring-1 ring-primary/10">
-              <Music size={18} />
-            </div>
-            <span className="font-serif font-bold text-primary text-lg tracking-tight">
-              {SITE_NAME}
-            </span>
-          </Link>
-          <nav className="flex items-center gap-3">
-            <Link href="/modules" className="inline-flex items-center gap-2 text-foreground/70 hover:text-primary text-sm font-medium transition-colors">
-              Course
-            </Link>
-            {session ? (
-              <button onClick={handleLogout} className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary text-sm transition-colors" aria-label="Sign out">
-                <LogOut className="w-4 h-4" />
-              </button>
-            ) : (
-              <Link href="/auth/sign-in" className="inline-flex items-center gap-2 border border-border bg-card/60 hover:border-primary/25 text-foreground/80 px-4 py-2 rounded-lg font-medium text-sm transition-colors">
-                Sign In
-              </Link>
-            )}
-          </nav>
-        </div>
-      </header>
+      <div className="relative overflow-hidden flex-1 flex flex-col">
+        <div className="absolute inset-0 sheet-music-texture pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[700px] rounded-full bg-primary/[0.04] blur-3xl pointer-events-none" />
 
-      <main className="relative z-10 flex-1">
+        <main className="relative z-10 flex-1">
         {/* Hero */}
-        <div className="max-w-3xl mx-auto px-6 pt-12 sm:pt-20 pb-4 text-center">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pt-10 sm:pt-14 pb-4 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/[0.06] border border-primary/10 text-primary text-[11px] font-semibold uppercase tracking-[0.15em]">
             <Feather className="w-3 h-3" />
             Before you begin
@@ -220,8 +191,8 @@ export default function WelcomePage() {
         </div>
 
         {/* Letter */}
-        <div className="max-w-3xl mx-auto px-6 py-10">
-          <div className="relative rounded-3xl border border-border/40 bg-card/70 shadow-sm shadow-primary/[0.03] px-6 sm:px-10 py-10 sm:py-12">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
+          <div className="relative max-w-3xl mx-auto rounded-3xl border border-border/40 bg-card/70 shadow-sm shadow-primary/[0.03] px-6 sm:px-10 py-10 sm:py-12">
             <div className="absolute -top-14 -right-14 w-48 h-48 rounded-full bg-accent/[0.07] blur-3xl pointer-events-none" />
             {welcome?.content ? (
               <MarkdownBody markdown={welcome.content} />
@@ -245,8 +216,8 @@ export default function WelcomePage() {
         </div>
 
         {/* Next step */}
-        <div className="max-w-3xl mx-auto px-6 pb-20">
-          <div className="rounded-3xl border border-accent/25 bg-accent/[0.07] px-8 py-10 text-center">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pb-16 sm:pb-20">
+          <div className="max-w-3xl mx-auto rounded-3xl border border-accent/25 bg-accent/[0.07] px-6 sm:px-8 py-10 text-center">
             {isCourseComplete ? (
               <>
                 <div className="w-12 h-12 rounded-2xl bg-accent-bright/10 flex items-center justify-center mx-auto mb-4">
@@ -302,7 +273,8 @@ export default function WelcomePage() {
             </p>
           </div>
         </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

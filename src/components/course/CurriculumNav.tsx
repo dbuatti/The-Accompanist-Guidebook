@@ -51,7 +51,7 @@ export default function CurriculumNav({
                 const pct = lessons.length > 0 ? Math.round((done / lessons.length) * 100) : 0;
 
                 return (
-                  <div key={module.id} className="rounded-xl border border-border/20 bg-card/20 overflow-hidden">
+                  <div key={module.id} className="rounded-xl border border-border/30 bg-card/50 overflow-hidden">
                     <div className="flex items-start gap-1 p-1.5">
                       <button
                         type="button"
@@ -124,7 +124,7 @@ export default function CurriculumNav({
       </div>
 
       {session && (
-        <div className="border-t border-border/20 p-3 space-y-1 shrink-0 bg-background/40">
+        <div className="border-t border-border/30 p-3 space-y-1 shrink-0 bg-muted/20">
           <Link
             href="/modules/resources"
             className="flex items-center gap-2 px-2.5 py-2 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-accent/15 transition-colors"
