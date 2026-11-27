@@ -78,13 +78,17 @@ export default function ModuleReadingLayout({ children }: { children: React.Reac
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuItem asChild>
-                  <Link href="/account/settings">Account settings</Link>
+                  <Link href="/modules">Curriculum</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href="/modules/resources">Tools &amp; resources</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/modules">All modules</Link>
+                  <Link href="/welcome">Welcome letter</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link href="/account/settings">Account settings</Link>
                 </DropdownMenuItem>
                 {isAdmin && (
                   <DropdownMenuItem asChild>

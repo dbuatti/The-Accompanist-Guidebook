@@ -45,7 +45,7 @@ export default function CurriculumView() {
 
   return (
     <div className="animate-in fade-in duration-500">
-      <div className="border-b border-border/20">
+      <div className="border-b border-border/30">
         <div className="max-w-4xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>

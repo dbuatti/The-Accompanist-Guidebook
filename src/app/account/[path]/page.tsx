@@ -21,6 +21,11 @@ export default function AccountPage() {
     <div className="min-h-screen bg-background">
       <CourseHeader session={session} isAdmin={isAdmin} onLogout={logout} active="account" />
       <main className="max-w-4xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
+        <div className="mb-6">
+          <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-primary/70 mb-2">Account</p>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">Settings</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage your profile, security, and preferences.</p>
+        </div>
         <AccountView path={path} />
       </main>
     </div>
