@@ -53,7 +53,7 @@ export default function ConfirmDialog({
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription className={description ? undefined : "sr-only"}>
-            {description ?? "Please confirm to continue."}
+            {description ?? "Please confirm this action."}
           </DialogDescription>
         </DialogHeader>
 

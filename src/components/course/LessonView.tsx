@@ -35,93 +35,59 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
   return (
     <div>
       {/* Header */}
-      <div className="relative border-b border-border/20">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
-        <div className="relative max-w-4xl mx-auto px-5 sm:px-10 pt-8 sm:pt-12 pb-6 sm:pb-8">
-          <div className="flex items-center gap-1.5 mb-3 text-[11px] text-muted-foreground">
+      <div className="border-b border-border/20 bg-gradient-to-b from-primary/[0.03] to-transparent">
+        <div className="max-w-4xl mx-auto px-5 sm:px-8 pt-5 sm:pt-7 pb-5">
+          <div className="flex items-center gap-1.5 mb-2 text-[11px] text-muted-foreground">
+            <Link href="/modules" className="hover:text-primary transition-colors">Curriculum</Link>
+            <span className="text-muted-foreground/40">/</span>
             <Link
               href={`/modules/${module.slug}`}
-              className="hover:text-primary transition-colors focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none rounded-sm"
+              className="hover:text-primary transition-colors truncate"
             >
               {formatModuleTitle(module)}
             </Link>
-            <span className="text-muted-foreground/40">·</span>
-            <span>
-              Lesson {lessonIndex + 1} of {lessons.length}
-            </span>
+            <span className="text-muted-foreground/40">/</span>
+            <span className="shrink-0">Lesson {lessonIndex + 1} of {lessons.length}</span>
           </div>
-          <h1 className="text-xl sm:text-3xl font-serif font-bold text-primary leading-tight">{lesson.title}</h1>
 
-          {isLoggedIn && lessons.length > 0 && (
-            <div className="mt-5 flex items-center gap-2.5 max-w-sm">
-              <div className="flex-1 h-1.5 rounded-full bg-primary/10 overflow-hidden">
-                <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${modulePct}%` }} />
-              </div>
-              <span className="text-[11px] font-medium text-muted-foreground shrink-0 tabular-nums">
-                {moduleDone}/{lessons.length} in module
-              </span>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-serif font-bold text-primary leading-tight">{lesson.title}</h1>
+              {isLoggedIn && lessons.length > 0 && (
+                <div className="mt-3 flex items-center gap-2.5 max-w-xs">
+                  <div className="flex-1 h-1.5 rounded-full bg-primary/10 overflow-hidden">
+                    <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${modulePct}%` }} />
+                  </div>
+                  <span className="text-[11px] font-medium text-muted-foreground shrink-0 tabular-nums">
+                    {moduleDone}/{lessons.length} complete
+                  </span>
+                </div>
+              )}
             </div>
-          )}
 
-          {isLoggedIn && (
-            <button
-              onClick={() => toggleComplete(lesson.id)}
-              aria-pressed={completed}
-              title={completed ? "Mark this lesson as not complete" : "Mark this lesson as complete"}
-              className={`mt-5 inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
-                completed
-                  ? "bg-accent/20 border-accent/30 text-accent-foreground hover:bg-accent/30"
-                  : "bg-card/70 border-border text-foreground/75 hover:border-primary/30 hover:text-primary"
-              }`}
-            >
-              <CheckCircle2 className={`w-4 h-4 ${completed ? "text-accent-bright" : "text-muted-foreground/60"}`} />
-              {completed ? "Completed" : "Mark lesson complete"}
-            </button>
-          )}
+            {isLoggedIn && (
+              <button
+                onClick={() => toggleComplete(lesson.id)}
+                aria-pressed={completed}
+                title={completed ? "Mark this lesson as not complete" : "Mark this lesson as complete"}
+                className={`shrink-0 inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition-all focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none ${
+                  completed
+                    ? "bg-accent/20 border-accent/30 text-accent-foreground hover:bg-accent/30"
+                    : "bg-card/70 border-border text-foreground/75 hover:border-primary/30 hover:text-primary"
+                }`}
+              >
+                <CheckCircle2 className={`w-4 h-4 ${completed ? "text-accent-bright" : "text-muted-foreground/60"}`} />
+                {completed ? "Completed" : "Mark complete"}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* --- COMPACT SIDEBAR: Level → Module → Lessons --- */}
-      <div className="max-w-4xl mx-auto px-5 sm:px-10 pt-6">
-        <div className="rounded-xl bg-card/50 border border-border/60 p-4 sm:p-6">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] font-bold uppercase tracking-[0.15em] text-primary">
-              {formatModuleTitle(module)}
-            </span>
-            <span className="text-[10px] text-muted-foreground/60">
-              Lesson {lessonIndex + 1} of {lessons.length}
-            </span>
-          </div>
-          <div className="h-1 rounded-full bg-primary/10 overflow-hidden">
-            <div className="h-full bg-primary transition-all duration-500" style={{ width: `${modulePct}%` }} />
-          </div>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {lessons.map((l, i) => {
-              const done = isLessonCompleted(l.id);
-              const isCurrent = l.id === lesson.id;
-              return (
-                <Link
-                  key={l.id}
-                  href={`/modules/${module.slug}/${l.slug}`}
-                  className={`text-[10px] px-2 py-1 rounded-md transition-colors ${
-                    done
-                      ? "bg-accent/20 text-accent-foreground"
-                      : isCurrent
-                        ? "bg-primary/10 text-primary ring-1 ring-primary/20"
-                        : "bg-card/60 text-muted-foreground/60 hover:bg-card/80"
-                  }`}
-                >
-                  {i + 1}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-      {/* --- END SIDEBAR --- */}
+
 
       {/* Body */}
-      <div className="max-w-4xl mx-auto px-5 sm:px-10 py-8 sm:py-12">
+      <div className="max-w-4xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
         {/* Video */}
         {lesson.videoUrl && (
           <div className="mb-10 rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
@@ -219,7 +185,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
           )}
         </div>
 
-        <div className="mt-16 text-center">
+        <div className="mt-10 text-center">
           <p className="text-[11px] text-muted-foreground/60 uppercase tracking-widest">End of lesson</p>
         </div>
       </div>

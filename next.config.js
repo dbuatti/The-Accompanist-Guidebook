@@ -7,8 +7,10 @@ const isDev = process.env.NODE_ENV === "development";
 // 1. ENFORCED, CACHEABLE baseline (below, via next.config headers). Cache-safe
 //    because it contains no per-request nonce, so it costs nothing on the CDN.
 //    `script-src` keeps 'unsafe-inline' because Next 14 App Router emits inline
-//    hydration/flight scripts that a no-nonce policy would otherwise block, but
-//    every other directive is locked down and remote scripts are restricted to
+//    hydration/flight scripts that a no-nonce policy would otherwise block. In
+//    development it also allows 'unsafe-eval' for Next's React Refresh runtime;
+//    production keeps it disabled. Every other directive is locked down and
+//    remote scripts are restricted to
 //    the two YouTube origins the video player needs.
 //
 // 2. REPORT-ONLY strict nonce policy (nonce + 'strict-dynamic', the strategy
@@ -24,7 +26,7 @@ const cspHeader = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""} https://www.youtube.com https://s.ytimg.com`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",

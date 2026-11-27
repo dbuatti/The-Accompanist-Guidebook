@@ -67,16 +67,16 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
       {/* Hero header */}
       <div className="relative border-b border-border/20">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.04] via-primary/[0.02] to-transparent" />
-        <div className="relative max-w-2xl mx-auto px-5 sm:px-10 pt-12 sm:pt-20 pb-10 sm:pb-14 text-center">
-          <div className="inline-flex items-center gap-1.5 h-5 sm:h-6 px-2.5 sm:px-3 rounded-full bg-primary/10 mb-4">
+        <div className="relative max-w-2xl mx-auto px-5 sm:px-8 pt-8 sm:pt-12 pb-8 sm:pb-10 text-center">
+          <div className="inline-flex items-center gap-1.5 h-5 sm:h-6 px-2.5 sm:px-3 rounded-full bg-primary/10 mb-3">
             <Layers className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-primary" />
             <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-primary">Module</span>
           </div>
-          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-primary leading-tight">{formatModuleTitle(module)}</h1>
-          <p className="text-xs sm:text-sm text-muted-foreground/60 mt-3">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</p>
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight">{formatModuleTitle(module)}</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground/60 mt-2">{lessons.length} lesson{lessons.length !== 1 ? "s" : ""}</p>
 
           {isLoggedIn && lessons.length > 0 && (
-            <div className="mt-5 flex items-center gap-3 max-w-xs mx-auto">
+            <div className="mt-4 flex items-center gap-3 max-w-xs mx-auto">
               <div className="flex-1 h-1.5 rounded-full bg-primary/10 overflow-hidden">
                 <div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
               </div>
@@ -87,7 +87,7 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
           {lessons.length > 0 && (
             <CTAButton
               href={`/modules/${module.slug}/${nextLesson.slug}`}
-              className="mt-7"
+              className="mt-5"
             >
               {isComplete ? <CheckCircle2 className="w-4 h-4" /> : null}
               {isComplete ? "Review Lesson 1" : done > 0 ? `Continue: ${nextLesson.title}` : "Start Lesson 1"}
@@ -113,7 +113,7 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
 
       {/* Lesson list */}
       {lessons.length > 0 && (
-        <div className="max-w-2xl mx-auto px-5 sm:px-10 py-8 sm:py-10">
+        <div className="max-w-2xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
           <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-4">Lessons in this module</h3>
           <div className="space-y-2">
             {lessons.map((lesson, i) => {
@@ -149,7 +149,7 @@ export default function ModuleView({ moduleSlug }: { moduleSlug: string }) {
 
       {/* Wrap-Up Video */}
       {module.wrapUpVideoUrl && (
-        <div className="max-w-2xl mx-auto px-5 sm:px-10 py-10 sm:py-12">
+        <div className="max-w-2xl mx-auto px-5 sm:px-8 py-8 sm:py-10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-1 h-6 rounded-full bg-primary/30" />
             <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground/60">Wrap-Up</h3>

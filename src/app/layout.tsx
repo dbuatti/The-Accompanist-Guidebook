@@ -57,7 +57,7 @@ export default function RootLayout({
         <NeonAuthUIProvider
           authClient={authClient as unknown as ComponentProps<typeof NeonAuthUIProvider>["authClient"]}
           defaultTheme="light"
-          redirectTo="/welcome?"
+          redirectTo="/welcome"
           baseURL={process.env.NEXT_PUBLIC_APP_URL || ""}
         >
           <Providers>
