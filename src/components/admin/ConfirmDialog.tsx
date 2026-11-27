@@ -52,7 +52,11 @@ export default function ConfirmDialog({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          {description && <DialogDescription>{description}</DialogDescription>}
+          {description ? (
+            <DialogDescription>{description}</DialogDescription>
+          ) : (
+            <DialogDescription className="sr-only">Please confirm this action.</DialogDescription>
+          )}
         </DialogHeader>
 
         {withInput && (

@@ -18,10 +18,17 @@ describe("ConfirmDialog", () => {
     );
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toHaveAccessibleDescription("This cannot be undone.");
     expect(screen.getByText("Delete lesson")).toBeInTheDocument();
     expect(screen.getByText("This cannot be undone.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Delete" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+  });
+
+  it("provides an accessible description when no visible description is supplied", () => {
+    render(<ConfirmDialog {...baseProps} />);
+
+    expect(screen.getByRole("dialog")).toHaveAccessibleDescription("Please confirm this action.");
   });
 
   it("confirms without a value by default", async () => {

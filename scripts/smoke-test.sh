@@ -53,19 +53,30 @@ code=$(http_code "/nonexistent-page-xyz")
 echo
 echo "2) Admin pages reject anonymous (server-side guard)"
 # ---------------------------------------------------------------------------
-# With no session, /admin should redirect (30x), NOT 200. We check two ways:
-#   a) without -L: expect a redirect code (307)
-#   b) following redirects: expect to land on /auth/sign-in (200) and NOT on /admin content
+# With no session, /admin should redirect to sign-in. Next may send either:
+#   a) a normal 30x response, or
+#   b) a 200 streaming shell carrying NEXT_REDIRECT + a meta-refresh to sign-in.
+# Accept either form, but never a plain 200 admin page.
 code=$(http_code "/admin")
+body=$(curl -s --max-time 20 "${BASE}/admin")
 case "$code" in
-  307|302|308) ok "GET /admin (anon) -> redirect ($code, guard fires)" ;;
-  200)         bad "GET /admin (anon) -> 200 (GUARD NOT FIRING — server-side guard missing/buggy)" ;;
-  *)           bad "GET /admin (anon) -> $code (expected redirect)" ;;
+  307|302|308)
+    ok "GET /admin (anon) -> redirect ($code, guard fires)"
+    ;;
+  200)
+    if echo "$body" | grep -q "NEXT_REDIRECT;replace;/auth/sign-in" \
+      || echo "$body" | grep -q 'http-equiv="refresh" content="1;url=/auth/sign-in"'; then
+      ok "GET /admin (anon) -> sign-in redirect payload (guard fires)"
+    else
+      bad "GET /admin (anon) -> 200 without redirect (GUARD NOT FIRING)"
+    fi
+    ;;
+  *)
+    bad "GET /admin (anon) -> $code (expected redirect)"
+    ;;
 esac
 
-# Following the redirect should land on sign-in, and the body should NOT contain
-# admin dashboard text like "Admin Dashboard" or "Course Content".
-body=$(curl -sL --max-time 20 "${BASE}/admin")
+# The redirect response/landing page must NOT contain admin dashboard content.
 if echo "$body" | grep -q "Admin Dashboard"; then
   bad "Anonymous followed to a page containing 'Admin Dashboard' (guard bypassed)"
 else
