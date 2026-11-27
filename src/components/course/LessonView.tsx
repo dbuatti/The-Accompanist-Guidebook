@@ -9,7 +9,7 @@ import { formatModuleTitle } from "@/lib/utils";
 import { saveVideoProgress } from "@/app/actions";
 
 export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: string; lessonSlug: string }) {
-  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session, progressData, content } = useCourse();
+  const { getModule, getLesson, getAdjacentLesson, isLessonCompleted, toggleComplete, session, progressData } = useCourse();
   const module = getModule(moduleSlug);
   const lesson = getLesson(moduleSlug, lessonSlug);
   const { prev, next } = getAdjacentLesson(moduleSlug, lessonSlug);
@@ -84,13 +84,11 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
         </div>
       </div>
 
-
-
       {/* Body */}
       <div className="max-w-4xl mx-auto px-5 sm:px-8 py-6 sm:py-8">
         {/* Video */}
         {lesson.videoUrl && (
-          <div className="mb-10 rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
+          <div className="mb-8 rounded-2xl overflow-hidden shadow-lg shadow-black/5 ring-1 ring-black/5">
             <VideoPlayer
               url={lesson.videoUrl}
               onComplete={() => {
@@ -137,7 +135,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
 
         {/* Complete */}
         {isLoggedIn && !completed && (
-          <div className="mt-12 flex justify-center">
+          <div className="mt-10 flex justify-center">
             <button
               onClick={() => toggleComplete(lesson.id)}
               className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-2.5 text-sm font-medium hover:bg-primary/90 transition-all shadow-md shadow-primary/15 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-primary/50 focus-visible:outline-none"
@@ -149,7 +147,7 @@ export default function LessonView({ moduleSlug, lessonSlug }: { moduleSlug: str
         )}
 
         {/* Prev / Next */}
-        <div className="mt-8 grid sm:grid-cols-2 gap-4">
+        <div className="mt-10 grid sm:grid-cols-2 gap-4">
           {prev ? (
             <Link
               href={prev.href}
