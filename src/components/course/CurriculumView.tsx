@@ -48,16 +48,16 @@ export default function CurriculumView() {
       <div className="relative border-b border-border/20 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-primary/[0.02] to-transparent" />
         <div className="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-primary/[0.03] blur-3xl" />
-        <div className="relative max-w-3xl mx-auto px-5 sm:px-10 pt-12 sm:pt-20 pb-8 sm:pb-12 text-center">
-          <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 sm:mb-5 ring-1 ring-primary/10">
-            <Layers className="w-6 sm:w-7 h-6 sm:h-7 text-primary" />
+        <div className="relative max-w-3xl mx-auto px-5 sm:px-8 pt-10 sm:pt-14 pb-6 sm:pb-8 text-center">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 ring-1 ring-primary/10">
+            <Layers className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
           </div>
-          <h1 className="text-2xl sm:text-4xl font-serif font-bold text-primary leading-tight mb-2 sm:mb-3">
+          <h1 className="text-2xl sm:text-3xl font-serif font-bold text-primary leading-tight mb-2">
             Course Curriculum
           </h1>
-            <p className="text-xs sm:text-sm text-muted-foreground/70">
-              {totalModules} modules spanning {totalLessons} lessons
-            </p>
+          <p className="text-sm text-muted-foreground/70">
+            {totalModules} modules · {totalLessons} lessons
+          </p>
 
           {isLoggedIn && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground/60 mt-2">
